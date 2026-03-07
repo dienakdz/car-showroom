@@ -1,0 +1,402 @@
+@startuml
+' =========================
+'  Car Showroom DB Overview
+'  (Spec layer + Unit layer)
+'  Scope: NO review-advanced, NO blog/content
+'  Attributes: NO attribute_options (no select type)
+'  RBAC: Custom (users/roles/permissions + pivots)
+' =========================
+
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+' -------------------------
+' USERS & RBAC (Custom)
+' -------------------------
+class users {
+  +bigint id <<PK>>
+  --
+  name
+  email <<UQ, nullable>>
+  phone <<UQ, nullable>>
+  password <<nullable>>
+  created_at
+  updated_at
+}
+
+class roles {
+  +bigint id <<PK>>
+  --
+  name <<UQ>>
+  description <<nullable>>
+  created_at
+  updated_at
+}
+
+class permissions {
+  +bigint id <<PK>>
+  --
+  key <<UQ>>
+  description <<nullable>>
+  created_at
+  updated_at
+}
+
+class user_roles {
+  +bigint user_id <<FK>>
+  +bigint role_id <<FK>>
+  --
+  <<PK>>(user_id, role_id)
+}
+
+class role_has_permissions {
+  +bigint role_id <<FK>>
+  +bigint permission_id <<FK>>
+  --
+  <<PK>>(role_id, permission_id)
+}
+
+
+users ||--o{ user_roles : user_id
+roles ||--o{ user_roles : role_id
+
+roles ||--o{ role_has_permissions : role_id
+permissions ||--o{ role_has_permissions : permission_id
+
+
+' -------------------------
+' CATALOG (SPEC LAYER)
+' -------------------------
+class makes {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+  logo_path <<nullable>>
+  created_at
+  updated_at
+}
+
+class models {
+  +bigint id <<PK>>
+  +bigint make_id <<FK>>
+  --
+  name
+  slug
+  created_at
+  updated_at
+}
+
+class trims {
+  +bigint id <<PK>>
+  +bigint model_id <<FK>>
+  --
+  name
+  slug
+  year_from <<nullable>>
+  year_to <<nullable>>
+  msrp <<nullable>>
+  description <<nullable>>
+  created_at
+  updated_at
+}
+
+makes ||--o{ models : make_id
+models ||--o{ trims : model_id
+
+' -------------------------
+' LOOKUP TABLES
+' -------------------------
+class body_types {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+}
+class fuel_types {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+}
+class transmissions {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+}
+class drivetrains {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+}
+class colors {
+  +bigint id <<PK>>
+  --
+  name
+  slug <<UQ>>
+  type <<exterior|interior>>
+  hex <<nullable>>
+}
+
+' -------------------------
+' FEATURES (SPEC)
+' -------------------------
+class feature_groups {
+  +bigint id <<PK>>
+  --
+  name
+  sort_order
+}
+class features {
+  +bigint id <<PK>>
+  +bigint feature_group_id <<FK>>
+  --
+  name
+  slug <<UQ>>
+}
+class trim_feature {
+  +bigint trim_id <<FK>>
+  +bigint feature_id <<FK>>
+  --
+  <<PK>>(trim_id, feature_id)
+}
+
+feature_groups ||--o{ features : feature_group_id
+trims ||--o{ trim_feature : trim_id
+features ||--o{ trim_feature : feature_id
+
+' -------------------------
+' ATTRIBUTES (EAV for SPEC) - no select/options
+' -------------------------
+class attributes {
+  +bigint id <<PK>>
+  --
+  code <<UQ>>
+  label
+  type <<string|number|boolean>>
+  unit <<nullable>>
+  is_filterable
+  sort_order
+}
+
+class trim_attribute_values {
+  +bigint id <<PK>>
+  +bigint trim_id <<FK>>
+  +bigint attribute_id <<FK>>
+  --
+  value_string <<nullable>>
+  value_number <<nullable>>
+  value_boolean <<nullable>>
+  <<UQ>>(trim_id, attribute_id)
+}
+
+trims ||--o{ trim_attribute_values : trim_id
+attributes ||--o{ trim_attribute_values : attribute_id
+
+' -------------------------
+' INVENTORY (UNIT LAYER)
+' -------------------------
+class car_units {
+  +bigint id <<PK>>
+  +bigint trim_id <<FK>>
+  --
+  condition <<new|used|cpo>>
+  vin <<UQ, nullable>>
+  stock_code <<UQ>>
+  year
+  mileage <<nullable>>
+  body_type_id <<FK, nullable>>
+  fuel_type_id <<FK, nullable>>
+  transmission_id <<FK, nullable>>
+  drivetrain_id <<FK, nullable>>
+  exterior_color_id <<FK, nullable>>
+  interior_color_id <<FK, nullable>>
+  price <<nullable>>
+  currency
+  status <<draft|available|on_hold|sold|archived>>
+  hold_until <<nullable>>
+  published_at <<nullable>>
+  sold_at <<nullable>>
+  notes_internal <<nullable>>
+  deleted_at <<soft delete>>
+  created_at
+  updated_at
+}
+
+class car_unit_media {
+  +bigint id <<PK>>
+  +bigint car_unit_id <<FK>>
+  --
+  type <<image|video>>
+  path_or_url
+  caption <<nullable>>
+  sort_order
+  is_cover
+  created_at
+  updated_at
+}
+
+class car_unit_holds {
+  +bigint id <<PK>>
+  +bigint car_unit_id <<FK>>
+  +bigint created_by <<FK users>>
+  --
+  hold_until
+  reason <<nullable>>
+  created_at
+  updated_at
+}
+
+class car_unit_price_histories {
+  +bigint id <<PK>>
+  +bigint car_unit_id <<FK>>
+  +bigint changed_by <<FK users>>
+  --
+  old_price <<nullable>>
+  new_price <<nullable>>
+  created_at
+  updated_at
+}
+
+trims ||--o{ car_units : trim_id
+car_units ||--o{ car_unit_media : car_unit_id
+car_units ||--o{ car_unit_holds : car_unit_id
+users ||--o{ car_unit_holds : created_by
+car_units ||--o{ car_unit_price_histories : car_unit_id
+users ||--o{ car_unit_price_histories : changed_by
+
+body_types ||--o{ car_units : body_type_id
+fuel_types ||--o{ car_units : fuel_type_id
+transmissions ||--o{ car_units : transmission_id
+drivetrains ||--o{ car_units : drivetrain_id
+colors ||--o{ car_units : exterior_color_id
+colors ||--o{ car_units : interior_color_id
+
+' -------------------------
+' SALES (VERIFY PURCHASE)
+' -------------------------
+class sales {
+  +bigint id <<PK>>
+  +bigint car_unit_id <<FK, UQ>>
+  +bigint buyer_user_id <<FK users>>
+  +bigint created_by <<FK users>>
+  --
+  sold_price <<nullable>>
+  sold_at
+  created_at
+  updated_at
+}
+
+car_units ||--|| sales : car_unit_id (unique)
+users ||--o{ sales : buyer_user_id
+users ||--o{ sales : created_by
+
+' -------------------------
+' REVIEWS (PRODUCT-LIKE)
+' -------------------------
+class trim_reviews {
+  +bigint id <<PK>>
+  +bigint trim_id <<FK>>
+  +bigint user_id <<FK users>>
+  --
+  rating <<1..5>>
+  comment
+  status <<pending|approved|hidden>>
+  <<UQ>>(trim_id, user_id)
+  created_at
+  updated_at
+}
+
+trims ||--o{ trim_reviews : trim_id
+users ||--o{ trim_reviews : user_id
+
+' -------------------------
+' CRM: LEADS & APPOINTMENTS
+' -------------------------
+class leads {
+  +bigint id <<PK>>
+  +bigint user_id <<FK, nullable>>
+  +bigint car_unit_id <<FK, nullable>>
+  +bigint trim_id <<FK, nullable>>
+  +bigint assigned_to <<FK users, nullable>>
+  --
+  source <<unit_detail|trim_page|finance|trade_in|contact>>
+  name
+  phone
+  email <<nullable>>
+  message <<nullable>>
+  status <<new|contacted|qualified|booked|closed|lost>>
+  utm_source <<nullable>>
+  utm_medium <<nullable>>
+  utm_campaign <<nullable>>
+  created_at
+  updated_at
+}
+
+class lead_notes {
+  +bigint id <<PK>>
+  +bigint lead_id <<FK>>
+  +bigint created_by <<FK users>>
+  --
+  note
+  created_at
+  updated_at
+}
+
+class appointments {
+  +bigint id <<PK>>
+  +bigint user_id <<FK, nullable>>
+  +bigint car_unit_id <<FK, nullable>>
+  +bigint trim_id <<FK, nullable>>
+  +bigint lead_id <<FK, nullable>>
+  +bigint handled_by <<FK users, nullable>>
+  --
+  scheduled_at
+  status <<pending|confirmed|cancelled|done>>
+  note <<nullable>>
+  created_at
+  updated_at
+}
+
+users ||--o{ leads : user_id
+car_units ||--o{ leads : car_unit_id
+trims ||--o{ leads : trim_id
+users ||--o{ leads : assigned_to
+
+leads ||--o{ lead_notes : lead_id
+users ||--o{ lead_notes : created_by
+
+users ||--o{ appointments : user_id
+car_units ||--o{ appointments : car_unit_id
+trims ||--o{ appointments : trim_id
+leads ||--o{ appointments : lead_id
+users ||--o{ appointments : handled_by
+
+' -------------------------
+' SETTINGS / SHOWROOM
+' -------------------------
+class showrooms {
+  +bigint id <<PK>>
+  --
+  name
+  phone
+  email <<nullable>>
+  address <<nullable>>
+  description <<nullable>>
+  created_at
+  updated_at
+}
+
+class settings {
+  +bigint id <<PK>>
+  --
+  key <<UQ>>
+  value_json
+  created_at
+  updated_at
+}
+
+@enduml
