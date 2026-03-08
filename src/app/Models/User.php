@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
     ];
 
@@ -30,7 +33,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -41,8 +43,67 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function userRoles(): HasMany
+    {
+        return $this->hasMany(UserRole::class, 'user_id');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
+    }
+
+    public function trimReviews(): HasMany
+    {
+        return $this->hasMany(TrimReview::class, 'user_id');
+    }
+
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'user_id');
+    }
+
+    public function assignedLeads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'assigned_to');
+    }
+
+    public function leadNotesCreated(): HasMany
+    {
+        return $this->hasMany(LeadNote::class, 'created_by');
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'user_id');
+    }
+
+    public function handledAppointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'handled_by');
+    }
+
+    public function carUnitHoldsCreated(): HasMany
+    {
+        return $this->hasMany(CarUnitHold::class, 'created_by');
+    }
+
+    public function carUnitPriceChanges(): HasMany
+    {
+        return $this->hasMany(CarUnitPriceHistory::class, 'changed_by');
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'buyer_user_id');
+    }
+
+    public function salesCreated(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'created_by');
     }
 }
