@@ -68,6 +68,9 @@
     $showroomName = $navShowroom->name ?? 'Showroom';
     $showroomAddress = $navShowroom->address ?? 'Lien he de nhan dia chi showroom';
     $showroomEmail = $navShowroom->email ?? null;
+    $defaultName = old('name', auth()->user()->name ?? '');
+    $defaultPhone = old('phone', auth()->user()->phone ?? '');
+    $defaultEmail = old('email', auth()->user()->email ?? '');
 @endphp
 
 <section class="inventory-section pb-0 layout-radius">
@@ -119,7 +122,7 @@
                                     @if ($videoMedia->isNotEmpty())
                                         <li><a href="{{ $videoMedia->first()->url }}" data-fancybox="gallery2"><img src="{{ asset('boxcar/images/resource/video1-1.svg') }}" alt="video">Video</a></li>
                                     @endif
-                                    <li><a href="#dealer-contact"><img src="{{ asset('boxcar/images/resource/video1-2.svg') }}" alt="contact">Dat lich xem xe</a></li>
+                                    <li><a href="#dealer-booking"><img src="{{ asset('boxcar/images/resource/video1-2.svg') }}" alt="contact">Dat lich xem xe</a></li>
                                     <li><a href="{{ $imageMedia->first()->url }}" data-fancybox="gallery"><img src="{{ asset('boxcar/images/resource/video1-4.svg') }}" alt="photos">Tat ca hinh anh</a></li>
                                 </ul>
                             </div>
@@ -252,10 +255,6 @@
                     <div class="form-box" id="dealer-contact">
                         <h4 class="title">Dat lich xem xe va nhan bao gia</h4>
 
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-
                         @if ($errors->any())
                             <div class="alert alert-danger">{{ $errors->first() }}</div>
                         @endif
@@ -269,19 +268,19 @@
                             <div class="col-lg-6">
                                 <div class="form_boxes">
                                     <label>Ho va ten</label>
-                                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Nguyen Van A" required>
+                                    <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form_boxes">
                                     <label>So dien thoai</label>
-                                    <input type="text" name="phone" value="{{ old('phone') }}" placeholder="09xxxxxxxx" required>
+                                    <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form_boxes">
                                     <label>Email</label>
-                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="example@email.com">
+                                    <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -308,6 +307,52 @@
                             <li><span>Tinh trang</span>{{ $car->condition_label }}</li>
                             <li><span>Showroom</span>{{ $showroomName }}</li>
                         </ul>
+                    </div>
+
+                    <div class="form-box" id="dealer-booking">
+                        <h4 class="title">Dat lich xem xe / lai thu</h4>
+                        <form class="row" method="POST" action="{{ route('appointments.store') }}">
+                            @csrf
+                            <input type="hidden" name="source" value="unit_detail">
+                            <input type="hidden" name="car_unit_id" value="{{ $car->id }}">
+                            <input type="hidden" name="trim_id" value="{{ $car->trim_id }}">
+
+                            <div class="col-lg-6">
+                                <div class="form_boxes">
+                                    <label>Ho va ten</label>
+                                    <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form_boxes">
+                                    <label>So dien thoai</label>
+                                    <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form_boxes">
+                                    <label>Email</label>
+                                    <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form_boxes">
+                                    <label>Thoi gian mong muon</label>
+                                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" min="{{ now()->addHour()->format('Y-m-d\\TH:i') }}" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form_boxes v2">
+                                    <label>Ghi chu</label>
+                                    <textarea name="message" placeholder="Toi muon xem xe va lai thu vao cuoi tuan nay">{{ old('message') }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-submit">
+                                    <button type="submit" class="theme-btn">Dat lich xem xe<img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
                     <div class="review-sec">
@@ -395,7 +440,7 @@
                         <small>{{ $car->condition_label }} | {{ strtoupper((string) $car->status) }}</small>
                         <div class="btn-box">
                             <a href="#dealer-contact" class="side-btn"><img src="{{ asset('boxcar/images/resource/tag.svg') }}" alt="offer">Nhan bao gia</a>
-                            <a href="#dealer-contact" class="side-btn two"><img src="{{ asset('boxcar/images/resource/tag1-1.svg') }}" alt="test-drive">Dat lich xem xe</a>
+                            <a href="#dealer-booking" class="side-btn two"><img src="{{ asset('boxcar/images/resource/tag1-1.svg') }}" alt="test-drive">Dat lich xem xe</a>
                         </div>
                     </div>
 

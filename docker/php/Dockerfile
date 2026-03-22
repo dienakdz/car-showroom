@@ -4,6 +4,8 @@ RUN apk add --no-cache bash git curl zip unzip icu-dev oniguruma-dev libzip-dev 
  && docker-php-ext-install -j$(nproc) pdo_mysql mbstring intl zip opcache
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY docker/php/zz-fpm-tuning.conf /usr/local/etc/php-fpm.d/zz-fpm-tuning.conf
+COPY docker/php/zz-opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
 
 WORKDIR /var/www/html
 

@@ -12,6 +12,15 @@ class Sale extends EloquentModel
 
     protected $guarded = [];
 
+    public static function hasBuyerPurchasedTrim(int $buyerUserId, int $trimId): bool
+    {
+        return static::query()
+            ->join('car_units', 'car_units.id', '=', 'sales.car_unit_id')
+            ->where('sales.buyer_user_id', $buyerUserId)
+            ->where('car_units.trim_id', $trimId)
+            ->exists();
+    }
+
     protected function casts(): array
     {
         return [

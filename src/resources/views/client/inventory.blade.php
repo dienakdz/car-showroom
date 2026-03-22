@@ -30,11 +30,8 @@
         (object) ['value' => 'price_desc', 'label' => 'Gia cao den thap'],
         (object) ['value' => 'year_desc', 'label' => 'Nam moi nhat'],
         (object) ['value' => 'year_asc', 'label' => 'Nam cu nhat'],
-    ]);
-    $statusOptions = collect([
-        (object) ['value' => 'available', 'label' => 'Dang ban'],
-        (object) ['value' => 'on_hold', 'label' => 'Dang giu cho'],
-        (object) ['value' => 'all', 'label' => 'Tat ca'],
+        (object) ['value' => 'mileage_asc', 'label' => 'Odo thap den cao'],
+        (object) ['value' => 'mileage_desc', 'label' => 'Odo cao den thap'],
     ]);
 @endphp
 
@@ -48,8 +45,16 @@
             <h2>{{ $pageTitle }}</h2>
             <form class="form-box" method="GET" action="{{ $inventoryAction }}">
                 <input type="hidden" name="q" value="{{ request('q', '') }}">
-                <input type="hidden" name="status" value="{{ request('status', 'available') }}">
+                <input type="hidden" name="trim" value="{{ request('trim', '') }}">
+                <input type="hidden" name="year" value="{{ request('year', '') }}">
+                <input type="hidden" name="min_year" value="{{ request('min_year', '') }}">
+                <input type="hidden" name="max_year" value="{{ request('max_year', '') }}">
                 <input type="hidden" name="transmission" value="{{ request('transmission', '') }}">
+                <input type="hidden" name="drivetrain" value="{{ request('drivetrain', '') }}">
+                <input type="hidden" name="exterior_color" value="{{ request('exterior_color', '') }}">
+                <input type="hidden" name="interior_color" value="{{ request('interior_color', '') }}">
+                <input type="hidden" name="min_mileage" value="{{ request('min_mileage', '') }}">
+                <input type="hidden" name="max_mileage" value="{{ request('max_mileage', '') }}">
                 <input type="hidden" name="min_price" value="{{ request('min_price', '') }}">
                 <input type="hidden" name="max_price" value="{{ request('max_price', '') }}">
                 <input type="hidden" name="sort" value="{{ request('sort', 'newest') }}">
@@ -100,12 +105,12 @@
                 </div>
                 <div class="form_boxes">
                     @include('client.partials.form.custom-dropdown', [
-                        'name' => 'year',
+                        'name' => 'min_year',
                         'options' => $filters['years'],
-                        'selectedValue' => request('year', ''),
+                        'selectedValue' => request('min_year', ''),
                         'valueField' => 'value',
                         'labelField' => 'label',
-                        'emptyLabel' => 'Nam san xuat',
+                        'emptyLabel' => 'Nam tu',
                         'autoSubmit' => true,
                     ])
                 </div>
@@ -132,10 +137,17 @@
                     <input type="hidden" name="body_type" value="{{ request('body_type', '') }}">
                     <input type="hidden" name="make" value="{{ request('make', '') }}">
                     <input type="hidden" name="model" value="{{ request('model', '') }}">
+                    <input type="hidden" name="trim" value="{{ request('trim', '') }}">
                     <input type="hidden" name="year" value="{{ request('year', '') }}">
+                    <input type="hidden" name="min_year" value="{{ request('min_year', '') }}">
+                    <input type="hidden" name="max_year" value="{{ request('max_year', '') }}">
                     <input type="hidden" name="fuel_type" value="{{ request('fuel_type', '') }}">
                     <input type="hidden" name="transmission" value="{{ request('transmission', '') }}">
-                    <input type="hidden" name="status" value="{{ request('status', 'available') }}">
+                    <input type="hidden" name="drivetrain" value="{{ request('drivetrain', '') }}">
+                    <input type="hidden" name="exterior_color" value="{{ request('exterior_color', '') }}">
+                    <input type="hidden" name="interior_color" value="{{ request('interior_color', '') }}">
+                    <input type="hidden" name="min_mileage" value="{{ request('min_mileage', '') }}">
+                    <input type="hidden" name="max_mileage" value="{{ request('max_mileage', '') }}">
                     <input type="hidden" name="min_price" value="{{ request('min_price', '') }}">
                     <input type="hidden" name="max_price" value="{{ request('max_price', '') }}">
                     <div class="form_boxes v3">
@@ -203,19 +215,6 @@
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <div class="categories-box">
-                                <h6 class="title">Trang thai</h6>
-                                <div class="cheak-box">
-                                    @foreach ($statusOptions as $statusOption)
-                                        <label class="contain">{{ $statusOption->label }}
-                                            <input type="radio" name="status" value="{{ $statusOption->value }}" {{ request('status', 'available') === $statusOption->value ? 'checked' : '' }}>
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
                             <div class="form_boxes">
                                 <label>Hang xe</label>
                                 @include('client.partials.form.custom-dropdown', [
@@ -241,13 +240,39 @@
                                 ])
                             </div>
                         </div>
+                        <div class="col-lg-12">
+                            <div class="form_boxes">
+                                <label>Phien ban</label>
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'trim',
+                                    'options' => $filters['trims'],
+                                    'selectedValue' => request('trim', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tat ca phien ban',
+                                ])
+                            </div>
+                        </div>
                         <div class="col-lg-6">
                             <div class="form_boxes">
-                                <label>Nam</label>
+                                <label>Nam tu</label>
                                 @include('client.partials.form.custom-dropdown', [
-                                    'name' => 'year',
+                                    'name' => 'min_year',
                                     'options' => $filters['years'],
-                                    'selectedValue' => request('year', ''),
+                                    'selectedValue' => request('min_year', ''),
+                                    'valueField' => 'value',
+                                    'labelField' => 'label',
+                                    'emptyLabel' => 'Tat ca',
+                                ])
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form_boxes">
+                                <label>Nam den</label>
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'max_year',
+                                    'options' => $filters['years'],
+                                    'selectedValue' => request('max_year', ''),
                                     'valueField' => 'value',
                                     'labelField' => 'label',
                                     'emptyLabel' => 'Tat ca',
@@ -264,6 +289,19 @@
                                     'valueField' => 'slug',
                                     'labelField' => 'name',
                                     'emptyLabel' => 'Tat ca',
+                                ])
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form_boxes">
+                                <label>Dan dong</label>
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'drivetrain',
+                                    'options' => $filters['drivetrains'],
+                                    'selectedValue' => request('drivetrain', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tat ca dan dong',
                                 ])
                             </div>
                         </div>
@@ -311,6 +349,44 @@
                             <div class="form_boxes">
                                 <label>Gia den</label>
                                 <input type="number" name="max_price" value="{{ request('max_price', '') }}" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form_boxes">
+                                <label>Odo tu</label>
+                                <input type="number" name="min_mileage" value="{{ request('min_mileage', '') }}" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form_boxes">
+                                <label>Odo den</label>
+                                <input type="number" name="max_mileage" value="{{ request('max_mileage', '') }}" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form_boxes">
+                                <label>Mau ngoai that</label>
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'exterior_color',
+                                    'options' => $filters['colors'],
+                                    'selectedValue' => request('exterior_color', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tat ca mau',
+                                ])
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form_boxes">
+                                <label>Mau noi that</label>
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'interior_color',
+                                    'options' => $filters['colors'],
+                                    'selectedValue' => request('interior_color', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tat ca mau',
+                                ])
                             </div>
                         </div>
                         <div class="col-lg-12">

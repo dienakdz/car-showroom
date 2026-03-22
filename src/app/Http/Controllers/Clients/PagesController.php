@@ -16,7 +16,7 @@ class PagesController extends ClientBaseController
         $showroom = Showroom::query()->first();
 
         $stats = [
-            'cars_for_sale' => CarUnit::query()->available()->count(),
+            'cars_for_sale' => CarUnit::query()->available()->whereNotNull('published_at')->count(),
             'trims' => Trim::query()->count(),
             'reviews' => TrimReview::query()->approved()->count(),
             'leads' => Lead::query()->count(),
@@ -33,8 +33,7 @@ class PagesController extends ClientBaseController
         $source = $this->normalizeLeadSource($source);
         $sourceTitle = $this->leadSourceTitle($source);
 
-        $availableCars = $this->baseCarQuery()
-            ->where('car_units.status', 'available')
+        $availableCars = $this->publicVisibleCarQuery()
             ->orderByDesc('car_units.id')
             ->limit(40)
             ->get()

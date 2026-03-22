@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Clients;
 
+use App\Models\Sale;
 use App\Models\Trim;
+use App\Models\TrimReview;
 use Illuminate\View\View;
 
 class TrimsController extends ClientBaseController
@@ -23,9 +25,12 @@ class TrimsController extends ClientBaseController
 
         $attributes = $this->loadTrimAttributes($trim->id);
 
-        $availableCars = $this->baseCarQuery()
-            ->where('car_units.trim_id', $trim->id)
-            ->where('car_units.status', 'available')
+        $availableCarsQuery = $this->publicVisibleCarQuery()
+            ->where('car_units.trim_id', $trim->id);
+
+        $availableCarsCount = (clone $availableCarsQuery)->count();
+
+        $availableCars = $availableCarsQuery
             ->orderByDesc('car_units.published_at')
             ->orderByDesc('car_units.id')
             ->limit(12)
@@ -33,13 +38,29 @@ class TrimsController extends ClientBaseController
             ->map(fn (object $car) => $this->decorateCar($car));
 
         $reviews = $this->loadApprovedTrimReviews($trim->id);
+        $userHasPurchasedTrim = false;
+        $userReview = null;
+        $canSubmitReview = false;
+
+        if (auth()->check()) {
+            $userHasPurchasedTrim = Sale::hasBuyerPurchasedTrim((int) auth()->id(), $trim->id);
+            $userReview = TrimReview::query()
+                ->where('trim_id', $trim->id)
+                ->where('user_id', (int) auth()->id())
+                ->first();
+            $canSubmitReview = $userHasPurchasedTrim && $userReview === null;
+        }
 
         return $this->viewWithSharedData('client.trim-detail', [
             'trim' => $trim,
             'features' => $features,
             'attributes' => $attributes,
+            'availableCarsCount' => $availableCarsCount,
             'availableCars' => $availableCars,
             'reviews' => $reviews,
+            'userHasPurchasedTrim' => $userHasPurchasedTrim,
+            'userReview' => $userReview,
+            'canSubmitReview' => $canSubmitReview,
         ]);
     }
 }

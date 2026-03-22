@@ -4,9 +4,13 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     container_name: car_app
+    user: "0:0"
     working_dir: /var/www/html
+    command: >
+      sh -lc "if [ ! -f vendor/autoload.php ] || [ composer.lock -nt vendor/autoload.php ]; then composer install --no-interaction --prefer-dist; fi && php-fpm"
     volumes:
       - ./src:/var/www/html
+      - vendor_data:/var/www/html/vendor
     depends_on:
       - mysql
 
@@ -36,3 +40,4 @@ services:
 
 volumes:
   mysql_data:
+  vendor_data:

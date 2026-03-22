@@ -6,16 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\CarUnit;
 use App\Models\CarUnitMedia;
 use App\Models\Feature;
+use App\Models\Lead;
 use App\Models\Showroom;
 use App\Models\TrimAttributeValue;
 use App\Models\TrimReview;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 abstract class ClientBaseController extends Controller
 {
+    protected array $resolvedMediaPathCache = [];
+
     protected const LEAD_SOURCES = [
         'unit_detail',
         'trim_page',
@@ -76,6 +79,13 @@ abstract class ClientBaseController extends Controller
                 'exterior_colors.name as exterior_color_name',
                 'interior_colors.name as interior_color_name',
             ]);
+    }
+
+    protected function publicVisibleCarQuery(): EloquentBuilder
+    {
+        return $this->baseCarQuery()
+            ->where('car_units.status', 'available')
+            ->whereNotNull('car_units.published_at');
     }
 
     protected function decorateCar(object $car): object
@@ -221,34 +231,66 @@ abstract class ClientBaseController extends Controller
 
     protected function resolveMediaPath(?string $path): string
     {
+        $cacheKey = $path ?? '__fallback__';
+
+        if (array_key_exists($cacheKey, $this->resolvedMediaPathCache)) {
+            return $this->resolvedMediaPathCache[$cacheKey];
+        }
+
         if ($path === null || $path === '') {
-            return asset('boxcar/images/resource/shop3-1.jpg');
+            return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/images/resource/shop3-1.jpg');
         }
 
         if (preg_match('/^https?:\\/\\//i', $path) === 1) {
-            return $path;
+            return $this->resolvedMediaPathCache[$cacheKey] = $path;
         }
 
         $cleanPath = ltrim($path, '/');
 
         if (str_starts_with($cleanPath, 'boxcar/')) {
-            return asset($cleanPath);
+            return $this->resolvedMediaPathCache[$cacheKey] = asset($cleanPath);
         }
 
         if (file_exists(public_path($cleanPath))) {
-            return asset($cleanPath);
+            return $this->resolvedMediaPathCache[$cacheKey] = asset($cleanPath);
         }
 
         if (file_exists(public_path('boxcar/' . $cleanPath))) {
-            return asset('boxcar/' . $cleanPath);
+            return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/' . $cleanPath);
         }
 
-        return asset('boxcar/images/resource/shop3-1.jpg');
+        return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/images/resource/shop3-1.jpg');
     }
 
     protected function normalizeLeadSource(string $source): string
     {
         return in_array($source, self::LEAD_SOURCES, true) ? $source : 'contact';
+    }
+
+    protected function firstStaffUserId(): ?int
+    {
+        return User::query()
+            ->whereHas('roles', fn ($query) => $query->where('roles.name', 'staff'))
+            ->value('id');
+    }
+
+    protected function createLead(array $payload): Lead
+    {
+        return Lead::query()->create([
+            'user_id' => auth()->id(),
+            'car_unit_id' => $payload['car_unit_id'] ?? null,
+            'trim_id' => $payload['trim_id'] ?? null,
+            'assigned_to' => $this->firstStaffUserId(),
+            'source' => $this->normalizeLeadSource((string) ($payload['source'] ?? 'contact')),
+            'name' => $payload['name'],
+            'phone' => $payload['phone'],
+            'email' => $payload['email'] ?? null,
+            'message' => $payload['message'] ?? null,
+            'status' => $payload['status'] ?? 'new',
+            'utm_source' => $payload['utm_source'] ?? null,
+            'utm_medium' => $payload['utm_medium'] ?? null,
+            'utm_campaign' => $payload['utm_campaign'] ?? null,
+        ]);
     }
 
     protected function leadSourceTitle(string $source): string
@@ -260,11 +302,28 @@ abstract class ClientBaseController extends Controller
         };
     }
 
+    protected function pushSuccessToast(string $message): void
+    {
+        session()->flash('success', $message);
+
+        toastr()->success($message, [
+            'positionClass' => 'toast-top-right',
+            'closeButton' => true,
+            'progressBar' => true,
+            'timeOut' => 3000,
+            'extendedTimeOut' => 1200,
+            'preventDuplicates' => true,
+        ]);
+    }
+
     protected function viewWithSharedData(string $viewName, array $data = []): View
     {
         $navShowroom = null;
-        if (Schema::hasTable('showrooms')) {
+
+        try {
             $navShowroom = Showroom::query()->first();
+        } catch (\Throwable) {
+            $navShowroom = null;
         }
 
         return view($viewName, array_merge(['navShowroom' => $navShowroom], $data));

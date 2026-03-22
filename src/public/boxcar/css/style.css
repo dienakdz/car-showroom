@@ -24988,23 +24988,43 @@ Chat Widget
 }
 
 .form_boxes input::-webkit-input-placeholder {
-  color: #000;
+  color: #8c93a3 !important;
 }
 
 .form_boxes input::-moz-placeholder {
-  color: #000;
+  color: #8c93a3 !important;
 }
 
 .form_boxes input:-ms-input-placeholder {
-  color: #000;
+  color: #8c93a3 !important;
 }
 
 .form_boxes input::-ms-input-placeholder {
-  color: #000;
+  color: #8c93a3 !important;
 }
 
 .form_boxes input::placeholder {
-  color: #000;
+  color: #8c93a3 !important;
+}
+
+.form_boxes textarea::-webkit-input-placeholder {
+  color: #8c93a3 !important;
+}
+
+.form_boxes textarea::-moz-placeholder {
+  color: #8c93a3 !important;
+}
+
+.form_boxes textarea:-ms-input-placeholder {
+  color: #8c93a3 !important;
+}
+
+.form_boxes textarea::-ms-input-placeholder {
+  color: #8c93a3 !important;
+}
+
+.form_boxes textarea::placeholder {
+  color: #8c93a3 !important;
 }
 
 .theme-btn img {
@@ -28416,12 +28436,34 @@ Chat Widget
 
 }
 
-.input-box input,
-.input-box input::placeholder {
+.input-box input {
   font-size: 15px;
   line-height: 19.53px;
   color: rgba(5, 11, 32, 1);
 
+}
+
+.input-box input::-webkit-input-placeholder {
+  color: #8c93a3 !important;
+  opacity: 1;
+}
+
+.input-box input::-moz-placeholder {
+  color: #8c93a3 !important;
+  opacity: 1;
+}
+
+.input-box input:-ms-input-placeholder {
+  color: #8c93a3 !important;
+}
+
+.input-box input::-ms-input-placeholder {
+  color: #8c93a3 !important;
+}
+
+.input-box input::placeholder {
+  color: #8c93a3 !important;
+  opacity: 1;
 }
 
 .select-box-el {
@@ -28493,7 +28535,8 @@ Chat Widget
 }
 
 .select-box-el .select-body .search-box input::placeholder {
-  color: rgba(5, 11, 32, 1);
+  color: #8c93a3 !important;
+  opacity: 1;
 
 }
 

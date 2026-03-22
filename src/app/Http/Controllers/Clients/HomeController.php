@@ -12,7 +12,7 @@ class HomeController extends ClientBaseController
 {
     public function index(): View
     {
-        $availableCars = $this->baseCarQuery()->where('car_units.status', 'available');
+        $availableCars = $this->publicVisibleCarQuery();
 
         $featuredCars = $this->attachGalleryImages((clone $availableCars)
             ->orderByDesc('car_units.published_at')
@@ -45,6 +45,7 @@ class HomeController extends ClientBaseController
             ->leftJoin('car_units', function ($join): void {
                 $join->on('car_units.trim_id', '=', 'trims.id')
                     ->where('car_units.status', '=', 'available')
+                    ->whereNotNull('car_units.published_at')
                     ->whereNull('car_units.deleted_at');
             })
             ->groupBy('makes.id', 'makes.name', 'makes.slug')
@@ -66,9 +67,9 @@ class HomeController extends ClientBaseController
         });
 
         $stats = [
-            'available' => CarUnit::query()->available()->count(),
-            'new' => CarUnit::query()->available()->where('condition', 'new')->count(),
-            'used' => CarUnit::query()->available()->whereIn('condition', ['used', 'cpo'])->count(),
+            'available' => CarUnit::query()->available()->whereNotNull('published_at')->count(),
+            'new' => CarUnit::query()->available()->whereNotNull('published_at')->where('condition', 'new')->count(),
+            'used' => CarUnit::query()->available()->whereNotNull('published_at')->whereIn('condition', ['used', 'cpo'])->count(),
             'makes' => Make::query()->count(),
         ];
 
