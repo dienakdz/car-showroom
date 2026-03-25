@@ -32,6 +32,8 @@ class ClientAuthTest extends TestCase
         ]);
 
         $response->assertRedirect(route('home'));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', [
             'email' => 'buyer@example.com',
@@ -55,6 +57,8 @@ class ClientAuthTest extends TestCase
         ]);
 
         $response->assertRedirect(route('home'));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
         $this->assertAuthenticatedAs($user);
     }
 
@@ -110,6 +114,8 @@ class ClientAuthTest extends TestCase
         ]);
 
         $response->assertRedirect(route('account.show', ['tab' => 'account-profile']));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'Profile Updated',
@@ -135,6 +141,8 @@ class ClientAuthTest extends TestCase
         ]);
 
         $response->assertRedirect(route('account.show', ['tab' => 'account-profile']));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
         $this->assertTrue(Hash::check('newsecret123', $user->refresh()->password));
     }
 }

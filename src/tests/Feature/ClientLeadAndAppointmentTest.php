@@ -28,6 +28,8 @@ class ClientLeadAndAppointmentTest extends TestCase
             ]);
 
         $response->assertRedirect(route('trim.show', ['trimSlug' => $fixture['trim_slug']]));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
 
         $this->assertDatabaseHas('leads', [
             'user_id' => $user->id,
@@ -71,6 +73,8 @@ class ClientLeadAndAppointmentTest extends TestCase
             ]);
 
         $response->assertRedirect(route('car.show', ['stockCode' => $fixture['stock_code']]));
+        $response->assertSessionMissing('success');
+        $response->assertSessionHas('flasher::envelopes');
 
         $leadId = DB::table('leads')
             ->where('user_id', $user->id)

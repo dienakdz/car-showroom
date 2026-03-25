@@ -15,6 +15,136 @@
 
 @section('title', $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name)
 
+@push('styles')
+<style>
+    .car-detail-trim-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(64, 95, 242, 0.18);
+        background: rgba(64, 95, 242, 0.08);
+        color: #2543d1;
+        font-weight: 700;
+        line-height: 1.3;
+        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .car-detail-trim-link:hover {
+        background: #405ff2;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(64, 95, 242, 0.18);
+    }
+
+    .car-detail-trim-link__hint {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.82;
+    }
+
+    .car-detail-trim-cta {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .car-detail-trim-cta::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(64, 95, 242, 0.12) 0%, rgba(64, 95, 242, 0.04) 55%, rgba(5, 11, 32, 0.02) 100%);
+        border: 1px solid rgba(64, 95, 242, 0.14);
+        pointer-events: none;
+    }
+
+    .description-sec .des-list li.car-detail-trim-cta {
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    .car-detail-trim-cta__link {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        width: 100%;
+        min-height: 84px;
+        padding: 18px 22px;
+        color: #050b20;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .car-detail-trim-cta__link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+    }
+
+    .car-detail-trim-cta__content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .car-detail-trim-cta__eyebrow {
+        color: #405ff2;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .car-detail-trim-cta__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #050b20;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .car-detail-trim-cta__title img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .car-detail-trim-cta__note {
+        color: #5f6980;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .car-detail-trim-cta__arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #405ff2;
+        color: #ffffff;
+        font-size: 18px;
+        box-shadow: 0 12px 24px rgba(64, 95, 242, 0.22);
+    }
+
+    @media (max-width: 767.98px) {
+        .car-detail-trim-cta__link {
+            align-items: flex-start;
+            padding: 16px 18px;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $imageMedia = $media->filter(function (object $item): bool {
@@ -151,7 +281,13 @@
                                         <li><span><img src="{{ asset('boxcar/images/resource/insep1-8.svg') }}" alt="exterior">Mau ngoai that</span>{{ $car->exterior_color_name ?? 'Dang cap nhat' }}</li>
                                         <li><span><img src="{{ asset('boxcar/images/resource/insep1-9.svg') }}" alt="interior">Mau noi that</span>{{ $car->interior_color_name ?? 'Dang cap nhat' }}</li>
                                         <li><span><img src="{{ asset('boxcar/images/resource/insep1-10.svg') }}" alt="stock">Ma xe</span>{{ $car->stock_code }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-11.svg') }}" alt="trim">Phien ban</span><a href="{{ route('trim.show', $car->trim_slug) }}">{{ $car->trim_name }}</a></li>
+                                        <li>
+                                            <span><img src="{{ asset('boxcar/images/resource/insep1-11.svg') }}" alt="trim">Phien ban</span>
+                                            <a href="{{ route('trim.show', $car->trim_slug) }}" class="car-detail-trim-link">
+                                                {{ $car->trim_name }}
+                                                <small class="car-detail-trim-link__hint">Mo trang trim</small>
+                                            </a>
+                                        </li>
                                         <li><span><img src="{{ asset('boxcar/images/resource/insep1-12.svg') }}" alt="vin">VIN</span>{{ $car->vin ?? 'Dang cap nhat' }}</li>
                                     </ul>
                                 </div>
@@ -164,8 +300,18 @@
                         <div class="text two">{{ $descriptionLead }}</div>
                         <div class="text">{{ $descriptionTail }}</div>
                         <ul class="des-list">
-                            <li><a href="{{ $car->vin ? 'https://www.google.com/search?q=' . rawurlencode($car->vin) : '#dealer-contact' }}" @if ($car->vin) target="_blank" rel="noopener" @endif><span><img src="{{ asset('boxcar/images/resource/book1-1.svg') }}" alt="vin">Tra cuu VIN</span></a></li>
-                            <li class="two"><a href="{{ route('trim.show', $car->trim_slug) }}"><span><img src="{{ asset('boxcar/images/resource/book1-2.svg') }}" alt="trim">Xem thong tin phien ban</span></a></li>
+                            <li class="two car-detail-trim-cta">
+                                <a href="{{ route('trim.show', $car->trim_slug) }}" class="car-detail-trim-cta__link">
+                                    <span class="car-detail-trim-cta__content">
+                                        <span class="car-detail-trim-cta__title">
+                                            <img src="{{ asset('boxcar/images/resource/book1-2.svg') }}" alt="trim">
+                                            Xem thong tin phien ban
+                                        </span>
+                                        <small class="car-detail-trim-cta__note">Mo trang trim de xem thong so chung, trang bi, review va xe cung phien ban.</small>
+                                    </span>
+                                    <span class="car-detail-trim-cta__arrow" aria-hidden="true">></span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
 

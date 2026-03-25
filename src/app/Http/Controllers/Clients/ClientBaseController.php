@@ -304,8 +304,6 @@ abstract class ClientBaseController extends Controller
 
     protected function pushSuccessToast(string $message): void
     {
-        session()->flash('success', $message);
-
         toastr()->success($message, [
             'positionClass' => 'toast-top-right',
             'closeButton' => true,
