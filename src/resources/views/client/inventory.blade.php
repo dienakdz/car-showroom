@@ -643,7 +643,7 @@
                 $menu.removeClass('active');
                 $menu.children('.dropdown').stop(true, true).slideUp(150);
 
-                if ($form.length && (submitOnSelect || $menu.closest('.inventory-sidebar').length > 0)) {
+                if ($form.length && submitOnSelect) {
                     window.setTimeout(function () {
                         $form.trigger('submit');
                     }, 0);
@@ -777,16 +777,6 @@
         $(document).on('click.inventoryAjax', '#inventory-content .close-filters, #inventory-content .sidebar-backdrop', function (event) {
             event.preventDefault();
             closeInventorySidebar();
-        });
-
-        $(document).on('change.inventoryAjax', '#inventory-content .inventory-sidebar input[type="radio"]', function () {
-            var $form = $(this).closest('form');
-
-            if (!$form.length) {
-                return;
-            }
-
-            $form.trigger('submit');
         });
 
         $(document).on('submit.inventoryAjax', '#inventory-content form', function (event) {

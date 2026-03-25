@@ -36,4 +36,15 @@ class ClientStaticPagesTest extends TestCase
             $response->assertSeeText('Gui thong tin tu van');
         }
     }
+
+    public function test_missing_route_uses_custom_404_page(): void
+    {
+        config(['app.debug' => false]);
+
+        $response = $this->get('/trang-khong-ton-tai');
+
+        $response->assertNotFound();
+        $response->assertSeeText('Oops! Trang ban tim hien khong co san.');
+        $response->assertSeeText('Ve trang chu');
+    }
 }

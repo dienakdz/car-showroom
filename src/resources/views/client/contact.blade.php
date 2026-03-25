@@ -91,6 +91,10 @@
         overflow: visible;
     }
 
+    .client-contact-flow .flow-main .flow-panel {
+        overflow: visible;
+    }
+
     .client-contact-flow .flow-panel-inner {
         padding: 28px;
     }
@@ -130,13 +134,13 @@
     }
 
     .client-contact-flow .flow-step {
-        display: grid;
-        grid-template-columns: 38px minmax(0, 1fr);
-        gap: 12px;
-        align-items: start;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
     }
 
     .client-contact-flow .flow-step-index {
+        flex: 0 0 38px;
         width: 38px;
         height: 38px;
         border-radius: 14px;
@@ -148,14 +152,20 @@
         font-weight: 700;
     }
 
-    .client-contact-flow .flow-step strong {
+    .client-contact-flow .flow-step-body {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-top: 2px;
+    }
+
+    .client-contact-flow .flow-step-body strong {
         display: block;
         margin-bottom: 4px;
         color: #050b20;
         font-size: 15px;
     }
 
-    .client-contact-flow .flow-step span {
+    .client-contact-flow .flow-step-body span {
         display: block;
         color: rgba(255, 255, 255, 0.78);
         font-size: 14px;
@@ -246,6 +256,10 @@
         position: relative;
     }
 
+    .client-contact-flow .form_boxes:has(.drop-menu.active) {
+        z-index: 30;
+    }
+
     .client-contact-flow .form_boxes label {
         display: block;
         margin-bottom: 8px;
@@ -309,7 +323,11 @@
 
     .client-contact-flow .form_boxes .drop-menu {
         position: relative;
-        z-index: 3;
+        z-index: 4;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu.active {
+        z-index: 40;
     }
 
     .client-contact-flow .form_boxes .drop-menu .select {
@@ -345,6 +363,7 @@
         box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
         max-height: 280px;
         overflow-y: auto;
+        z-index: 50;
     }
 
     .client-contact-flow .form_boxes .drop-menu .dropdown li {
@@ -486,7 +505,7 @@
                             @foreach ($sourceMeta['steps'] as $step)
                                 <li class="flow-step">
                                     <span class="flow-step-index">{{ $loop->iteration }}</span>
-                                    <div>
+                                    <div class="flow-step-body">
                                         <strong>Buoc {{ $loop->iteration }}</strong>
                                         <span>{{ $step }}</span>
                                     </div>
