@@ -4,7 +4,114 @@
 @php($accountUrl = auth()->check() ? route('account.show') : route('login'))
 @php($inventoryMenuActive = request()->routeIs('inventory.*'))
 
-<header class="{{ $headerClasses }}">
+@once
+    @push('styles')
+    <style>
+        .boxcar-header.js-site-header .site-header-bar {
+            transition: background-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease, -webkit-backdrop-filter 0.25s ease;
+        }
+
+        .boxcar-header.js-site-header.is-sticky {
+            z-index: 1100;
+            border-bottom-color: transparent;
+        }
+
+        .boxcar-header.js-site-header.is-sticky .site-header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1100;
+            background: rgba(5, 11, 32, 0.94);
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.18);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .boxcar-header.js-site-header.is-sticky .site-header-bar .header-inner {
+            padding-top: 16px;
+        }
+
+        .boxcar-header.js-site-header.is-sticky.cus-style-1 {
+            padding-bottom: 0 !important;
+        }
+
+        .boxcar-header.js-site-header.is-sticky .layout-search {
+            margin-top: 0;
+        }
+
+        @media (max-width: 991.98px) {
+            .boxcar-header.js-site-header.is-sticky .site-header-bar .header-inner {
+                padding-top: 12px;
+            }
+        }
+    </style>
+    @endpush
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const headers = document.querySelectorAll('.js-site-header');
+
+            headers.forEach((header) => {
+                const bar = header.querySelector('.site-header-bar');
+                if (!bar) {
+                    return;
+                }
+
+                let ticking = false;
+                let baseHeight = 0;
+
+                const measureBaseHeight = () => {
+                    const wasSticky = header.classList.contains('is-sticky');
+
+                    if (wasSticky) {
+                        header.classList.remove('is-sticky');
+                        header.style.height = '';
+                    }
+
+                    baseHeight = Math.ceil(header.getBoundingClientRect().height);
+
+                    if (wasSticky) {
+                        header.classList.add('is-sticky');
+                    }
+                };
+
+                const syncStickyState = () => {
+                    const shouldStick = window.scrollY > 24;
+
+                    header.classList.toggle('is-sticky', shouldStick);
+                    header.style.height = shouldStick && baseHeight > 0 ? `${baseHeight}px` : '';
+
+                    ticking = false;
+                };
+
+                const requestSync = () => {
+                    if (ticking) {
+                        return;
+                    }
+
+                    ticking = true;
+                    window.requestAnimationFrame(syncStickyState);
+                };
+
+                const handleResize = () => {
+                    measureBaseHeight();
+                    syncStickyState();
+                };
+
+                measureBaseHeight();
+                syncStickyState();
+                window.addEventListener('scroll', requestSync, { passive: true });
+                window.addEventListener('resize', handleResize);
+            });
+        });
+    </script>
+    @endpush
+@endonce
+
+<header class="{{ $headerClasses }} js-site-header">
+    <div class="site-header-bar">
     <div class="header-inner">
         <div class="inner-container">
             <div class="c-box">
@@ -86,5 +193,6 @@
             </div>
         </div>
     </div>
-    <div id="nav-mobile"></div>
+        <div id="nav-mobile"></div>
+    </div>
 </header>

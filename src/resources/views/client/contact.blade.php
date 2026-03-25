@@ -87,6 +87,10 @@
         overflow: hidden;
     }
 
+    .client-contact-flow .flow-panel.flow-panel-form {
+        overflow: visible;
+    }
+
     .client-contact-flow .flow-panel-inner {
         padding: 28px;
     }
@@ -237,10 +241,122 @@
         font-size: 13px;
     }
 
+    .client-contact-flow .form_boxes {
+        margin-bottom: 18px;
+        position: relative;
+    }
+
     .client-contact-flow .form_boxes label {
+        display: block;
         margin-bottom: 8px;
-        font-weight: 600;
+        font-weight: 700;
         color: #050b20;
+    }
+
+    .client-contact-flow .form_boxes input,
+    .client-contact-flow .form_boxes textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        background: #f8fbff;
+        color: #0f172a;
+        font-size: 15px;
+        line-height: 1.6;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .client-contact-flow .form_boxes input {
+        height: 58px;
+        padding: 0 18px;
+    }
+
+    .client-contact-flow .form_boxes textarea {
+        min-height: 160px;
+        padding: 16px 18px;
+        resize: vertical;
+    }
+
+    .client-contact-flow .form_boxes input:hover,
+    .client-contact-flow .form_boxes textarea:hover,
+    .client-contact-flow .form_boxes .drop-menu .select:hover {
+        border-color: #94a3b8;
+        background: #fff;
+    }
+
+    .client-contact-flow .form_boxes input:focus,
+    .client-contact-flow .form_boxes textarea:focus {
+        outline: none;
+        border-color: #405ff2;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.14);
+    }
+
+    .client-contact-flow .form_boxes input.is-invalid,
+    .client-contact-flow .form_boxes textarea.is-invalid,
+    .client-contact-flow .form_boxes.is-invalid .drop-menu .select {
+        border-color: #d93025;
+        background: #fff8f7;
+        box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.08);
+    }
+
+    .client-contact-flow .form_boxes input::placeholder,
+    .client-contact-flow .form_boxes textarea::placeholder {
+        color: #98a2b3 !important;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu {
+        position: relative;
+        z-index: 3;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .select {
+        min-height: 58px;
+        padding: 0 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        background: #f8fbff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: #0f172a;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .select span {
+        color: #0f172a;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .select i {
+        color: #64748b;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .dropdown {
+        width: 100%;
+        margin-top: 10px;
+        padding: 8px;
+        border: 1px solid #d9dde8;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+        max-height: 280px;
+        overflow-y: auto;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .dropdown li {
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: #0f172a;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .client-contact-flow .form_boxes .drop-menu .dropdown li:hover {
+        background: #eef2ff;
+        color: #405ff2;
     }
 
     .client-contact-flow .flow-note-grid {
@@ -395,7 +511,7 @@
                     </div>
                 </div>
 
-                <div class="flow-panel">
+                <div class="flow-panel flow-panel-form">
                     <iframe
                         class="flow-map"
                         src="https://maps.google.com/maps?width=100%25&height=600&hl=vi&q={{ $mapAddress }}&t=&z=14&ie=UTF8&iwloc=B&output=embed"
@@ -445,7 +561,7 @@
                             <div class="col-lg-6">
                                 <div class="form_boxes">
                                     <label>Ho va ten</label>
-                                    <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
+                                    <input class="@error('name') is-invalid @enderror" type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
                                     @error('name')
                                         <span class="flow-error">{{ $message }}</span>
                                     @enderror
@@ -455,7 +571,7 @@
                             <div class="col-lg-6">
                                 <div class="form_boxes">
                                     <label>So dien thoai</label>
-                                    <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
+                                    <input class="@error('phone') is-invalid @enderror" type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
                                     @error('phone')
                                         <span class="flow-error">{{ $message }}</span>
                                     @enderror
@@ -465,7 +581,7 @@
                             <div class="col-lg-12">
                                 <div class="form_boxes">
                                     <label>Email</label>
-                                    <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="name@email.com">
+                                    <input class="@error('email') is-invalid @enderror" type="email" name="email" value="{{ $defaultEmail }}" placeholder="name@email.com">
                                     @error('email')
                                         <span class="flow-error">{{ $message }}</span>
                                     @enderror
@@ -473,7 +589,7 @@
                             </div>
 
                             <div class="col-lg-12">
-                                <div class="form_boxes">
+                                <div class="form_boxes {{ $errors->has('car_unit_id') ? 'is-invalid' : '' }}">
                                     <label>Chon xe dang quan tam</label>
                                     @include('client.partials.form.custom-dropdown', [
                                         'name' => 'car_unit_id',
@@ -490,7 +606,7 @@
                             </div>
 
                             <div class="col-lg-12">
-                                <div class="form_boxes">
+                                <div class="form_boxes {{ $errors->has('trim_id') ? 'is-invalid' : '' }}">
                                     <label>Hoac chon phien ban</label>
                                     @include('client.partials.form.custom-dropdown', [
                                         'name' => 'trim_id',
@@ -509,7 +625,7 @@
                             <div class="col-lg-12">
                                 <div class="form_boxes v2">
                                     <label>Noi dung</label>
-                                    <textarea name="message" placeholder="Mo ta nhu cau, thoi gian co the lien he, muc tai chinh hoac thong tin xe can trade-in">{{ old('message') }}</textarea>
+                                    <textarea class="@error('message') is-invalid @enderror" name="message" placeholder="Mo ta nhu cau, thoi gian co the lien he, muc tai chinh hoac thong tin xe can trade-in">{{ old('message') }}</textarea>
                                     @error('message')
                                         <span class="flow-error">{{ $message }}</span>
                                     @enderror
