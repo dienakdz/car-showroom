@@ -158,10 +158,6 @@
                 </div>
 
                 <div class="right-box">
-                    <a href="tel:{{ $navShowroom->phone ?? '0900000000' }}" class="box-account">
-                        <span class="icon"><i class="fa-solid fa-phone"></i></span>
-                        {{ $navShowroom->phone ?? '0900 000 000' }}
-                    </a>
                     <a href="{{ $accountUrl }}" class="box-account">
                         <span class="icon">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

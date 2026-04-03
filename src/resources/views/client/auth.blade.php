@@ -355,7 +355,200 @@
         font-weight: 700;
         padding: 12px 18px;
     }
+    .client-login-shell .nav-tabs .nav-link:hover,
+    .client-login-shell .nav-tabs .nav-link:focus-visible {
+        border-color: #94a3b8;
+        background: #f8fbff;
+        outline: none;
+    }
     .client-login-shell .nav-tabs .nav-link.active { border-color: #405ff2; background: #405ff2; color: #fff; }
+    .client-login-shell .nav-tabs .nav-link.active:hover,
+    .client-login-shell .nav-tabs .nav-link.active:focus-visible {
+        border-color: #405ff2;
+        background: #405ff2;
+        color: #fff;
+    }
+    .client-login-shell .tab-content {
+        max-width: 650px;
+    }
+    .client-login-shell .form-box form {
+        margin: 0;
+    }
+    .client-login-shell .form_boxes {
+        margin-bottom: 18px;
+    }
+    .client-login-shell .form_boxes label {
+        display: block;
+        margin-bottom: 10px;
+        color: #101828;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+    .client-login-shell .form_boxes input {
+        width: 100%;
+        height: 58px;
+        padding: 0 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        background: #f8fbff;
+        color: #0f172a;
+        font-size: 16px;
+        line-height: 1.5;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    .client-login-shell .form_boxes input:hover {
+        border-color: #94a3b8;
+        background: #fff;
+    }
+    .client-login-shell .form_boxes input:focus {
+        outline: none;
+        border-color: #405ff2;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.14);
+    }
+    .client-login-shell .form_boxes input.is-invalid {
+        border-color: #d93025;
+        background: #fff8f7;
+        box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.08);
+    }
+    .client-login-shell .form_boxes input::placeholder {
+        color: #98a2b3 !important;
+    }
+    .client-login-shell .form_boxes input:-webkit-autofill,
+    .client-login-shell .form_boxes input:-webkit-autofill:hover,
+    .client-login-shell .form_boxes input:-webkit-autofill:focus {
+        -webkit-text-fill-color: #0f172a;
+        caret-color: #0f172a;
+        border: 1px solid #cbd5e1;
+        -webkit-box-shadow: 0 0 0 1000px #f8fbff inset;
+        box-shadow: 0 0 0 1000px #f8fbff inset;
+        transition: background-color 9999s ease-out 0s;
+    }
+    .client-login-shell .form_boxes input:-webkit-autofill:hover {
+        border-color: #94a3b8;
+        -webkit-box-shadow: 0 0 0 1000px #fff inset;
+        box-shadow: 0 0 0 1000px #fff inset;
+    }
+    .client-login-shell .form_boxes input:-webkit-autofill:focus {
+        border-color: #405ff2;
+        -webkit-box-shadow: 0 0 0 1000px #fff inset, 0 0 0 4px rgba(64, 95, 242, 0.14);
+        box-shadow: 0 0 0 1000px #fff inset, 0 0 0 4px rgba(64, 95, 242, 0.14);
+    }
+    .client-login-shell .error-text {
+        display: block;
+        margin-top: 8px;
+        color: #d93025;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    .client-login-shell .btn-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 4px 0 0;
+    }
+    .client-login-shell .btn-box .contain {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        margin: 0;
+        padding-left: 34px;
+        color: #344054;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.5;
+        cursor: pointer;
+        user-select: none;
+    }
+    .client-login-shell .btn-box .contain input {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        transform: translateY(-50%);
+        opacity: 0;
+        cursor: pointer;
+    }
+    .client-login-shell .btn-box .checkmark {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 22px;
+        height: 22px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        transform: translateY(-50%);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .client-login-shell .btn-box .contain:hover .checkmark {
+        border-color: #94a3b8;
+    }
+    .client-login-shell .btn-box .contain input:focus-visible ~ .checkmark {
+        border-color: #405ff2;
+        box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.14);
+    }
+    .client-login-shell .btn-box .contain input:checked ~ .checkmark {
+        border-color: #405ff2;
+        background: #405ff2;
+    }
+    .client-login-shell .btn-box .checkmark:after {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 3px;
+        display: none;
+        width: 6px;
+        height: 11px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    .client-login-shell .btn-box .contain input:checked ~ .checkmark:after {
+        display: block;
+    }
+    .client-login-shell .btn-box.has-error .checkmark {
+        border-color: #d93025;
+        box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.08);
+    }
+    .client-login-shell .btn-box .pasword-btn {
+        display: inline-flex;
+        align-items: center;
+        color: #405ff2;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .client-login-shell .btn-box .pasword-btn:hover {
+        color: #2440cb;
+        text-decoration: underline;
+    }
+    .client-login-shell .btn-box .error-text {
+        flex-basis: 100%;
+        margin-top: -4px;
+    }
+    .client-login-shell .form-submit {
+        margin-top: 6px;
+    }
+    .client-login-shell .form-submit .theme-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 188px;
+    }
+    .client-login-shell .form-submit .theme-btn img {
+        margin-left: 0;
+    }
     @media (max-width: 1199px) {
         .client-account-shell .stats,
         .client-account-shell .purchase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -377,6 +570,13 @@
         .client-account-shell .purchase-grid,
         .client-account-shell .profile-summary-grid { grid-template-columns: 1fr; }
         .client-account-shell .purchase { grid-template-columns: 1fr; }
+        .client-login-shell .btn-box {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+        .client-login-shell .form-submit .theme-btn {
+            width: 100%;
+        }
     }
 </style>
 @endpush
@@ -940,12 +1140,12 @@
                                     <input type="hidden" name="form_mode" value="login">
                                     <div class="form_boxes">
                                         <label>Email, so dien thoai hoac ten tai khoan</label>
-                                        <input type="text" name="identifier" value="{{ $activeTab !== 'register' ? old('identifier') : '' }}" placeholder="admin@showroom.test">
+                                        <input class="@error('identifier') is-invalid @enderror" type="text" name="identifier" value="{{ $activeTab !== 'register' ? old('identifier') : '' }}" placeholder="email@example.com hoac 0901234567" autocomplete="username" autocapitalize="none" spellcheck="false" required>
                                         @error('identifier')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="form_boxes">
                                         <label>Mat khau</label>
-                                        <input type="password" name="password" placeholder="********">
+                                        <input class="@error('password') is-invalid @enderror" type="password" name="password" placeholder="Nhap mat khau cua ban" autocomplete="current-password" required>
                                         @error('password')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="btn-box">
@@ -969,29 +1169,30 @@
                                     <input type="hidden" name="form_mode" value="register">
                                     <div class="form_boxes">
                                         <label>Ho ten</label>
-                                        <input type="text" name="name" value="{{ $activeTab === 'register' ? old('name') : '' }}" placeholder="Nguyen Van A">
+                                        <input class="@error('name') is-invalid @enderror" type="text" name="name" value="{{ $activeTab === 'register' ? old('name') : '' }}" placeholder="Nguyen Van A" autocomplete="name" required>
                                         @error('name')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="form_boxes">
                                         <label>Email</label>
-                                        <input type="email" name="email" value="{{ $activeTab === 'register' ? old('email') : '' }}" placeholder="name@email.com">
+                                        <input class="@error('email') is-invalid @enderror" type="email" name="email" value="{{ $activeTab === 'register' ? old('email') : '' }}" placeholder="name@email.com" autocomplete="email" autocapitalize="none" spellcheck="false">
                                         @error('email')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="form_boxes">
                                         <label>So dien thoai</label>
-                                        <input type="text" name="phone" value="{{ $activeTab === 'register' ? old('phone') : '' }}" placeholder="0901234567">
+                                        <input class="@error('phone') is-invalid @enderror" type="text" name="phone" value="{{ $activeTab === 'register' ? old('phone') : '' }}" placeholder="0901234567" autocomplete="tel">
                                         @error('phone')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="form_boxes">
                                         <label>Mat khau</label>
-                                        <input type="password" name="password" placeholder="Toi thieu 6 ky tu">
+                                        <input class="@error('password') is-invalid @enderror" type="password" name="password" placeholder="Toi thieu 6 ky tu" autocomplete="new-password" required>
                                         @error('password')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
-                                    <div class="btn-box">
+                                    <div class="btn-box @error('accept_privacy') has-error @enderror">
                                         <label class="contain">Toi dong y voi chinh sach bao mat
                                             <input type="checkbox" name="accept_privacy" value="1" {{ old('accept_privacy') ? 'checked' : '' }}>
                                             <span class="checkmark"></span>
                                         </label>
+                                        @error('accept_privacy')<span class="error-text">{{ $message }}</span>@enderror
                                     </div>
                                     <div class="form-submit">
                                         <button type="submit" class="theme-btn">Tao tai khoan <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
