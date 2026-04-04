@@ -44,3 +44,5 @@ Route::get('/lien-he', [PagesController::class, 'contact'])->defaults('source', 
 Route::get('/tai-chinh', [PagesController::class, 'contact'])->defaults('source', 'finance')->name('finance');
 Route::get('/thu-cu-doi-moi', [PagesController::class, 'contact'])->defaults('source', 'trade_in')->name('tradein');
 Route::post('/lead', [LeadController::class, 'store'])->middleware('throttle:15,1')->name('lead.store');
+
+require __DIR__.'/admin.php';

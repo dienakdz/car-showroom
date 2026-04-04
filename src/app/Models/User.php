@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -105,5 +106,32 @@ class User extends Authenticatable
     public function salesCreated(): HasMany
     {
         return $this->hasMany(Sale::class, 'created_by');
+    }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roleNames()->contains($roleName);
+    }
+
+    public function hasAnyRole(array $roleNames): bool
+    {
+        return $this->roleNames()->intersect($roleNames)->isNotEmpty();
+    }
+
+    public function hasPermission(string $permissionName): bool
+    {
+        $this->loadMissing('roles.permissions');
+
+        return $this->roles
+            ->flatMap(fn (Role $role): Collection => $role->permissions)
+            ->pluck('name')
+            ->contains($permissionName);
+    }
+
+    public function roleNames(): Collection
+    {
+        $this->loadMissing('roles');
+
+        return $this->roles->pluck('name');
     }
 }
