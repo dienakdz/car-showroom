@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\Setting;
 use App\Models\Showroom;
+use App\Support\ViewDataCache;
 use Illuminate\Support\Facades\DB;
 
 class ShowroomSettingsService
@@ -36,5 +37,7 @@ class ShowroomSettingsService
                 );
             }
         });
+
+        ViewDataCache::forgetShowroomAndSettings();
     }
 }

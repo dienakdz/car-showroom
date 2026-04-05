@@ -15,6 +15,10 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected ?Collection $resolvedRoleNames = null;
+
+    protected ?Collection $resolvedPermissionNames = null;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -120,18 +124,34 @@ class User extends Authenticatable
 
     public function hasPermission(string $permissionName): bool
     {
-        $this->loadMissing('roles.permissions');
-
-        return $this->roles
-            ->flatMap(fn (Role $role): Collection => $role->permissions)
-            ->pluck('name')
-            ->contains($permissionName);
+        return $this->permissionNames()->contains($permissionName);
     }
 
     public function roleNames(): Collection
     {
+        if ($this->resolvedRoleNames !== null) {
+            return $this->resolvedRoleNames;
+        }
+
         $this->loadMissing('roles');
 
-        return $this->roles->pluck('name');
+        return $this->resolvedRoleNames = $this->roles
+            ->pluck('name')
+            ->values();
+    }
+
+    public function permissionNames(): Collection
+    {
+        if ($this->resolvedPermissionNames !== null) {
+            return $this->resolvedPermissionNames;
+        }
+
+        $this->loadMissing('roles.permissions');
+
+        return $this->resolvedPermissionNames = $this->roles
+            ->flatMap(fn (Role $role): Collection => $role->permissions)
+            ->pluck('name')
+            ->unique()
+            ->values();
     }
 }

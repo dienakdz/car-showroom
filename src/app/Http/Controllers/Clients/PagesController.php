@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Clients;
 
 use App\Models\CarUnit;
 use App\Models\Lead;
-use App\Models\Showroom;
 use App\Models\Trim;
 use App\Models\TrimReview;
 use Illuminate\View\View;
@@ -13,7 +12,7 @@ class PagesController extends ClientBaseController
 {
     public function about(): View
     {
-        $showroom = Showroom::query()->first();
+        $showroom = $this->sharedShowroom();
 
         $stats = [
             'cars_for_sale' => CarUnit::query()->available()->whereNotNull('published_at')->count(),
@@ -62,7 +61,7 @@ class PagesController extends ClientBaseController
             });
 
         return $this->viewWithSharedData('client.contact', [
-            'showroom' => Showroom::query()->first(),
+            'showroom' => $this->sharedShowroom(),
             'source' => $source,
             'sourceTitle' => $sourceTitle,
             'availableCars' => $availableCars,

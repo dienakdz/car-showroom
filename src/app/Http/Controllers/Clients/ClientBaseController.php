@@ -11,6 +11,7 @@ use App\Models\Showroom;
 use App\Models\TrimAttributeValue;
 use App\Models\TrimReview;
 use App\Models\User;
+use App\Support\ViewDataCache;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -316,14 +317,17 @@ abstract class ClientBaseController extends Controller
 
     protected function viewWithSharedData(string $viewName, array $data = []): View
     {
-        $navShowroom = null;
-
-        try {
-            $navShowroom = Showroom::query()->first();
-        } catch (\Throwable) {
-            $navShowroom = null;
-        }
+        $navShowroom = $this->sharedShowroom();
 
         return view($viewName, array_merge(['navShowroom' => $navShowroom], $data));
+    }
+
+    protected function sharedShowroom(): ?Showroom
+    {
+        try {
+            return ViewDataCache::rememberShowroom();
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

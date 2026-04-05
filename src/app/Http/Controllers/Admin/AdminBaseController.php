@@ -3,30 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
 use App\Models\Showroom;
+use App\Support\ViewDataCache;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 abstract class AdminBaseController extends Controller
 {
+    protected const ADMIN_PERMISSION_KEYS = [
+        'catalog.manage',
+        'inventory.manage',
+        'leads.manage',
+        'appointments.manage',
+        'sales.manage',
+        'reviews.approve',
+        'settings.manage',
+    ];
+
+    protected bool $adminContextResolved = false;
+
+    protected array $adminContext = [];
+
     protected function adminView(string $view, array $data = []): View
     {
-        $showroom = Showroom::query()->first();
-        $settings = $this->loadAdminSettings();
-        $brandName = trim((string) data_get($settings, 'site.brand_name.value', ''));
-
-        if ($brandName === '') {
-            $brandName = $showroom?->name ?: 'Car Showroom';
-        }
-
-        return view($view, array_merge([
-            'adminCurrentUser' => auth()->user(),
-            'adminShowroom' => $showroom,
-            'adminSettings' => $settings,
-            'adminBrandName' => $brandName,
-            'adminDefaultCurrency' => data_get($settings, 'site.default_currency.value', 'VND'),
-        ], $data));
+        return view($view, array_merge($this->resolveAdminContext(), $data));
     }
 
     protected function pushSuccessToast(string $message): void
@@ -64,15 +65,44 @@ abstract class AdminBaseController extends Controller
 
     protected function loadAdminSettings(): Collection
     {
-        return Setting::query()
-            ->whereIn('key', [
-                'site.brand_name',
-                'site.default_currency',
-                'contact.sales_hotline',
-                'inventory.show_on_hold_public',
-                'notifications.lead_email_enabled',
-            ])
-            ->get()
-            ->mapWithKeys(fn (Setting $setting): array => [$setting->key => $setting->value_json]);
+        return $this->resolveAdminContext()['adminSettings'];
+    }
+
+    protected function loadAdminShowroom(): ?Showroom
+    {
+        return $this->resolveAdminContext()['adminShowroom'];
+    }
+
+    protected function resolveAdminContext(): array
+    {
+        if ($this->adminContextResolved) {
+            return $this->adminContext;
+        }
+
+        $showroom = ViewDataCache::rememberShowroom();
+        $settings = ViewDataCache::rememberAdminSettings();
+        $brandName = trim((string) data_get($settings, 'site.brand_name.value', ''));
+        $user = auth()->user();
+        $roleNames = $user?->roleNames() ?? collect();
+        $permissionNames = $user?->permissionNames() ?? collect();
+
+        if ($brandName === '') {
+            $brandName = $showroom?->name ?: 'Car Showroom';
+        }
+
+        $this->adminContext = [
+            'adminCurrentUser' => $user,
+            'adminShowroom' => $showroom,
+            'adminSettings' => $settings,
+            'adminBrandName' => $brandName,
+            'adminDefaultCurrency' => data_get($settings, 'site.default_currency.value', 'VND'),
+            'adminRoleLabel' => Str::headline((string) ($roleNames->first() ?? 'Admin')),
+            'adminPermissionMap' => collect(self::ADMIN_PERMISSION_KEYS)
+                ->mapWithKeys(fn (string $permission): array => [$permission => $permissionNames->contains($permission)])
+                ->all(),
+        ];
+        $this->adminContextResolved = true;
+
+        return $this->adminContext;
     }
 }

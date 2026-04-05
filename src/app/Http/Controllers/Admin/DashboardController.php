@@ -6,9 +6,12 @@ use App\Models\Appointment;
 use App\Models\CarUnit;
 use App\Models\Lead;
 use App\Models\Sale;
+use App\Models\Trim;
 use App\Models\TrimReview;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends AdminBaseController
@@ -23,23 +26,45 @@ class DashboardController extends AdminBaseController
             ->groupBy('status')
             ->pluck('aggregate', 'status');
 
+        $leadTrendPeriodStart = now()->startOfMonth()->subMonths(5);
+        $leadTrendPeriodExpression = match (DB::getDriverName()) {
+            'sqlite' => "strftime('%Y-%m', created_at)",
+            'pgsql' => "to_char(created_at, 'YYYY-MM')",
+            default => "DATE_FORMAT(created_at, '%Y-%m')",
+        };
+        $leadTrendCounts = Lead::query()
+            ->selectRaw($leadTrendPeriodExpression . ' as period_key, COUNT(*) as total')
+            ->whereBetween('created_at', [$leadTrendPeriodStart, now()->endOfMonth()])
+            ->groupBy('period_key')
+            ->pluck('total', 'period_key');
+
         $leadTrend = collect(range(5, 0))
-            ->map(function (int $offset): array {
+            ->map(function (int $offset) use ($leadTrendCounts): array {
                 $periodStart = now()->startOfMonth()->subMonths($offset);
-                $periodEnd = $periodStart->copy()->endOfMonth();
 
                 return [
                     'label' => $periodStart->translatedFormat('M Y'),
-                    'total' => Lead::query()
-                        ->whereBetween('created_at', [$periodStart, $periodEnd])
-                        ->count(),
+                    'total' => (int) $leadTrendCounts->get($periodStart->format('Y-m'), 0),
                 ];
             });
+
+        $recentLeadRows = Lead::query()
+            ->with([
+                'assignedTo:id,name',
+                'carUnit.trim.model.make',
+            ])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        $recentLeadFallbackTrims = $this->loadContextTrims(
+            $recentLeadRows->whereNull('car_unit_id')->pluck('trim_id')
+        );
 
         $summaryCards = [
             [
                 'label' => 'Tong xe trong kho',
-                'value' => CarUnit::query()->count(),
+                'value' => (int) $inventoryCounts->sum(),
                 'note' => $inventoryCounts->get('available', 0) . ' xe dang san sang len public',
                 'icon' => asset('boxcar/images/icons/cart1.svg'),
                 'tone' => 'primary',
@@ -76,17 +101,13 @@ class DashboardController extends AdminBaseController
             ],
         ];
 
-        $recentLeads = Lead::query()
-            ->with([
-                'assignedTo:id,name',
-                'carUnit.trim.model.make',
-                'trim.model.make',
-            ])
-            ->latest()
-            ->limit(6)
-            ->get()
-            ->map(function (Lead $lead): object {
-                $context = $lead->carUnit?->trim ?? $lead->trim;
+        $recentLeads = $recentLeadRows
+            ->map(function (Lead $lead) use ($recentLeadFallbackTrims): object {
+                $context = $lead->carUnit?->trim;
+
+                if ($context === null) {
+                    $context = $recentLeadFallbackTrims->get($lead->trim_id);
+                }
 
                 return (object) [
                     'name' => $lead->name,
@@ -103,18 +124,27 @@ class DashboardController extends AdminBaseController
                 ];
             });
 
-        $upcomingAppointments = Appointment::query()
+        $upcomingAppointmentRows = Appointment::query()
             ->with([
                 'handledBy:id,name',
                 'carUnit.trim.model.make',
-                'trim.model.make',
             ])
             ->where('scheduled_at', '>=', now()->startOfDay())
             ->orderBy('scheduled_at')
             ->limit(6)
-            ->get()
-            ->map(function (Appointment $appointment): object {
-                $context = $appointment->carUnit?->trim ?? $appointment->trim;
+            ->get();
+
+        $upcomingAppointmentFallbackTrims = $this->loadContextTrims(
+            $upcomingAppointmentRows->whereNull('car_unit_id')->pluck('trim_id')
+        );
+
+        $upcomingAppointments = $upcomingAppointmentRows
+            ->map(function (Appointment $appointment) use ($upcomingAppointmentFallbackTrims): object {
+                $context = $appointment->carUnit?->trim;
+
+                if ($context === null) {
+                    $context = $upcomingAppointmentFallbackTrims->get($appointment->trim_id);
+                }
 
                 return (object) [
                     'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Dang cap nhat',
@@ -174,6 +204,24 @@ class DashboardController extends AdminBaseController
             'upcomingAppointments' => $upcomingAppointments,
             'recentSales' => $recentSales,
         ]);
+    }
+
+    protected function loadContextTrims(Collection $trimIds): Collection
+    {
+        $trimIds = $trimIds
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($trimIds->isEmpty()) {
+            return collect();
+        }
+
+        return Trim::query()
+            ->with('model.make')
+            ->whereIn('id', $trimIds)
+            ->get()
+            ->keyBy('id');
     }
 
     protected function formatRelativeDate(?CarbonInterface $dateTime): string

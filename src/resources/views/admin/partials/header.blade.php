@@ -1,6 +1,5 @@
 @php
     $adminHeaderBrand = $adminBrandName ?? $adminShowroom?->name ?? 'Car Showroom';
-    $adminRoleLabel = \Illuminate\Support\Str::headline((string) ($adminCurrentUser?->roleNames()->first() ?? 'Admin'));
 @endphp
 
 <header class="admin-topbar">

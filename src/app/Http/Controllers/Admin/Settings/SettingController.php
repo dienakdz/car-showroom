@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\Admin\Settings\UpdateShowroomSettingsRequest;
-use App\Models\Showroom;
 use App\Services\Admin\ShowroomSettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -16,7 +15,7 @@ class SettingController extends AdminBaseController
         return $this->adminView('admin.settings.index', [
             'adminPageTitle' => 'Settings & Showroom',
             'adminPageDescription' => 'Cap nhat thong tin showroom va mot so policy van hanh co ban.',
-            'showroom' => Showroom::query()->first(),
+            'showroom' => $this->loadAdminShowroom(),
         ]);
     }
 

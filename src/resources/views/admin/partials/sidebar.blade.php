@@ -1,5 +1,5 @@
 @php
-    $adminUser = $adminCurrentUser;
+    $adminPermissions = $adminPermissionMap ?? [];
     $adminSidebarModules = [
         [
             'kind' => 'link',
@@ -54,11 +54,11 @@
         ],
     ];
 
-    $resolvedSidebarModules = collect($adminSidebarModules)->map(function (array $module) use ($adminUser): array {
+    $resolvedSidebarModules = collect($adminSidebarModules)->map(function (array $module) use ($adminPermissions): array {
         if (($module['kind'] ?? 'link') === 'submenu') {
             $children = collect($module['children'])
-                ->map(function (array $child) use ($adminUser): array {
-                    $child['can_access'] = empty($child['permission']) || $adminUser?->hasPermission($child['permission']);
+                ->map(function (array $child) use ($adminPermissions): array {
+                    $child['can_access'] = empty($child['permission']) || ($adminPermissions[$child['permission']] ?? false);
                     $child['is_active'] = request()->routeIs(...$child['patterns']);
 
                     return $child;
@@ -72,7 +72,7 @@
             return $module;
         }
 
-        $module['can_access'] = empty($module['permission']) || $adminUser?->hasPermission($module['permission']);
+        $module['can_access'] = empty($module['permission']) || ($adminPermissions[$module['permission']] ?? false);
         $module['is_active'] = request()->routeIs(...$module['patterns']);
 
         return $module;
