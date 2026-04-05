@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Livewire\Admin\Catalog\Makes\Manager as MakesManager;
+use App\Livewire\Admin\Catalog\Models\Manager as ModelsManager;
 use App\Models\CarAttribute;
 use App\Models\CarModel;
 use App\Models\Feature;
@@ -11,6 +13,7 @@ use App\Models\Trim;
 use App\Models\User;
 use Database\Seeders\UsersAndRbacSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AdminCatalogManagementTest extends TestCase
@@ -40,18 +43,22 @@ class AdminCatalogManagementTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->actingAs($admin)->post(route('admin.catalog.makes.store'), [
-            'name' => 'Honda',
-            'slug' => 'honda',
-        ])->assertRedirect(route('admin.catalog.makes.index'));
+        $this->actingAs($admin);
+
+        Livewire::test(MakesManager::class)
+            ->set('createForm.name', 'Honda')
+            ->set('createForm.slug', 'honda')
+            ->call('create')
+            ->assertHasNoErrors();
 
         $make = Make::query()->where('slug', 'honda')->firstOrFail();
 
-        $this->actingAs($admin)->post(route('admin.catalog.models.store'), [
-            'make_id' => $make->id,
-            'name' => 'Civic',
-            'slug' => 'civic',
-        ])->assertRedirect(route('admin.catalog.models.index'));
+        Livewire::test(ModelsManager::class)
+            ->set('createForm.make_id', (string) $make->id)
+            ->set('createForm.name', 'Civic')
+            ->set('createForm.slug', 'civic')
+            ->call('create')
+            ->assertHasNoErrors();
 
         $model = CarModel::query()->where('slug', 'civic')->firstOrFail();
 

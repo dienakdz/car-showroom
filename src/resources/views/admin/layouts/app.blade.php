@@ -15,6 +15,7 @@
     <link href="{{ asset('boxcar/css/admin.css') }}?v={{ $adminCssVersion }}" rel="stylesheet">
     <link href="{{ asset('vendor/flasher/flasher.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/flasher/toastr.min.css') }}" rel="stylesheet">
+    @livewireStyles
     <link rel="shortcut icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
     <link rel="icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
     @stack('styles')
@@ -66,6 +67,7 @@
 <script src="{{ asset('boxcar/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('vendor/flasher/flasher.min.js') }}"></script>
 <script src="{{ asset('vendor/flasher/flasher-toastr.min.js') }}"></script>
+@livewireScripts
 @flasher_render
 @stack('scripts')
 </body>

@@ -2,9 +2,7 @@
 
 use App\Http\Controllers\Admin\Appointments\AppointmentController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\Catalog\MakeController;
-use App\Http\Controllers\Admin\Catalog\ModelController;
-use App\Http\Controllers\Admin\Catalog\TrimController;
+use App\Http\Controllers\Admin\Catalog\TrimFormController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
@@ -13,6 +11,9 @@ use App\Http\Controllers\Admin\Leads\LeadNoteController;
 use App\Http\Controllers\Admin\Reviews\TrimReviewController;
 use App\Http\Controllers\Admin\Sales\SaleController;
 use App\Http\Controllers\Admin\Settings\SettingController;
+use App\Livewire\Admin\Catalog\Page as CatalogPage;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -27,22 +28,43 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('catalog.')
             ->middleware('admin.permission:catalog.manage')
             ->group(function (): void {
-                Route::get('/makes', [MakeController::class, 'index'])->name('makes.index');
-                Route::post('/makes', [MakeController::class, 'store'])->name('makes.store');
-                Route::match(['put', 'patch'], '/makes/{make}', [MakeController::class, 'update'])->name('makes.update');
-                Route::delete('/makes/{make}', [MakeController::class, 'destroy'])->name('makes.destroy');
+                Route::get('', CatalogPage::class)->name('index');
 
-                Route::get('/models', [ModelController::class, 'index'])->name('models.index');
-                Route::post('/models', [ModelController::class, 'store'])->name('models.store');
-                Route::match(['put', 'patch'], '/models/{carModel}', [ModelController::class, 'update'])->name('models.update');
-                Route::delete('/models/{carModel}', [ModelController::class, 'destroy'])->name('models.destroy');
+                Route::get('/makes', function (Request $request): RedirectResponse {
+                    $search = trim((string) $request->string('q'));
 
-                Route::get('/trims', [TrimController::class, 'index'])->name('trims.index');
-                Route::get('/trims/create', [TrimController::class, 'create'])->name('trims.create');
-                Route::post('/trims', [TrimController::class, 'store'])->name('trims.store');
-                Route::get('/trims/{trimRecord}/edit', [TrimController::class, 'edit'])->name('trims.edit');
-                Route::match(['put', 'patch'], '/trims/{trimRecord}', [TrimController::class, 'update'])->name('trims.update');
-                Route::delete('/trims/{trimRecord}', [TrimController::class, 'destroy'])->name('trims.destroy');
+                    return redirect()->route('admin.catalog.index', array_filter([
+                        'tab' => 'makes',
+                        'make_q' => $search !== '' ? $search : null,
+                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                })->name('makes.index');
+
+                Route::get('/models', function (Request $request): RedirectResponse {
+                    $search = trim((string) $request->string('q'));
+                    $makeId = $request->integer('make_id');
+
+                    return redirect()->route('admin.catalog.index', array_filter([
+                        'tab' => 'models',
+                        'model_q' => $search !== '' ? $search : null,
+                        'model_make' => $makeId > 0 ? $makeId : null,
+                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                })->name('models.index');
+
+                Route::get('/trims', function (Request $request): RedirectResponse {
+                    $search = trim((string) $request->string('q'));
+                    $modelId = $request->integer('model_id');
+
+                    return redirect()->route('admin.catalog.index', array_filter([
+                        'tab' => 'trims',
+                        'trim_q' => $search !== '' ? $search : null,
+                        'trim_model' => $modelId > 0 ? $modelId : null,
+                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                })->name('trims.index');
+
+                Route::get('/trims/create', [TrimFormController::class, 'create'])->name('trims.create');
+                Route::post('/trims', [TrimFormController::class, 'store'])->name('trims.store');
+                Route::get('/trims/{trimRecord}/edit', [TrimFormController::class, 'edit'])->name('trims.edit');
+                Route::match(['put', 'patch'], '/trims/{trimRecord}', [TrimFormController::class, 'update'])->name('trims.update');
             });
 
         Route::prefix('inventory')

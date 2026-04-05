@@ -13,9 +13,9 @@
             'label' => 'Catalog',
             'icon' => 'fa fa-folder-open',
             'children' => [
-                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.makes.index', 'label' => 'Makes', 'patterns' => ['admin.catalog.makes.*']],
-                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.models.index', 'label' => 'Models', 'patterns' => ['admin.catalog.models.*']],
-                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.trims.index', 'label' => 'Trims', 'patterns' => ['admin.catalog.trims.*']],
+                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.index', 'params' => ['tab' => 'makes'], 'label' => 'Makes', 'patterns' => ['admin.catalog.index', 'admin.catalog.makes.*'], 'tab' => 'makes'],
+                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.index', 'params' => ['tab' => 'models'], 'label' => 'Models', 'patterns' => ['admin.catalog.index', 'admin.catalog.models.*'], 'tab' => 'models'],
+                ['permission' => 'catalog.manage', 'route' => 'admin.catalog.index', 'params' => ['tab' => 'trims'], 'label' => 'Trims', 'patterns' => ['admin.catalog.index', 'admin.catalog.trims.*'], 'tab' => 'trims'],
             ],
         ],
         [
@@ -61,6 +61,10 @@
                     $child['can_access'] = empty($child['permission']) || ($adminPermissions[$child['permission']] ?? false);
                     $child['is_active'] = request()->routeIs(...$child['patterns']);
 
+                    if (($child['tab'] ?? null) !== null && request()->routeIs('admin.catalog.index')) {
+                        $child['is_active'] = $child['is_active'] && request()->query('tab', 'makes') === $child['tab'];
+                    }
+
                     return $child;
                 })
                 ->values()
@@ -103,7 +107,7 @@
                                     <li>
                                         @if ($child['can_access'])
                                             <a
-                                                href="{{ route($child['route']) }}"
+                                                href="{{ route($child['route'], $child['params'] ?? []) }}"
                                                 class="admin-sidebar-sublink {{ $child['is_active'] ? 'is-active' : '' }}"
                                                 @if ($child['is_active']) aria-current="page" @endif
                                             >

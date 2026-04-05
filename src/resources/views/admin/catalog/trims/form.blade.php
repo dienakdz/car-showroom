@@ -3,7 +3,7 @@
 @section('title', $trimRecord->exists ? 'Cap nhat Trim' : 'Tao Trim')
 
 @section('page-actions')
-    <a href="{{ route('admin.catalog.trims.index') }}" class="admin-action-btn admin-action-btn-secondary">Ve danh sach trim</a>
+    <a href="{{ route('admin.catalog.index', ['tab' => 'trims']) }}" class="admin-action-btn admin-action-btn-secondary">Ve workspace catalog</a>
 @endsection
 
 @section('admin-content')
