@@ -18,18 +18,15 @@ class Manager extends Component
     use WithFileUploads;
     use WithPagination;
 
-    private const SORTABLE_FIELDS = ['name', 'slug', 'models_count', 'updated_at'];
-
     protected string $paginationTheme = 'bootstrap';
 
     #[Url(as: 'make_q', except: '')]
     public string $search = '';
 
+    #[Url(as: 'make_sort', except: 'updated_desc')]
+    public string $sort = 'updated_desc';
+
     public int $perPage = 10;
-
-    public string $sortField = 'updated_at';
-
-    public string $sortDirection = 'desc';
 
     public array $createForm = [];
 
@@ -59,25 +56,14 @@ class Manager extends Component
         $this->resetPage('makesPage');
     }
 
+    public function updatedSort(): void
+    {
+        $this->resetPage('makesPage');
+    }
+
     public function dismissFeedback(): void
     {
         $this->feedback = [];
-    }
-
-    public function sortBy(string $field): void
-    {
-        if (! in_array($field, self::SORTABLE_FIELDS, true)) {
-            return;
-        }
-
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-
-            return;
-        }
-
-        $this->sortField = $field;
-        $this->sortDirection = in_array($field, ['models_count', 'updated_at'], true) ? 'desc' : 'asc';
     }
 
     public function create(): void
@@ -89,17 +75,14 @@ class Manager extends Component
         $validated = $this->validate([
             'createForm.name' => ['required', 'string', 'max:255'],
             'createForm.slug' => ['required', 'string', 'max:255', Rule::unique('makes', 'slug')],
-            'createForm.manual_logo_path' => ['nullable', 'string', 'max:2048'],
             'logoUpload' => ['nullable', 'file', 'mimes:jpg,jpeg,png,svg,webp', 'max:2048'],
         ], attributes: $this->validationAttributes('createForm', 'logoUpload'));
 
         $payload = $validated['createForm'];
         $payload['logo_path'] = $this->prepareCreateLogoPath(
-            $payload['manual_logo_path'] ?? null,
             $validated['logoUpload'] ?? null,
             $payload['name']
         );
-        unset($payload['manual_logo_path']);
 
         Make::query()->create($payload);
 
@@ -120,7 +103,6 @@ class Manager extends Component
         $this->editForm = [
             'name' => $make->name,
             'slug' => $make->slug,
-            'manual_logo_path' => $this->isManagedLogoPath($make->logo_path) ? '' : (string) ($make->logo_path ?? ''),
         ];
         $this->editLogoUpload = null;
     }
@@ -146,18 +128,15 @@ class Manager extends Component
         $validated = $this->validate([
             'editForm.name' => ['required', 'string', 'max:255'],
             'editForm.slug' => ['required', 'string', 'max:255', Rule::unique('makes', 'slug')->ignore($make->id)],
-            'editForm.manual_logo_path' => ['nullable', 'string', 'max:2048'],
             'editLogoUpload' => ['nullable', 'file', 'mimes:jpg,jpeg,png,svg,webp', 'max:2048'],
         ], attributes: $this->validationAttributes('editForm', 'editLogoUpload'));
 
         $payload = $validated['editForm'];
         $payload['logo_path'] = $this->prepareUpdateLogoPath(
             $make->logo_path,
-            $payload['manual_logo_path'] ?? null,
             $validated['editLogoUpload'] ?? null,
             $payload['name']
         );
-        unset($payload['manual_logo_path']);
 
         $make->update($payload);
 
@@ -189,6 +168,8 @@ class Manager extends Component
 
     public function render(): View
     {
+        [$sortField, $sortDirection] = $this->resolveSort();
+
         return view('livewire.admin.catalog.makes.manager', [
             'makes' => Make::query()
                 ->withCount('models')
@@ -199,7 +180,7 @@ class Manager extends Component
                             ->orWhere('slug', 'like', '%' . $this->search . '%');
                     });
                 })
-                ->orderBy($this->sortField, $this->sortDirection)
+                ->orderBy($sortField, $sortDirection)
                 ->paginate($this->perPage, ['*'], 'makesPage'),
         ]);
     }
@@ -209,7 +190,6 @@ class Manager extends Component
         $this->createForm = [
             'name' => '',
             'slug' => '',
-            'manual_logo_path' => '',
         ];
     }
 
@@ -219,7 +199,6 @@ class Manager extends Component
         $this->editForm = [
             'name' => '',
             'slug' => '',
-            'manual_logo_path' => '',
         ];
         $this->editLogoUpload = null;
     }
@@ -235,7 +214,6 @@ class Manager extends Component
         return [
             'name' => $name,
             'slug' => Str::slug((string) (($form['slug'] ?? '') !== '' ? $form['slug'] : $name)),
-            'manual_logo_path' => trim((string) ($form['manual_logo_path'] ?? '')),
         ];
     }
 
@@ -247,26 +225,43 @@ class Manager extends Component
         return [
             $formProperty . '.name' => 'ten hang xe',
             $formProperty . '.slug' => 'slug make',
-            $formProperty . '.manual_logo_path' => 'duong dan logo',
             $uploadProperty => 'file logo',
         ];
     }
 
-    private function prepareCreateLogoPath(?string $manualLogoPath, mixed $logoUpload, string $name): ?string
+    public function removeCreateLogo(): void
     {
-        $manualLogoPath = $this->nullableString($manualLogoPath);
+        $this->logoUpload = null;
+        $this->resetValidation('logoUpload');
+    }
 
+    public function removeEditLogo(): void
+    {
+        $this->editLogoUpload = null;
+        $this->resetValidation('editLogoUpload');
+    }
+
+    public function getCreateLogoPreviewUrlProperty(): ?string
+    {
+        return $this->temporaryPreviewUrl($this->logoUpload);
+    }
+
+    public function getEditLogoPreviewUrlProperty(): ?string
+    {
+        return $this->temporaryPreviewUrl($this->editLogoUpload);
+    }
+
+    private function prepareCreateLogoPath(mixed $logoUpload, string $name): ?string
+    {
         if ($logoUpload instanceof UploadedFile) {
             return $this->storeLogoFile($logoUpload, $name);
         }
 
-        return $manualLogoPath;
+        return null;
     }
 
-    private function prepareUpdateLogoPath(?string $currentPath, ?string $manualLogoPath, mixed $logoUpload, string $name): ?string
+    private function prepareUpdateLogoPath(?string $currentPath, mixed $logoUpload, string $name): ?string
     {
-        $manualLogoPath = $this->nullableString($manualLogoPath);
-
         if ($logoUpload instanceof UploadedFile) {
             $newPath = $this->storeLogoFile($logoUpload, $name);
             $this->deleteManagedLogo($currentPath);
@@ -274,21 +269,7 @@ class Manager extends Component
             return $newPath;
         }
 
-        if ($manualLogoPath !== null) {
-            if ($manualLogoPath !== $currentPath) {
-                $this->deleteManagedLogo($currentPath);
-            }
-
-            return $manualLogoPath;
-        }
-
-        if ($this->isManagedLogoPath($currentPath)) {
-            return $currentPath;
-        }
-
-        $this->deleteManagedLogo($currentPath);
-
-        return null;
+        return $currentPath;
     }
 
     private function storeLogoFile(UploadedFile $file, string $name): string
@@ -330,15 +311,17 @@ class Manager extends Component
         return Storage::disk('public')->exists($path);
     }
 
-    private function nullableString(mixed $value): ?string
+    private function temporaryPreviewUrl(mixed $upload): ?string
     {
-        if ($value === null) {
+        if (! $upload instanceof UploadedFile) {
             return null;
         }
 
-        $string = trim((string) $value);
-
-        return $string === '' ? null : $string;
+        try {
+            return $upload->temporaryUrl();
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function setFeedback(string $type, string $message): void
@@ -347,5 +330,22 @@ class Manager extends Component
             'type' => $type,
             'message' => $message,
         ];
+    }
+
+    /**
+     * @return array{0: string, 1: 'asc'|'desc'}
+     */
+    private function resolveSort(): array
+    {
+        return match ($this->sort) {
+            'name_asc' => ['name', 'asc'],
+            'name_desc' => ['name', 'desc'],
+            'slug_asc' => ['slug', 'asc'],
+            'slug_desc' => ['slug', 'desc'],
+            'models_desc' => ['models_count', 'desc'],
+            'models_asc' => ['models_count', 'asc'],
+            'updated_asc' => ['updated_at', 'asc'],
+            default => ['updated_at', 'desc'],
+        };
     }
 }

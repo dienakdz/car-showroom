@@ -3,7 +3,11 @@
 namespace Tests\Feature\Livewire\Admin\Catalog;
 
 use App\Livewire\Admin\Catalog\Makes\Manager as MakesManager;
+use App\Livewire\Admin\Catalog\Models\Manager as ModelsManager;
+use App\Livewire\Admin\Catalog\Trims\Manager as TrimsManager;
+use App\Models\CarModel;
 use App\Models\Make;
+use App\Models\Trim;
 use App\Models\User;
 use Database\Seeders\UsersAndRbacSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +31,7 @@ class WorkspaceTest extends TestCase
         $response->assertOk();
         $response->assertSeeLivewire('admin.catalog.page');
         $response->assertSeeLivewire('admin.catalog.makes.manager');
-        $response->assertSeeText('Architecture');
+        $response->assertSeeText('Catalog Workspace');
         $response->assertSeeText('Makes');
         $response->assertSeeText('Models');
         $response->assertSeeText('Trims');
@@ -72,5 +76,48 @@ class WorkspaceTest extends TestCase
 
         $this->assertNotNull($make->logo_path);
         Storage::disk('public')->assertExists($make->logo_path);
+    }
+
+    public function test_models_manager_renders_with_template_table_layout(): void
+    {
+        $make = Make::query()->create([
+            'name' => 'Toyota',
+            'slug' => 'toyota',
+        ]);
+
+        CarModel::query()->create([
+            'make_id' => $make->id,
+            'name' => 'Corolla Cross',
+            'slug' => 'corolla-cross',
+        ]);
+
+        Livewire::test(ModelsManager::class)
+            ->assertSee('Model directory')
+            ->assertSee('Corolla Cross');
+    }
+
+    public function test_trims_manager_renders_with_template_table_layout(): void
+    {
+        $make = Make::query()->create([
+            'name' => 'Honda',
+            'slug' => 'honda',
+        ]);
+
+        $model = CarModel::query()->create([
+            'make_id' => $make->id,
+            'name' => 'Civic',
+            'slug' => 'civic',
+        ]);
+
+        Trim::query()->create([
+            'model_id' => $model->id,
+            'name' => 'RS',
+            'slug' => 'rs',
+            'description' => 'Ban RS',
+        ]);
+
+        Livewire::test(TrimsManager::class)
+            ->assertSee('Trim directory')
+            ->assertSee('RS');
     }
 }

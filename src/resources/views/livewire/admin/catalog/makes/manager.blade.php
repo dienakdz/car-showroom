@@ -1,225 +1,350 @@
-<div class="admin-catalog-stack">
+@php($editIcon = asset('boxcar/images/icons/edit.svg'))
+@php($deleteIcon = asset('boxcar/images/icons/remove.svg'))
+@php($fallbackLogo = asset('boxcar/images/resource/brandf.png'))
+@php($uploadIcon = asset('boxcar/images/resource/uplode.svg'))
+@php($createPreview = $this->createLogoPreviewUrl ?: $fallbackLogo)
+@php($createUploadName = is_object($logoUpload) && method_exists($logoUpload, 'getClientOriginalName') ? $logoUpload->getClientOriginalName() : null)
+
+<div class="catalog-module">
     @if ($feedback !== [])
-        <div class="admin-catalog-feedback {{ ($feedback['type'] ?? 'success') === 'error' ? 'is-error' : 'is-success' }}">
+        <div class="catalog-feedback {{ ($feedback['type'] ?? 'success') === 'error' ? 'is-error' : 'is-success' }}">
             <div>
-                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Can xu ly' : 'Cap nhat thanh cong' }}</strong>
+                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Can xu ly' : 'Da cap nhat' }}</strong>
                 <p>{{ $feedback['message'] ?? '' }}</p>
             </div>
             <button type="button" wire:click="dismissFeedback">Dong</button>
         </div>
     @endif
 
-    <section class="admin-catalog-panel">
-        <div class="admin-catalog-panel-head admin-catalog-panel-head-tight">
+    <div class="form-box catalog-form-box">
+        <div class="catalog-box-head">
             <div>
-                <h4>Quick create make</h4>
-                <p>Table-first nhu CRM: tao nhanh o tren, thao tac chinh o bang duoi.</p>
-            </div>
-            <div class="admin-catalog-toolbar-meta">
-                <span>{{ number_format($makes->total()) }} make</span>
-                <span wire:loading wire:target="logoUpload">Dang tai logo...</span>
+                <h4>Tao make moi</h4>
+                <p>Dung form template de them thuong hieu va logo ma khong can roi workspace.</p>
             </div>
         </div>
 
-        <form wire:submit="create" class="admin-catalog-quick-form">
-            <div class="admin-catalog-quick-form-grid admin-catalog-quick-form-grid-makes">
-                <label class="admin-catalog-field">
-                    <span>Ten hang xe</span>
-                    <input type="text" wire:model.blur="createForm.name" placeholder="Toyota">
-                    @error('createForm.name') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                </label>
+        <form wire:submit="create" class="catalog-make-form catalog-make-profile-form">
+            <div class="gallery-sec catalog-make-gallery-section">
+                <div class="right-box-three catalog-make-gallery-block">
+                    <h6 class="title">Gallery</h6>
 
-                <label class="admin-catalog-field">
-                    <span>Slug</span>
-                    <input type="text" wire:model.blur="createForm.slug" placeholder="toyota">
-                    @error('createForm.slug') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                </label>
+                    <div class="gallery-box">
+                        <div class="inner-box catalog-upload-with-preview">
+                            <div class="image-box catalog-upload-preview">
+                                <img src="{{ $createPreview }}" alt="Logo preview">
+                            </div>
 
-                <label class="admin-catalog-field">
-                    <span>Upload logo</span>
-                    <input type="file" wire:model="logoUpload" accept=".png,.jpg,.jpeg,.svg,.webp">
-                    <small>SVG, PNG, JPG, WebP. Luu vao public storage.</small>
-                    @error('logoUpload') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                </label>
+                            <label class="uplode-box catalog-upload-trigger catalog-upload-trigger-wide">
+                                <input type="file" class="catalog-upload-input" wire:model="logoUpload"
+                                    accept=".png,.jpg,.jpeg,.svg,.webp">
+                                <div class="content-box">
+                                    <img src="{{ $uploadIcon }}" alt="Upload">
+                                    <span>{{ $logoUpload ? 'Doi logo' : 'Upload' }}</span>
+                                </div>
+                            </label>
+                        </div>
 
-                <label class="admin-catalog-field">
-                    <span>URL / asset path</span>
-                    <input type="text" wire:model.blur="createForm.manual_logo_path" placeholder="boxcar/images/brands/toyota.svg">
-                    @error('createForm.manual_logo_path') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                </label>
-            </div>
+                        <div class="text catalog-make-gallery-text">
+                            Max file size 2MB. Dinh dang ho tro: SVG, PNG, JPG, WebP.
+                            @if ($createUploadName)
+                                <br>Dang chon: {{ $createUploadName }}
+                            @endif
+                        </div>
 
-            <div class="admin-catalog-form-actions">
-                <div class="admin-catalog-form-note">Row moi se len dau khi sort theo updated, de de xac nhan logo va du lieu vua tao.</div>
-                <button type="submit" class="admin-submit-btn">Tao make</button>
+                        @if ($logoUpload)
+                            <button type="button" class="catalog-upload-clear" wire:click="removeCreateLogo">Bo chon
+                                file</button>
+                        @endif
+                    </div>
+
+                    <span class="catalog-head-note" wire:loading wire:target="logoUpload">Dang tai logo...</span>
+                    @error('logoUpload')
+                        <small class="catalog-field-error">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-sec catalog-make-gallery-form">
+                    <div class="row">
+                        <div class="form-column col-lg-4 col-md-6">
+                            <div class="form_boxes">
+                                <label>Ten hang xe</label>
+                                <div class="drop-menu catalog-native-control">
+                                    <input type="text" wire:model.blur="createForm.name" placeholder="Toyota">
+                                </div>
+                                @error('createForm.name')
+                                    <small class="catalog-field-error">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-column col-lg-4 col-md-6">
+                            <div class="form_boxes">
+                                <label>Slug</label>
+                                <div class="drop-menu catalog-native-control">
+                                    <input type="text" wire:model.blur="createForm.slug" placeholder="toyota">
+                                </div>
+                                @error('createForm.slug')
+                                    <small class="catalog-field-error">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-column col-lg-4 col-md-12" style="display:flex; flex-direction: column; justify-content: flex-end;">
+                                <button type="submit" class="theme-btn catalog-make-action-btn"
+                                    wire:loading.attr="disabled" wire:target="create,logoUpload">
+                                    Tao make
+                                </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
-    </section>
+    </div>
 
-    <section class="admin-catalog-panel">
-        <div class="admin-catalog-panel-head">
+    <div class="my-listing-table wrap-listing">
+        <div class="title-listing">
             <div>
-                <h4>Make directory</h4>
-                <p>Search, sort, pagination va quick edit trong cung mot table view.</p>
+                <h4 class="catalog-section-title">Make directory</h4>
+                <p class="catalog-section-text">UI table cua template duoc dung lai de quan ly danh muc thuong hieu ro
+                    rang hon.</p>
             </div>
-            <div class="admin-catalog-toolbar">
-                <label class="admin-catalog-search">
-                    <i class="fa fa-search" aria-hidden="true"></i>
+
+            <div class="catalog-toolbar">
+                <div class="box-ip-search catalog-search-box">
+                    <span class="icon">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M6.29301 0.287598C2.9872 0.287598 0.294312 2.98048 0.294312 6.28631C0.294312 9.59211 2.9872 12.2902 6.29301 12.2902C7.70502 12.2902 9.00364 11.7954 10.03 10.9738L12.5287 13.4712C12.6548 13.5921 12.8232 13.6588 12.9979 13.657C13.1725 13.6552 13.3395 13.5851 13.4631 13.4617C13.5867 13.3382 13.6571 13.1713 13.6591 12.9967C13.6611 12.822 13.5947 12.6535 13.474 12.5272L10.9753 10.0285C11.7976 9.00061 12.293 7.69995 12.293 6.28631C12.293 2.98048 9.59882 0.287598 6.29301 0.287598ZM6.29301 1.62095C8.87824 1.62095 10.9584 3.70108 10.9584 6.28631C10.9584 8.87153 8.87824 10.9569 6.29301 10.9569C3.70778 10.9569 1.62764 8.87153 1.62764 6.28631C1.62764 3.70108 3.70778 1.62095 6.29301 1.62095Z"
+                                fill="#050B20" />
+                        </svg>
+                    </span>
                     <input type="search" wire:model.live.debounce.300ms="search" placeholder="Tim theo ten hoac slug">
-                </label>
+                </div>
+
+                <div class="text-box v1 catalog-toolbar-boxes">
+                    <div class="form_boxes v3 catalog-control-box">
+                        <small>Sort by</small>
+                        <div class="drop-menu" style="width: 76%;">
+                            <select wire:model.live="sort">
+                                <option value="updated_desc"> moi nhat</option>
+                                <option value="updated_asc">cu nhat</option>
+                                <option value="name_asc">Ten A-Z</option>
+                                <option value="name_desc">Ten Z-A</option>
+                                <option value="models_desc">Nhieu models nhat</option>
+                                <option value="models_asc">It models nhat</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="admin-table-wrap admin-catalog-table-wrap">
-            <table class="admin-table admin-catalog-data-table">
+        <div class="cart-table">
+            <table>
                 <thead>
-                <tr>
-                    <th>
-                        <button type="button" class="admin-table-sort" wire:click="sortBy('name')">
-                            Thuong hieu
-                            @if ($sortField === 'name')
-                                <span>{{ $sortDirection === 'asc' ? '^' : 'v' }}</span>
-                            @endif
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="admin-table-sort" wire:click="sortBy('slug')">
-                            Slug
-                            @if ($sortField === 'slug')
-                                <span>{{ $sortDirection === 'asc' ? '^' : 'v' }}</span>
-                            @endif
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="admin-table-sort" wire:click="sortBy('models_count')">
-                            Models
-                            @if ($sortField === 'models_count')
-                                <span>{{ $sortDirection === 'asc' ? '^' : 'v' }}</span>
-                            @endif
-                        </button>
-                    </th>
-                    <th>Logo</th>
-                    <th>
-                        <button type="button" class="admin-table-sort" wire:click="sortBy('updated_at')">
-                            Updated
-                            @if ($sortField === 'updated_at')
-                                <span>{{ $sortDirection === 'asc' ? '^' : 'v' }}</span>
-                            @endif
-                        </button>
-                    </th>
-                    <th>Actions</th>
-                </tr>
+                    <tr>
+                        <th>Make</th>
+                        <th>Slug</th>
+                        <th>Models</th>
+                        <th>Logo</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @forelse ($makes as $make)
-                    <tr wire:key="make-row-{{ $make->id }}">
-                        <td>
-                            <div class="admin-catalog-brand-cell">
-                                <div class="admin-catalog-logo">
-                                    @if ($make->logo_url)
-                                        <img src="{{ $make->logo_url }}" alt="{{ $make->name }} logo">
-                                    @else
-                                        <span>{{ $make->initials }}</span>
-                                    @endif
-                                </div>
-                                <div class="admin-catalog-brand-meta">
-                                    <strong>{{ $make->name }}</strong>
-                                    <div class="admin-table-subtext">ID #{{ $make->id }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="admin-catalog-chip">{{ $make->slug }}</span></td>
-                        <td>{{ number_format($make->models_count) }}</td>
-                        <td>
-                            @if ($make->logo_url)
-                                <span class="admin-catalog-status-badge">Dang hien thi</span>
-                                <div class="admin-table-subtext">{{ \Illuminate\Support\Str::limit($make->logo_path ?? '', 44) }}</div>
-                            @else
-                                <span class="admin-catalog-status-badge is-muted">Chua co logo</span>
-                            @endif
-                        </td>
-                        <td>{{ optional($make->updated_at)->format('d/m/Y H:i') ?: '--' }}</td>
-                        <td>
-                            <div class="admin-table-actions">
-                                <button type="button" class="admin-table-btn" wire:click="startEdit({{ $make->id }})">Sua nhanh</button>
-                                <button type="button" class="admin-table-btn admin-table-btn-danger" wire:click="delete({{ $make->id }})" onclick="return confirm('Xac nhan xoa make nay?')">Xoa</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    @if ($editingId === $make->id)
-                        <tr class="admin-catalog-edit-row" wire:key="make-editor-{{ $make->id }}">
-                            <td colspan="6">
-                                <form wire:submit="update" class="admin-catalog-row-editor">
-                                    <div class="admin-catalog-quick-form-grid admin-catalog-quick-form-grid-makes">
-                                        <label class="admin-catalog-field">
-                                            <span>Ten make</span>
-                                            <input type="text" wire:model.blur="editForm.name">
-                                            @error('editForm.name') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                                        </label>
-
-                                        <label class="admin-catalog-field">
-                                            <span>Slug</span>
-                                            <input type="text" wire:model.blur="editForm.slug">
-                                            @error('editForm.slug') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                                        </label>
-
-                                        <label class="admin-catalog-field">
-                                            <span>Logo moi</span>
-                                            <input type="file" wire:model="editLogoUpload" accept=".png,.jpg,.jpeg,.svg,.webp">
-                                            @error('editLogoUpload') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                                        </label>
-
-                                        <label class="admin-catalog-field">
-                                            <span>URL / asset path</span>
-                                            <input type="text" wire:model.blur="editForm.manual_logo_path" placeholder="De trong de giu logo upload hien tai">
-                                            @error('editForm.manual_logo_path') <small class="admin-catalog-error">{{ $message }}</small> @enderror
-                                        </label>
+                    @forelse ($makes as $make)
+                        <tr wire:key="make-row-{{ $make->id }}">
+                            <td>
+                                <div class="shop-cart-product">
+                                    <div class="shop-product-cart-img catalog-listing-thumb">
+                                        <img src="{{ $make->logo_url ?: $fallbackLogo }}"
+                                            alt="{{ $make->name }} logo">
                                     </div>
-
-                                    <div class="admin-catalog-form-actions">
-                                        <div class="admin-catalog-form-note" wire:loading wire:target="editLogoUpload">Dang tai logo moi...</div>
-                                        <div class="admin-table-actions">
-                                            <button type="submit" class="admin-submit-btn">Luu thay doi</button>
-                                            <button type="button" class="admin-table-btn" wire:click="cancelEdit">Huy</button>
-                                        </div>
+                                    <div class="shop-product-cart-info">
+                                        <h3>{{ $make->name }}</h3>
+                                        <p>ID #{{ $make->id }}</p>
                                     </div>
-                                </form>
+                                </div>
+                            </td>
+                            <td><span>{{ $make->slug }}</span></td>
+                            <td><span>{{ number_format($make->models_count) }}</span></td>
+                            <td>
+                                <span class="catalog-status-pill {{ $make->logo_url ? 'is-ready' : 'is-muted' }}">
+                                    {{ $make->logo_url ? 'Dang hien thi' : 'Chua co logo' }}
+                                </span>
+                                @if ($make->logo_path)
+                                    <p class="catalog-cell-note">
+                                        {{ \Illuminate\Support\Str::limit($make->logo_path, 42) }}</p>
+                                @endif
+                            </td>
+                            <td><span>{{ optional($make->updated_at)->format('d/m/Y H:i') ?: '--' }}</span></td>
+                            <td>
+                                <button type="button" class="remove-cart-item"
+                                    wire:click="startEdit({{ $make->id }})" title="Sua make">
+                                    <img src="{{ $editIcon }}" alt="Edit">
+                                </button>
+                                <button type="button" class="remove-cart-item"
+                                    wire:click="delete({{ $make->id }})"
+                                    onclick="return confirm('Xac nhan xoa make nay?')" title="Xoa make">
+                                    <img src="{{ $deleteIcon }}" alt="Delete">
+                                </button>
                             </td>
                         </tr>
-                    @endif
-                @empty
-                    <tr>
-                        <td colspan="6">
-                            <div class="admin-empty-state">Chua co make nao phu hop bo loc hien tai.</div>
-                        </td>
-                    </tr>
-                @endforelse
+
+                        @if ($editingId === $make->id)
+                            @php($editPreview = $this->editLogoPreviewUrl ?: ($make->logo_url ?: $fallbackLogo))
+                            @php($editUploadName = is_object($editLogoUpload) && method_exists($editLogoUpload, 'getClientOriginalName') ? $editLogoUpload->getClientOriginalName() : null)
+                            <tr class="catalog-inline-row" wire:key="make-editor-{{ $make->id }}">
+                                <td colspan="6">
+                                    <div class="form-box catalog-inline-form-box">
+                                        <div class="catalog-box-head">
+                                            <div>
+                                                <h4>Sua make</h4>
+                                                <p>Cap nhat ten, slug va logo ngay trong bang danh sach.</p>
+                                            </div>
+                                        </div>
+
+                                        <form wire:submit="update" class="catalog-make-form catalog-make-form-edit">
+                                            <div class="catalog-make-shell">
+                                                <div class="catalog-make-inline-grid">
+                                                    <div class="form_boxes catalog-make-field-card">
+                                                        <label>Ten make</label>
+                                                        <div class="drop-menu catalog-native-control">
+                                                            <input type="text" wire:model.blur="editForm.name">
+                                                        </div>
+                                                        @error('editForm.name')
+                                                            <small class="catalog-field-error">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="form_boxes catalog-make-field-card">
+                                                        <label>Slug</label>
+                                                        <div class="drop-menu catalog-native-control">
+                                                            <input type="text" wire:model.blur="editForm.slug">
+                                                        </div>
+                                                        @error('editForm.slug')
+                                                            <small class="catalog-field-error">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <div class="catalog-upload-card catalog-upload-card-compact">
+                                                    <div class="catalog-upload-card-head">
+                                                        <div>
+                                                            <h6 class="title">Logo moi</h6>
+                                                            <p>Neu khong chon file moi thi giu logo hien tai.</p>
+                                                        </div>
+                                                        <span class="catalog-head-note" wire:loading
+                                                            wire:target="editLogoUpload">Dang tai logo moi...</span>
+                                                    </div>
+
+                                                    <div class="gallery-sec catalog-upload-panel">
+                                                        <div class="right-box-three">
+                                                            <div class="gallery-box">
+                                                                <div class="inner-box catalog-upload-with-preview">
+                                                                    <div class="image-box catalog-upload-preview">
+                                                                        <img src="{{ $editPreview }}"
+                                                                            alt="Edit logo preview">
+                                                                    </div>
+
+                                                                    <label
+                                                                        class="uplode-box catalog-upload-trigger catalog-upload-trigger-wide">
+                                                                        <input type="file"
+                                                                            class="catalog-upload-input"
+                                                                            wire:model="editLogoUpload"
+                                                                            accept=".png,.jpg,.jpeg,.svg,.webp">
+                                                                        <div class="content-box">
+                                                                            <img src="{{ $uploadIcon }}"
+                                                                                alt="Upload">
+                                                                            <span>{{ $editLogoUpload ? 'Doi logo' : 'Upload logo' }}</span>
+                                                                            <small
+                                                                                class="catalog-upload-trigger-note">{{ $editUploadName ?: 'Khong chon file moi se giu logo hien tai' }}</small>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="text catalog-upload-meta">
+                                                                    <span>Toi da 2MB</span>
+                                                                    <span>SVG, PNG, JPG, WebP</span>
+                                                                    @if ($editUploadName)
+                                                                        <strong>{{ $editUploadName }}</strong>
+                                                                    @endif
+                                                                </div>
+
+                                                                @if ($editLogoUpload)
+                                                                    <button type="button"
+                                                                        class="catalog-upload-clear"
+                                                                        wire:click="removeEditLogo">Bo chon
+                                                                        file</button>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        @error('editLogoUpload')
+                                                            <small class="catalog-field-error">{{ $message }}</small>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="form-submit catalog-form-submit catalog-form-submit-end catalog-make-submit-panel">
+                                                    <div class="catalog-form-submit-copy">
+                                                        Sua nhanh metadata ma khong phai dieu huong sang man hinh khac.
+                                                    </div>
+                                                    <div class="catalog-submit-actions">
+                                                        <button type="button" class="catalog-text-btn"
+                                                            wire:click="cancelEdit">Huy</button>
+                                                        <button type="submit" class="theme-btn"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="update,editLogoUpload">
+                                                            Luu thay doi
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                    @empty
+                        <tr>
+                            <td colspan="6">
+                                <div class="catalog-empty-state">Chua co make nao phu hop bo loc hien tai.</div>
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="admin-catalog-table-footer">
-            <div class="admin-catalog-table-meta">
+        <div class="catalog-table-footer">
+            <div class="catalog-table-summary">
                 @if ($makes->total() > 0)
-                    <span>Hien thi {{ $makes->firstItem() }}-{{ $makes->lastItem() }} / {{ number_format($makes->total()) }} make</span>
+                    Hien thi {{ $makes->firstItem() }}-{{ $makes->lastItem() }} /
+                    {{ number_format($makes->total()) }} make
                 @else
-                    <span>Khong co du lieu</span>
+                    Khong co du lieu
                 @endif
-
-                <label class="admin-catalog-footer-select">
-                    <span>So dong</span>
-                    <select wire:model.live="perPage">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                    </select>
-                </label>
             </div>
 
-            <div class="admin-catalog-pagination">
-                {{ $makes->links() }}
+            <div class="catalog-table-footer-actions">
+                <div class="form_boxes v3 catalog-per-page catalog-control-box">
+                    <small>Rows</small>
+                    <div class="drop-menu">
+                        <select wire:model.live="perPage">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="catalog-pagination">
+                    {{ $makes->links() }}
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 </div>

@@ -23,6 +23,9 @@ class Manager extends Component
     #[Url(as: 'trim_model', except: '')]
     public string $modelFilter = '';
 
+    #[Url(as: 'trim_sort', except: 'updated_desc')]
+    public string $sort = 'updated_desc';
+
     public int $perPage = 10;
 
     public array $createForm = [];
@@ -54,6 +57,11 @@ class Manager extends Component
     }
 
     public function updatedPerPage(): void
+    {
+        $this->resetPage('trimsPage');
+    }
+
+    public function updatedSort(): void
     {
         $this->resetPage('trimsPage');
     }
@@ -182,6 +190,8 @@ class Manager extends Component
 
     public function render(): View
     {
+        [$sortField, $sortDirection] = $this->resolveSort();
+
         return view('livewire.admin.catalog.trims.manager', [
             'modelOptions' => CarModel::query()
                 ->with('make')
@@ -199,7 +209,7 @@ class Manager extends Component
                             ->orWhere('description', 'like', '%' . $this->search . '%');
                     });
                 })
-                ->latest('updated_at')
+                ->orderBy($sortField, $sortDirection)
                 ->paginate($this->perPage, ['*'], 'trimsPage'),
         ]);
     }
@@ -283,5 +293,22 @@ class Manager extends Component
             'type' => $type,
             'message' => $message,
         ];
+    }
+
+    /**
+     * @return array{0: string, 1: 'asc'|'desc'}
+     */
+    private function resolveSort(): array
+    {
+        return match ($this->sort) {
+            'name_asc' => ['name', 'asc'],
+            'name_desc' => ['name', 'desc'],
+            'msrp_desc' => ['msrp', 'desc'],
+            'msrp_asc' => ['msrp', 'asc'],
+            'year_desc' => ['year_from', 'desc'],
+            'year_asc' => ['year_from', 'asc'],
+            'updated_asc' => ['updated_at', 'asc'],
+            default => ['updated_at', 'desc'],
+        };
     }
 }
