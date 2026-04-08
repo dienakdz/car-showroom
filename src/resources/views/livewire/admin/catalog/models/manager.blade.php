@@ -1,18 +1,8 @@
 @php($editIcon = asset('boxcar/images/icons/edit.svg'))
 @php($deleteIcon = asset('boxcar/images/icons/remove.svg'))
-@php($fallbackLogo = asset('boxcar/images/resource/brandf.png'))
+@php($editingModel = $editingId ? $models->getCollection()->firstWhere('id', $editingId) : null)
 
 <div class="catalog-module">
-    @if ($feedback !== [])
-        <div class="catalog-feedback {{ ($feedback['type'] ?? 'success') === 'error' ? 'is-error' : 'is-success' }}">
-            <div>
-                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Can xu ly' : 'Da cap nhat' }}</strong>
-                <p>{{ $feedback['message'] ?? '' }}</p>
-            </div>
-            <button type="button" wire:click="dismissFeedback">Dong</button>
-        </div>
-    @endif
-
     <div class="form-box catalog-form-box">
         <div class="catalog-box-head">
             <div>
@@ -33,7 +23,9 @@
                             @endforeach
                         </select>
                     </div>
-                    @error('createForm.make_id') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                    @error('createForm.make_id')
+                        <small class="catalog-field-error">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 
@@ -43,7 +35,9 @@
                     <div class="drop-menu catalog-native-control">
                         <input type="text" wire:model.blur="createForm.name" placeholder="Corolla Cross">
                     </div>
-                    @error('createForm.name') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                    @error('createForm.name')
+                        <small class="catalog-field-error">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 
@@ -53,7 +47,9 @@
                     <div class="drop-menu catalog-native-control">
                         <input type="text" wire:model.blur="createForm.slug" placeholder="corolla-cross">
                     </div>
-                    @error('createForm.slug') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                    @error('createForm.slug')
+                        <small class="catalog-field-error">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 
@@ -89,8 +85,8 @@
 
                 <div class="text-box v1 catalog-toolbar-boxes">
                     <div class="form_boxes v3 catalog-control-box">
-                        <small>Make</small>
-                        <div class="drop-menu catalog-native-control">
+                        <small>Hang</small>
+                        <div class="drop-menu">
                             <select wire:model.live="makeFilter">
                                 <option value="">Tat ca make</option>
                                 @foreach ($makeOptions as $makeOption)
@@ -102,10 +98,10 @@
 
                     <div class="form_boxes v3 catalog-control-box">
                         <small>Sort by</small>
-                        <div class="drop-menu catalog-native-control">
+                        <div class="drop-menu">
                             <select wire:model.live="sort">
-                                <option value="updated_desc">Updated moi nhat</option>
-                                <option value="updated_asc">Updated cu nhat</option>
+                                <option value="updated_desc">moi nhat</option>
+                                <option value="updated_asc">cu nhat</option>
                                 <option value="name_asc">Ten A-Z</option>
                                 <option value="name_desc">Ten Z-A</option>
                                 <option value="trims_desc">Nhieu trims nhat</option>
@@ -120,117 +116,41 @@
         <div class="cart-table">
             <table>
                 <thead>
-                <tr>
-                    <th>Model</th>
-                    <th>Make</th>
-                    <th>Slug</th>
-                    <th>Trims</th>
-                    <th>Updated</th>
-                    <th>Actions</th>
-                </tr>
+                    <tr>
+                        <th>Hang</th>
+                        <th>Dong xe</th>
+                        <th>Slug</th>
+                        <th>Trims</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @forelse ($models as $model)
-                    <tr wire:key="model-row-{{ $model->id }}">
-                        <td>
-                            <div class="shop-cart-product">
-                                <div class="shop-product-cart-img catalog-listing-thumb">
-                                    <img src="{{ $model->make?->logo_url ?: $fallbackLogo }}" alt="{{ $model->name }}">
-                                </div>
-                                <div class="shop-product-cart-info">
-                                    <h3>{{ $model->name }}</h3>
-                                    <p>ID #{{ $model->id }}</p>
-                                    <div class="price">
-                                        <span>{{ $model->make?->name ?: 'Chua gan make' }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span>{{ $model->make?->name ?: '--' }}</span></td>
-                        <td><span>{{ $model->slug }}</span></td>
-                        <td><span>{{ number_format($model->trims_count) }}</span></td>
-                        <td><span>{{ optional($model->updated_at)->format('d/m/Y H:i') ?: '--' }}</span></td>
-                        <td>
-                            <button type="button" class="remove-cart-item" wire:click="startEdit({{ $model->id }})" title="Sua model">
-                                <img src="{{ $editIcon }}" alt="Edit">
-                            </button>
-                            <button type="button" class="remove-cart-item" wire:click="delete({{ $model->id }})" onclick="return confirm('Xac nhan xoa model nay?')" title="Xoa model">
-                                <img src="{{ $deleteIcon }}" alt="Delete">
-                            </button>
-                        </td>
-                    </tr>
-
-                    @if ($editingId === $model->id)
-                        <tr class="catalog-inline-row" wire:key="model-editor-{{ $model->id }}">
-                            <td colspan="6">
-                                <div class="form-box catalog-inline-form-box">
-                                    <div class="catalog-box-head">
-                                        <div>
-                                            <h4>Sua model</h4>
-                                            <p>Inline edit de cap nhat make, ten va slug ma khong can reload.</p>
-                                        </div>
-                                    </div>
-
-                                    <form class="row" wire:submit="update">
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Make</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <select wire:model.blur="editForm.make_id">
-                                                        @foreach ($makeOptions as $makeOption)
-                                                            <option value="{{ $makeOption->id }}">{{ $makeOption->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                @error('editForm.make_id') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Ten model</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.name">
-                                                </div>
-                                                @error('editForm.name') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Slug</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.slug">
-                                                </div>
-                                                @error('editForm.slug') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="form-submit catalog-form-submit">
-                                                <div class="catalog-form-submit-copy">
-                                                    Phu hop cho workflow admin khi phai cap nhat nhieu dong lien tiep.
-                                                </div>
-                                                <div class="catalog-submit-actions">
-                                                    <button type="button" class="catalog-text-btn" wire:click="cancelEdit">Huy</button>
-                                                    <button type="submit" class="theme-btn" wire:loading.attr="disabled" wire:target="update">
-                                                        Luu thay doi
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
+                    @forelse ($models as $model)
+                        <tr wire:key="model-row-{{ $model->id }}">
+                            <td><span>{{ $model->make?->name ?: '--' }}</span></td>
+                            <td><span>{{ $model->name ?? '--' }}</span></td>
+                            <td><span>{{ $model->slug }}</span></td>
+                            <td><span>{{ number_format($model->trims_count) }}</span></td>
+                            <td><span>{{ optional($model->updated_at)->format('d/m/Y H:i') ?: '--' }}</span></td>
+                            <td>
+                                <button type="button" class="remove-cart-item" wire:click="startEdit({{ $model->id }})"
+                                    title="Sua model">
+                                    <img src="{{ $editIcon }}" alt="Edit">
+                                </button>
+                                <button type="button" class="remove-cart-item" wire:click="delete({{ $model->id }})"
+                                    onclick="return confirm('Xac nhan xoa model nay?')" title="Xoa model">
+                                    <img src="{{ $deleteIcon }}" alt="Delete">
+                                </button>
                             </td>
                         </tr>
-                    @endif
-                @empty
-                    <tr>
-                        <td colspan="6">
-                            <div class="catalog-empty-state">Chua co model nao phu hop bo loc hien tai.</div>
-                        </td>
-                    </tr>
-                @endforelse
+                    @empty
+                        <tr>
+                            <td colspan="6">
+                                <div class="catalog-empty-state">Chua co model nao phu hop bo loc hien tai.</div>
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -247,7 +167,7 @@
             <div class="catalog-table-footer-actions">
                 <div class="form_boxes v3 catalog-per-page catalog-control-box">
                     <small>Rows</small>
-                    <div class="drop-menu catalog-native-control">
+                    <div class="drop-menu">
                         <select wire:model.live="perPage">
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -258,6 +178,89 @@
 
                 <div class="catalog-pagination">
                     {{ $models->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="catalogModelEditModal" tabindex="-1" aria-labelledby="catalogModelEditModalLabel"
+        aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable catalog-edit-modal-dialog catalog-edit-modal-dialog-compact">
+            <div class="modal-content catalog-edit-modal-content">
+                <div class="modal-header catalog-edit-modal-header">
+                    <div>
+                        <h5 class="modal-title catalog-edit-modal-title" id="catalogModelEditModalLabel">Sua model</h5>
+                        <p class="catalog-edit-modal-text">Cap nhat make, ten va slug trong mot modal rieng thay vi chen vao bang.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body catalog-edit-modal-body">
+                    @if ($editingModel)
+                        <form wire:submit="update" class="catalog-edit-modal-form">
+                            <div class="catalog-edit-modal-layout">
+                                <section class="catalog-edit-card">
+                                    <div class="catalog-edit-card-head">
+                                        <h6 class="catalog-edit-card-title">Thong tin model</h6>
+                                        <p class="catalog-edit-card-text">Cap nhat make lien ket, ten hien thi va slug URL cua dong xe.</p>
+                                    </div>
+
+                                    <div class="catalog-edit-fields catalog-edit-fields-two">
+                                        <div class="catalog-edit-field catalog-edit-field-full">
+                                            <label for="catalog-model-edit-make">Make</label>
+                                            <div class="catalog-edit-input-shell">
+                                                <select id="catalog-model-edit-make" wire:model.blur="editForm.make_id">
+                                                    @foreach ($makeOptions as $makeOption)
+                                                        <option value="{{ $makeOption->id }}">{{ $makeOption->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            @error('editForm.make_id')
+                                                <small class="catalog-field-error">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+
+                                        <div class="catalog-edit-field">
+                                            <label for="catalog-model-edit-name">Ten model</label>
+                                            <div class="catalog-edit-input-shell">
+                                                <input id="catalog-model-edit-name" type="text" wire:model.blur="editForm.name"
+                                                    placeholder="Corolla Cross">
+                                            </div>
+                                            @error('editForm.name')
+                                                <small class="catalog-field-error">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+
+                                        <div class="catalog-edit-field">
+                                            <label for="catalog-model-edit-slug">Slug</label>
+                                            <div class="catalog-edit-input-shell">
+                                                <input id="catalog-model-edit-slug" type="text" wire:model.blur="editForm.slug"
+                                                    placeholder="corolla-cross">
+                                            </div>
+                                            @error('editForm.slug')
+                                                <small class="catalog-field-error">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <div class="catalog-edit-modal-footer">
+                                    <p class="catalog-edit-modal-note">
+                                        Flow edit da duoc gom vao modal rieng, nen table model van gon ngay ca khi danh sach dai.
+                                    </p>
+                                    <div class="catalog-edit-actions">
+                                        <button type="button" class="catalog-edit-cancel" data-bs-dismiss="modal">Huy</button>
+                                        <button type="submit" class="theme-btn catalog-edit-submit-btn"
+                                            wire:loading.attr="disabled" wire:target="update">
+                                            Luu thay doi
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    @else
+                        <div class="catalog-empty-state">Khong tim thay model can sua.</div>
+                    @endif
                 </div>
             </div>
         </div>

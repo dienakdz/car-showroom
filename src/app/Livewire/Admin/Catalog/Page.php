@@ -30,6 +30,10 @@ class Page extends AdminPageComponent
 
     public function switchTab(string $tab): void
     {
+        if ($this->tab !== $tab) {
+            $this->dispatch('catalog-close-all-modals');
+        }
+
         $this->tab = $tab;
         $this->ensureValidTab();
     }

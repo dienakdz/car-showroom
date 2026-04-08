@@ -66,6 +66,12 @@ class Manager extends Component
         $this->feedback = [];
     }
 
+    public function syncEditModalClosed(): void
+    {
+        $this->resetEditState();
+        $this->resetErrorBag();
+    }
+
     public function create(): void
     {
         $this->feedback = [];
@@ -105,12 +111,16 @@ class Manager extends Component
             'slug' => $make->slug,
         ];
         $this->editLogoUpload = null;
+
+        $this->openEditModal();
     }
 
     public function cancelEdit(): void
     {
         $this->resetEditState();
         $this->resetErrorBag();
+
+        $this->closeEditModal();
     }
 
     public function update(): void
@@ -143,6 +153,7 @@ class Manager extends Component
         $this->dispatch('catalog-updated');
         $this->resetEditState();
         $this->setFeedback('success', 'Da cap nhat make.');
+        $this->closeEditModal();
     }
 
     public function delete(int $makeId): void
@@ -160,6 +171,7 @@ class Manager extends Component
 
         if ($this->editingId === $makeId) {
             $this->resetEditState();
+            $this->closeEditModal();
         }
 
         $this->dispatch('catalog-updated');
@@ -326,10 +338,18 @@ class Manager extends Component
 
     private function setFeedback(string $type, string $message): void
     {
-        $this->feedback = [
-            'type' => $type,
-            'message' => $message,
-        ];
+        $this->feedback = [];
+        $this->dispatch('catalog-toast', type: $type, message: $message);
+    }
+
+    private function openEditModal(): void
+    {
+        $this->dispatch('catalog-make-edit-modal-opened');
+    }
+
+    private function closeEditModal(): void
+    {
+        $this->dispatch('catalog-make-edit-modal-closed');
     }
 
     /**
