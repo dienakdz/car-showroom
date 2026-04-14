@@ -10,8 +10,8 @@ use App\Models\Color;
 use App\Models\Drivetrain;
 use App\Models\FuelType;
 use App\Models\Make;
-use App\Models\Trim;
 use App\Models\Transmission;
+use App\Models\Trim;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,7 +20,7 @@ class InventoryController extends ClientBaseController
     public function index(Request $request, ?string $condition = null): View
     {
         $allowedConditions = ['new', 'used', 'cpo'];
-        if ($condition !== null && !in_array($condition, $allowedConditions, true)) {
+        if ($condition !== null && ! in_array($condition, $allowedConditions, true)) {
             abort(404);
         }
 
@@ -38,11 +38,11 @@ class InventoryController extends ClientBaseController
         $keyword = trim((string) $request->query('q', ''));
         if ($keyword !== '') {
             $query->where(function ($queryBuilder) use ($keyword): void {
-                $queryBuilder->where('makes.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('models.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('trims.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('car_units.stock_code', 'like', '%' . $keyword . '%')
-                    ->orWhere('car_units.vin', 'like', '%' . $keyword . '%');
+                $queryBuilder->where('makes.name', 'like', '%'.$keyword.'%')
+                    ->orWhere('models.name', 'like', '%'.$keyword.'%')
+                    ->orWhere('trims.name', 'like', '%'.$keyword.'%')
+                    ->orWhere('car_units.stock_code', 'like', '%'.$keyword.'%')
+                    ->orWhere('car_units.vin', 'like', '%'.$keyword.'%');
             });
         }
 
@@ -154,7 +154,7 @@ class InventoryController extends ClientBaseController
                 ->get()
                 ->map(fn (CarModel $model): object => (object) [
                     'slug' => $model->slug,
-                    'name' => $model->make_name . ' ' . $model->name,
+                    'name' => $model->make_name.' '.$model->name,
                 ]),
             'trims' => Trim::query()
                 ->select([
@@ -171,7 +171,7 @@ class InventoryController extends ClientBaseController
                 ->get()
                 ->map(fn (Trim $trim): object => (object) [
                     'slug' => $trim->slug,
-                    'name' => $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name,
+                    'name' => $trim->make_name.' '.$trim->model_name.' '.$trim->name,
                 ]),
             'bodyTypes' => BodyType::query()->orderBy('name')->get(['slug', 'name']),
             'fuelTypes' => FuelType::query()->orderBy('name')->get(['slug', 'name']),
@@ -212,6 +212,7 @@ class InventoryController extends ClientBaseController
             ->get()
             ->map(function (CarUnitMedia $item): object {
                 $item->url = $this->resolveMediaPath($item->path_or_url);
+
                 return $item;
             });
 

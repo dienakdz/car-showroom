@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Middleware\EnsurePurchasedTrimForReview;
 use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsurePurchasedTrimForReview;
 use App\Http\Middleware\EnsureUserHasPermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;

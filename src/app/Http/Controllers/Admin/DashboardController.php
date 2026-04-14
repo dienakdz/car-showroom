@@ -33,7 +33,7 @@ class DashboardController extends AdminBaseController
             default => "DATE_FORMAT(created_at, '%Y-%m')",
         };
         $leadTrendCounts = Lead::query()
-            ->selectRaw($leadTrendPeriodExpression . ' as period_key, COUNT(*) as total')
+            ->selectRaw($leadTrendPeriodExpression.' as period_key, COUNT(*) as total')
             ->whereBetween('created_at', [$leadTrendPeriodStart, now()->endOfMonth()])
             ->groupBy('period_key')
             ->pluck('total', 'period_key');
@@ -65,7 +65,7 @@ class DashboardController extends AdminBaseController
             [
                 'label' => 'Tong xe trong kho',
                 'value' => (int) $inventoryCounts->sum(),
-                'note' => $inventoryCounts->get('available', 0) . ' xe dang san sang len public',
+                'note' => $inventoryCounts->get('available', 0).' xe dang san sang len public',
                 'icon' => asset('boxcar/images/icons/cart1.svg'),
                 'tone' => 'primary',
             ],
@@ -74,7 +74,7 @@ class DashboardController extends AdminBaseController
                 'value' => Lead::query()
                     ->where('created_at', '>=', now()->subDays(7))
                     ->count(),
-                'note' => Lead::query()->where('status', 'new')->count() . ' lead dang cho phan hoi',
+                'note' => Lead::query()->where('status', 'new')->count().' lead dang cho phan hoi',
                 'icon' => asset('boxcar/images/icons/cart2.svg'),
                 'tone' => 'info',
             ],
@@ -86,7 +86,7 @@ class DashboardController extends AdminBaseController
                 'note' => Appointment::query()
                     ->where('scheduled_at', '>=', now())
                     ->where('scheduled_at', '<=', now()->addDays(3))
-                    ->count() . ' lich trong 3 ngay toi',
+                    ->count().' lich trong 3 ngay toi',
                 'icon' => asset('boxcar/images/icons/cart3.svg'),
                 'tone' => 'warning',
             ],
@@ -95,7 +95,7 @@ class DashboardController extends AdminBaseController
                 'value' => Sale::query()
                     ->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])
                     ->count(),
-                'note' => TrimReview::query()->where('status', 'pending')->count() . ' review dang cho duyet',
+                'note' => TrimReview::query()->where('status', 'pending')->count().' review dang cho duyet',
                 'icon' => asset('boxcar/images/icons/cart4.svg'),
                 'tone' => 'success',
             ],
@@ -233,7 +233,7 @@ class DashboardController extends AdminBaseController
         $now = Carbon::now();
 
         if ($dateTime->isSameDay($now)) {
-            return 'Hom nay, ' . $dateTime->format('H:i');
+            return 'Hom nay, '.$dateTime->format('H:i');
         }
 
         return $dateTime->format('d/m/Y H:i');

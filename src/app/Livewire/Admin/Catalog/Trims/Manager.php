@@ -87,8 +87,8 @@ class Manager extends Component
                 'max:255',
                 Rule::unique('trims', 'slug')->where(fn ($query) => $query->where('model_id', $modelId)),
             ],
-            'createForm.year_from' => ['nullable', 'integer', 'min:1900', 'max:' . now()->addYear()->format('Y')],
-            'createForm.year_to' => ['nullable', 'integer', 'min:1900', 'max:' . now()->addYear()->format('Y'), 'gte:createForm.year_from'],
+            'createForm.year_from' => ['nullable', 'integer', 'min:1900', 'max:'.now()->addYear()->format('Y')],
+            'createForm.year_to' => ['nullable', 'integer', 'min:1900', 'max:'.now()->addYear()->format('Y'), 'gte:createForm.year_from'],
             'createForm.msrp' => ['nullable', 'integer', 'min:0'],
             'createForm.description' => ['nullable', 'string'],
         ], attributes: $this->validationAttributes('createForm'));
@@ -152,8 +152,8 @@ class Manager extends Component
                     ->where(fn ($query) => $query->where('model_id', $modelId))
                     ->ignore($trim->id),
             ],
-            'editForm.year_from' => ['nullable', 'integer', 'min:1900', 'max:' . now()->addYear()->format('Y')],
-            'editForm.year_to' => ['nullable', 'integer', 'min:1900', 'max:' . now()->addYear()->format('Y'), 'gte:editForm.year_from'],
+            'editForm.year_from' => ['nullable', 'integer', 'min:1900', 'max:'.now()->addYear()->format('Y')],
+            'editForm.year_to' => ['nullable', 'integer', 'min:1900', 'max:'.now()->addYear()->format('Y'), 'gte:editForm.year_from'],
             'editForm.msrp' => ['nullable', 'integer', 'min:0'],
             'editForm.description' => ['nullable', 'string'],
         ], attributes: $this->validationAttributes('editForm'));
@@ -204,9 +204,9 @@ class Manager extends Component
                 ->when($this->search !== '', function ($query): void {
                     $query->where(function ($innerQuery): void {
                         $innerQuery
-                            ->where('name', 'like', '%' . $this->search . '%')
-                            ->orWhere('slug', 'like', '%' . $this->search . '%')
-                            ->orWhere('description', 'like', '%' . $this->search . '%');
+                            ->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('slug', 'like', '%'.$this->search.'%')
+                            ->orWhere('description', 'like', '%'.$this->search.'%');
                     });
                 })
                 ->orderBy($sortField, $sortDirection)
@@ -266,13 +266,13 @@ class Manager extends Component
     private function validationAttributes(string $formProperty): array
     {
         return [
-            $formProperty . '.model_id' => 'model',
-            $formProperty . '.name' => 'ten trim',
-            $formProperty . '.slug' => 'slug trim',
-            $formProperty . '.year_from' => 'nam bat dau',
-            $formProperty . '.year_to' => 'nam ket thuc',
-            $formProperty . '.msrp' => 'MSRP',
-            $formProperty . '.description' => 'mo ta trim',
+            $formProperty.'.model_id' => 'model',
+            $formProperty.'.name' => 'ten trim',
+            $formProperty.'.slug' => 'slug trim',
+            $formProperty.'.year_from' => 'nam bat dau',
+            $formProperty.'.year_to' => 'nam ket thuc',
+            $formProperty.'.msrp' => 'MSRP',
+            $formProperty.'.description' => 'mo ta trim',
         ];
     }
 

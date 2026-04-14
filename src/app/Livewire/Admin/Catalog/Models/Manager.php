@@ -195,8 +195,8 @@ class Manager extends Component
                 ->when($this->search !== '', function ($query): void {
                     $query->where(function ($innerQuery): void {
                         $innerQuery
-                            ->where('name', 'like', '%' . $this->search . '%')
-                            ->orWhere('slug', 'like', '%' . $this->search . '%');
+                            ->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('slug', 'like', '%'.$this->search.'%');
                     });
                 })
                 ->orderBy($sortField, $sortDirection)
@@ -244,9 +244,9 @@ class Manager extends Component
     private function validationAttributes(string $formProperty): array
     {
         return [
-            $formProperty . '.make_id' => 'hang xe',
-            $formProperty . '.name' => 'ten model',
-            $formProperty . '.slug' => 'slug model',
+            $formProperty.'.make_id' => 'hang xe',
+            $formProperty.'.name' => 'ten model',
+            $formProperty.'.slug' => 'slug model',
         ];
     }
 

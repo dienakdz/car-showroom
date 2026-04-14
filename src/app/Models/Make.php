@@ -41,8 +41,8 @@ class Make extends EloquentModel
             return asset($cleanPath);
         }
 
-        if (file_exists(public_path('boxcar/' . $cleanPath))) {
-            return asset('boxcar/' . $cleanPath);
+        if (file_exists(public_path('boxcar/'.$cleanPath))) {
+            return asset('boxcar/'.$cleanPath);
         }
 
         if (Storage::disk('public')->exists($cleanPath)) {

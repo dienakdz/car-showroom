@@ -34,9 +34,9 @@ class LeadController extends AdminBaseController
             ->when($filters['q'] !== '', function ($query) use ($filters): void {
                 $query->where(function ($innerQuery) use ($filters): void {
                     $innerQuery
-                        ->where('name', 'like', '%' . $filters['q'] . '%')
-                        ->orWhere('phone', 'like', '%' . $filters['q'] . '%')
-                        ->orWhere('email', 'like', '%' . $filters['q'] . '%');
+                        ->where('name', 'like', '%'.$filters['q'].'%')
+                        ->orWhere('phone', 'like', '%'.$filters['q'].'%')
+                        ->orWhere('email', 'like', '%'.$filters['q'].'%');
                 });
             })
             ->latest()
@@ -65,7 +65,7 @@ class LeadController extends AdminBaseController
         ]);
 
         return $this->adminView('admin.leads.show', [
-            'adminPageTitle' => 'Chi tiet lead #' . $lead->id,
+            'adminPageTitle' => 'Chi tiet lead #'.$lead->id,
             'adminPageDescription' => 'Cap nhat pipeline, note log va assignment cho lead.',
             'lead' => $lead,
             'staffUsers' => $this->assignableUsers(),

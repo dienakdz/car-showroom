@@ -13,7 +13,7 @@ class AppointmentManagementService
     public function save(array $validated, User $actor, ?Appointment $appointment = null): Appointment
     {
         return DB::transaction(function () use ($validated, $actor, $appointment): Appointment {
-            $appointment ??= new Appointment();
+            $appointment ??= new Appointment;
 
             $lead = null;
 

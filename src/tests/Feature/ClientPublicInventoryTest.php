@@ -198,12 +198,12 @@ class ClientPublicInventoryTest extends TestCase
 
     private function createCarUnit(int $trimId, array $overrides = []): string
     {
-        $stockCode = $overrides['stock_code'] ?? ('STOCK-' . uniqid());
+        $stockCode = $overrides['stock_code'] ?? ('STOCK-'.uniqid());
 
         DB::table('car_units')->insert([
             'trim_id' => $trimId,
             'condition' => $overrides['condition'] ?? 'used',
-            'vin' => $overrides['vin'] ?? ('VIN-' . $stockCode),
+            'vin' => $overrides['vin'] ?? ('VIN-'.$stockCode),
             'stock_code' => $stockCode,
             'year' => $overrides['year'] ?? 2024,
             'mileage' => $overrides['mileage'] ?? 12000,

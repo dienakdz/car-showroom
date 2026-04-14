@@ -37,7 +37,8 @@ class PagesController extends ClientBaseController
             ->limit(40)
             ->get()
             ->map(function (object $car): object {
-                $car->label = $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' (' . $car->stock_code . ')';
+                $car->label = $car->make_name.' '.$car->model_name.' '.$car->trim_name.' ('.$car->stock_code.')';
+
                 return $car;
             });
 
@@ -56,7 +57,8 @@ class PagesController extends ClientBaseController
             ->orderBy('trims.name')
             ->get()
             ->map(function (object $trim): object {
-                $trim->label = $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name;
+                $trim->label = $trim->make_name.' '.$trim->model_name.' '.$trim->name;
+
                 return $trim;
             });
 
