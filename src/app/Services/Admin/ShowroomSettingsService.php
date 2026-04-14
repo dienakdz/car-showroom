@@ -12,7 +12,7 @@ class ShowroomSettingsService
     public function update(array $validated): void
     {
         DB::transaction(function () use ($validated): void {
-            $showroom = Showroom::query()->first() ?? new Showroom();
+            $showroom = Showroom::query()->first() ?? new Showroom;
             $showroom->fill([
                 'name' => $validated['showroom_name'],
                 'phone' => $validated['showroom_phone'],

@@ -16,7 +16,7 @@ class TrimFormController extends AdminBaseController
 {
     public function create(): View
     {
-        return $this->formView(new Trim(), 'Tao trim moi', 'Khai bao phien ban va metadata chung de su dung cho inventory + review.');
+        return $this->formView(new Trim, 'Tao trim moi', 'Khai bao phien ban va metadata chung de su dung cho inventory + review.');
     }
 
     public function store(UpsertTrimRequest $request, TrimManagementService $service): RedirectResponse

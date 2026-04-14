@@ -58,7 +58,7 @@ class CarUnitController extends AdminBaseController
 
     public function create(): View
     {
-        return $this->formView(new CarUnit(), 'Them xe vao kho', 'Khai bao inventory item, media va thong tin noi bo cho xe.');
+        return $this->formView(new CarUnit, 'Them xe vao kho', 'Khai bao inventory item, media va thong tin noi bo cho xe.');
     }
 
     public function store(UpsertCarUnitRequest $request, InventoryWorkflowService $service): RedirectResponse

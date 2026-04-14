@@ -38,6 +38,7 @@ class PagesController extends ClientBaseController
             ->get()
             ->map(function (object $car): object {
                 $car->label = $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' (' . $car->stock_code . ')';
+
                 return $car;
             });
 
@@ -57,6 +58,7 @@ class PagesController extends ClientBaseController
             ->get()
             ->map(function (object $trim): object {
                 $trim->label = $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name;
+
                 return $trim;
             });
 

@@ -17,7 +17,7 @@ class InventoryWorkflowService
     public function save(array $validated, User $actor, ?CarUnit $carUnit = null): CarUnit
     {
         return DB::transaction(function () use ($validated, $actor, $carUnit): CarUnit {
-            $carUnit ??= new CarUnit();
+            $carUnit ??= new CarUnit;
 
             $wasExisting = $carUnit->exists;
             $originalPrice = $carUnit->exists ? $carUnit->price : null;

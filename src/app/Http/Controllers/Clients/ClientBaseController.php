@@ -166,6 +166,7 @@ abstract class ClientBaseController extends Controller
 
             if ($attribute->type === 'string') {
                 $attribute->display_value = $attribute->value_string;
+
                 return $attribute;
             }
 
@@ -176,6 +177,7 @@ abstract class ClientBaseController extends Controller
 
                 $numberValue = rtrim(rtrim(number_format((float) $attribute->value_number, 4, '.', ''), '0'), '.');
                 $attribute->display_value = $numberValue . ($attribute->unit ? ' ' . $attribute->unit : '');
+
                 return $attribute;
             }
 
@@ -226,6 +228,7 @@ abstract class ClientBaseController extends Controller
 
         return $query->get()->map(function (TrimReview $review): object {
             $review->user_name = $review->user?->name ?? 'Khach hang';
+
             return $review;
         });
     }

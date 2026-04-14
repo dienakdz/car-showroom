@@ -13,7 +13,7 @@ class TrimManagementService
     public function save(array $validated, ?Trim $trim = null): Trim
     {
         return DB::transaction(function () use ($validated, $trim): Trim {
-            $trim ??= new Trim();
+            $trim ??= new Trim;
 
             $trim->fill(Arr::only($validated, [
                 'model_id',

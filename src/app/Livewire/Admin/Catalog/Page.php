@@ -6,9 +6,9 @@ use App\Livewire\Admin\AdminPageComponent;
 use App\Models\CarModel;
 use App\Models\Make;
 use App\Models\Trim;
+use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
-use Illuminate\View\View;
 
 class Page extends AdminPageComponent
 {

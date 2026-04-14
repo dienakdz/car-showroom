@@ -48,7 +48,7 @@ class AppointmentController extends AdminBaseController
 
     public function create(Request $request): View
     {
-        $appointment = new Appointment();
+        $appointment = new Appointment;
         $appointment->lead_id = $request->integer('lead_id') ?: null;
 
         return $this->formView($appointment, 'Tao appointment', 'Tao lich hen thu cong hoac gan lead da co.');

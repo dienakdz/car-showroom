@@ -10,8 +10,8 @@ use App\Models\Color;
 use App\Models\Drivetrain;
 use App\Models\FuelType;
 use App\Models\Make;
-use App\Models\Trim;
 use App\Models\Transmission;
+use App\Models\Trim;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,7 +20,7 @@ class InventoryController extends ClientBaseController
     public function index(Request $request, ?string $condition = null): View
     {
         $allowedConditions = ['new', 'used', 'cpo'];
-        if ($condition !== null && !in_array($condition, $allowedConditions, true)) {
+        if ($condition !== null && ! in_array($condition, $allowedConditions, true)) {
             abort(404);
         }
 
@@ -212,6 +212,7 @@ class InventoryController extends ClientBaseController
             ->get()
             ->map(function (CarUnitMedia $item): object {
                 $item->url = $this->resolveMediaPath($item->path_or_url);
+
                 return $item;
             });
 
