@@ -1,0 +1,5 @@
+{
+    "src/**/*.php": [
+        "php src/vendor/bin/pint --config src/pint.json"
+    ]
+}
