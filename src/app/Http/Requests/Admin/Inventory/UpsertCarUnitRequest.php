@@ -50,7 +50,7 @@ class UpsertCarUnitRequest extends FormRequest
             'condition' => ['required', Rule::in(['new', 'used', 'cpo'])],
             'vin' => ['nullable', 'string', 'max:255', Rule::unique('car_units', 'vin')->ignore($carUnitId)],
             'stock_code' => ['required', 'string', 'max:255', Rule::unique('car_units', 'stock_code')->ignore($carUnitId)],
-            'year' => ['required', 'integer', 'min:1900', 'max:'.$currentYear],
+            'year' => ['required', 'integer', 'min:1900', 'max:' . $currentYear],
             'mileage' => [Rule::requiredIf(in_array($this->input('condition'), ['used', 'cpo'], true)), 'nullable', 'integer', 'min:0'],
             'body_type_id' => ['nullable', 'integer', 'exists:body_types,id'],
             'fuel_type_id' => ['nullable', 'integer', 'exists:fuel_types,id'],

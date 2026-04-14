@@ -94,7 +94,7 @@ abstract class ClientBaseController extends Controller
         $car->image_url = $this->resolveMediaPath($car->cover_media ?? null);
         $car->formatted_price = $car->price === null
             ? 'Lien he'
-            : number_format((float) $car->price, 0, ',', '.').' '.$car->currency;
+            : number_format((float) $car->price, 0, ',', '.') . ' ' . $car->currency;
 
         $car->condition_label = match ($car->condition) {
             'new' => 'Moi',
@@ -176,7 +176,7 @@ abstract class ClientBaseController extends Controller
                 }
 
                 $numberValue = rtrim(rtrim(number_format((float) $attribute->value_number, 4, '.', ''), '0'), '.');
-                $attribute->display_value = $numberValue.($attribute->unit ? ' '.$attribute->unit : '');
+                $attribute->display_value = $numberValue . ($attribute->unit ? ' ' . $attribute->unit : '');
 
                 return $attribute;
             }
@@ -259,8 +259,8 @@ abstract class ClientBaseController extends Controller
             return $this->resolvedMediaPathCache[$cacheKey] = asset($cleanPath);
         }
 
-        if (file_exists(public_path('boxcar/'.$cleanPath))) {
-            return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/'.$cleanPath);
+        if (file_exists(public_path('boxcar/' . $cleanPath))) {
+            return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/' . $cleanPath);
         }
 
         return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/images/resource/shop3-1.jpg');

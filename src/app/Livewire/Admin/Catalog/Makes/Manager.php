@@ -188,8 +188,8 @@ class Manager extends Component
                 ->when($this->search !== '', function ($query): void {
                     $query->where(function ($innerQuery): void {
                         $innerQuery
-                            ->where('name', 'like', '%'.$this->search.'%')
-                            ->orWhere('slug', 'like', '%'.$this->search.'%');
+                            ->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhere('slug', 'like', '%' . $this->search . '%');
                     });
                 })
                 ->orderBy($sortField, $sortDirection)
@@ -235,8 +235,8 @@ class Manager extends Component
     private function validationAttributes(string $formProperty, string $uploadProperty): array
     {
         return [
-            $formProperty.'.name' => 'ten hang xe',
-            $formProperty.'.slug' => 'slug make',
+            $formProperty . '.name' => 'ten hang xe',
+            $formProperty . '.slug' => 'slug make',
             $uploadProperty => 'file logo',
         ];
     }
@@ -292,7 +292,7 @@ class Manager extends Component
             $extension = $file->extension() ?: 'png';
         }
 
-        $fileName = Str::slug($name ?: 'make').'-'.Str::lower(Str::random(8)).'.'.$extension;
+        $fileName = Str::slug($name ?: 'make') . '-' . Str::lower(Str::random(8)) . '.' . $extension;
 
         return $file->storeAs('catalog/makes', $fileName, 'public');
     }

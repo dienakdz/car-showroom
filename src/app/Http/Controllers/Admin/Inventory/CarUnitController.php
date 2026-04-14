@@ -34,8 +34,8 @@ class CarUnitController extends AdminBaseController
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($innerQuery) use ($search): void {
                     $innerQuery
-                        ->where('stock_code', 'like', '%'.$search.'%')
-                        ->orWhere('vin', 'like', '%'.$search.'%');
+                        ->where('stock_code', 'like', '%' . $search . '%')
+                        ->orWhere('vin', 'like', '%' . $search . '%');
                 });
             })
             ->latest()

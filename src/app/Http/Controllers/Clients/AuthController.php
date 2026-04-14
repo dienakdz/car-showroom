@@ -411,7 +411,7 @@ class AuthController extends ClientBaseController
                     'trim_label' => $this->formatTrimLabel($trim),
                     'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Dang cap nhat',
                     'sold_price_label' => $sale->sold_price !== null
-                        ? number_format((float) $sale->sold_price, 0, ',', '.').' VND'
+                        ? number_format((float) $sale->sold_price, 0, ',', '.') . ' VND'
                         : 'Theo hop dong',
                     'trim_url' => $trim?->slug ? route('trim.show', ['trimSlug' => $trim->slug]) : route('inventory.index'),
                     'review_status_label' => $review ? $this->reviewStatusLabel((string) $review->status) : 'Chua danh gia',
@@ -465,7 +465,7 @@ class AuthController extends ClientBaseController
         $trimLabel = $this->formatTrimLabel($resolvedTrim);
 
         if ($carUnit !== null && filled($carUnit->stock_code)) {
-            return $trimLabel.' | Stock '.$carUnit->stock_code;
+            return $trimLabel . ' | Stock ' . $carUnit->stock_code;
         }
 
         return $trimLabel;

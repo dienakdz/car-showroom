@@ -45,7 +45,7 @@ abstract class AdminBaseController extends Controller
             return 'Lien he';
         }
 
-        return number_format((float) $value, 0, ',', '.').' '.($currency ?? 'VND');
+        return number_format((float) $value, 0, ',', '.') . ' ' . ($currency ?? 'VND');
     }
 
     protected function loadAdminSettings(): Collection

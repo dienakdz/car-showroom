@@ -42,8 +42,8 @@ class UpsertTrimRequest extends FormRequest
                     ->where(fn ($query) => $query->where('model_id', $modelId))
                     ->ignore($trimId),
             ],
-            'year_from' => ['nullable', 'integer', 'min:1900', 'max:'.$currentYear],
-            'year_to' => ['nullable', 'integer', 'min:1900', 'max:'.$currentYear, 'gte:year_from'],
+            'year_from' => ['nullable', 'integer', 'min:1900', 'max:' . $currentYear],
+            'year_to' => ['nullable', 'integer', 'min:1900', 'max:' . $currentYear, 'gte:year_from'],
             'msrp' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'feature_ids' => ['nullable', 'array'],
