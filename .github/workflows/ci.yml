@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Prepare environment file
+        working-directory: ./src
+        run: |
+          cp .env.example .env
+          sed -i 's|^APP_URL=.*|APP_URL=http://localhost:8889|' .env
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^DB_HOST=.*/DB_HOST=mysql/' .env
+          sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=car_showroom/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=car/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=car/' .env
+          sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=file/' .env
+          sed -i 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' .env
+          sed -i 's/^CACHE_STORE=.*/CACHE_STORE=file/' .env
+
+      - name: Build and start containers
+        run: docker compose up -d --build
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if docker compose exec -T mysql mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+          echo "MySQL did not become ready in time"
+          docker compose logs
+          exit 1
+
+      - name: Generate app key
+        run: docker compose exec -T app php artisan key:generate
+
+      - name: Clear cached config
+        run: docker compose exec -T app php artisan config:clear
+
+      - name: Run migrations
+        run: docker compose exec -T app php artisan migrate --force
+
+      - name: Run Laravel Pint
+        run: docker compose exec -T app ./vendor/bin/pint --test
+
+      - name: Run tests
+        run: docker compose exec -T app composer test
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
