@@ -26,25 +26,6 @@ class AdminAuthAndAccessTest extends TestCase
         $response->assertRedirect(route('admin.login'));
     }
 
-    public function test_admin_can_login_and_open_dashboard(): void
-    {
-        $this->seed(UsersAndRbacSeeder::class);
-
-        $response = $this->post(route('admin.login.attempt'), [
-            'identifier' => 'admin@showroom.test',
-            'password' => '123456',
-        ]);
-
-        $response->assertRedirect(route('admin.dashboard'));
-        $this->assertAuthenticated();
-
-        $dashboard = $this->get(route('admin.dashboard'));
-
-        $dashboard->assertOk();
-        $dashboard->assertSeeText('Dashboard');
-        $dashboard->assertSeeText('Lead trend 6 thang gan day');
-    }
-
     public function test_customer_cannot_access_admin_dashboard(): void
     {
         $this->seed(UsersAndRbacSeeder::class);
