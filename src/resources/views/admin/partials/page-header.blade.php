@@ -1,8 +1,8 @@
 <div class="admin-page-header">
     <div class="admin-page-title-block">
-        <span class="admin-page-kicker">Showroom control</span>
-        <h3 class="title">{{ $adminPageTitle ?? 'Admin' }}</h3>
-        <div class="text">{{ $adminPageDescription ?? 'Quan ly cac module van hanh showroom theo tung nghiep vu.' }}</div>
+        <span class="admin-page-kicker">Phân hệ quản trị showroom</span>
+        <h2 class="admin-page-title">{{ $adminPageTitle ?? 'Bảng điều khiển' }}</h2>
+        <div class="admin-page-description">{{ $adminPageDescription ?? 'Quản lý các module vận hành showroom theo từng nghiệp vụ chuyên môn.' }}</div>
     </div>
 
     @hasSection('page-actions')

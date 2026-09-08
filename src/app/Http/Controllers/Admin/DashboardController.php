@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Appointment;
+use App\Models\CarModel;
 use App\Models\CarUnit;
 use App\Models\Lead;
+use App\Models\Make;
 use App\Models\Sale;
 use App\Models\Trim;
 use App\Models\TrimReview;
+use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -61,64 +64,83 @@ class DashboardController extends AdminBaseController
             $recentLeadRows->whereNull('car_unit_id')->pluck('trim_id')
         );
 
+        $totalInventory = (int) $inventoryCounts->sum();
+        $inventoryBreakdown = collect(['available', 'on_hold', 'draft', 'sold', 'archived'])
+            ->mapWithKeys(function (string $status) use ($inventoryCounts, $totalInventory): array {
+                $count = (int) $inventoryCounts->get($status, 0);
+                $percent = $totalInventory > 0 ? round(($count / $totalInventory) * 100, 1) : 0;
+
+                return [$status => [
+                    'count' => $count,
+                    'percent' => $percent,
+                ]];
+            })
+            ->all();
+
         $summaryCards = [
             [
-                'label' => 'Tong xe trong kho',
-                'value' => (int) $inventoryCounts->sum(),
-                'note' => $inventoryCounts->get('available', 0) . ' xe dang san sang len public',
+                'badge' => 'Kho xe',
+                'label' => 'Tổng xe trong kho',
+                'value' => $totalInventory,
+                'note' => $inventoryCounts->get('available', 0) . ' xe sẵn sàng lên sàn',
                 'icon' => asset('boxcar/images/icons/cart1.svg'),
+                'fa_icon' => 'fa-car',
                 'tone' => 'primary',
             ],
             [
-                'label' => 'Lead moi 7 ngay',
+                'badge' => 'CRM 7 ngày',
+                'label' => 'Lead mới tiếp nhận',
                 'value' => Lead::query()
                     ->where('created_at', '>=', now()->subDays(7))
                     ->count(),
-                'note' => Lead::query()->where('status', 'new')->count() . ' lead dang cho phan hoi',
+                'note' => Lead::query()->where('status', 'new')->count() . ' lead đang chờ phản hồi',
                 'icon' => asset('boxcar/images/icons/cart2.svg'),
+                'fa_icon' => 'fa-users',
                 'tone' => 'info',
             ],
             [
-                'label' => 'Lich hen can xu ly',
+                'badge' => 'Lịch hẹn',
+                'label' => 'Lịch hẹn cần xử lý',
                 'value' => Appointment::query()
                     ->whereIn('status', ['pending', 'confirmed'])
                     ->count(),
                 'note' => Appointment::query()
                     ->where('scheduled_at', '>=', now())
                     ->where('scheduled_at', '<=', now()->addDays(3))
-                    ->count() . ' lich trong 3 ngay toi',
+                    ->count() . ' lịch trong 3 ngày tới',
                 'icon' => asset('boxcar/images/icons/cart3.svg'),
+                'fa_icon' => 'fa-calendar-check',
                 'tone' => 'warning',
             ],
             [
-                'label' => 'Sale thang nay',
+                'badge' => 'Doanh số',
+                'label' => 'Giao dịch tháng này',
                 'value' => Sale::query()
                     ->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])
                     ->count(),
-                'note' => TrimReview::query()->where('status', 'pending')->count() . ' review dang cho duyet',
+                'note' => TrimReview::query()->where('status', 'pending')->count() . ' review đang chờ duyệt',
                 'icon' => asset('boxcar/images/icons/cart4.svg'),
+                'fa_icon' => 'fa-line-chart',
                 'tone' => 'success',
             ],
         ];
 
         $recentLeads = $recentLeadRows
             ->map(function (Lead $lead) use ($recentLeadFallbackTrims): object {
-                $context = $lead->carUnit?->trim;
-
-                if ($context === null) {
-                    $context = $recentLeadFallbackTrims->get($lead->trim_id);
-                }
+                /** @var CarUnit|null $carUnit */
+                $carUnit = $lead->carUnit;
+                /** @var Trim|null $context */
+                $context = $carUnit !== null ? $carUnit->trim : $recentLeadFallbackTrims->get($lead->trim_id);
+                /** @var User|null $assignedTo */
+                $assignedTo = $lead->assignedTo;
 
                 return (object) [
                     'name' => $lead->name,
                     'source' => $lead->source,
                     'status' => $lead->status,
-                    'assigned_to' => $lead->assignedTo?->name ?? 'Chua phan cong',
-                    'context' => trim(collect([
-                        $context?->model?->make?->name,
-                        $context?->model?->name,
-                        $context?->name,
-                    ])->filter()->implode(' ')) ?: 'Lien he chung',
+                    'status_label' => $this->formatLeadStatus($lead->status),
+                    'assigned_to' => $assignedTo ? $assignedTo->name : 'Chưa phân công',
+                    'context' => $this->formatCarContext($context) ?: 'Liên hệ chung',
                     'created_at_label' => $this->formatRelativeDate($lead->created_at),
                     'url' => route('admin.leads.show', $lead),
                 ];
@@ -140,21 +162,21 @@ class DashboardController extends AdminBaseController
 
         $upcomingAppointments = $upcomingAppointmentRows
             ->map(function (Appointment $appointment) use ($upcomingAppointmentFallbackTrims): object {
-                $context = $appointment->carUnit?->trim;
-
-                if ($context === null) {
-                    $context = $upcomingAppointmentFallbackTrims->get($appointment->trim_id);
-                }
+                /** @var CarUnit|null $carUnit */
+                $carUnit = $appointment->carUnit;
+                /** @var Trim|null $context */
+                $context = $carUnit !== null ? $carUnit->trim : $upcomingAppointmentFallbackTrims->get($appointment->trim_id);
+                /** @var User|null $handledBy */
+                $handledBy = $appointment->handledBy;
 
                 return (object) [
-                    'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Dang cap nhat',
+                    'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
+                    'scheduled_date' => optional($appointment->scheduled_at)->format('d/m') ?? '--',
+                    'scheduled_time' => optional($appointment->scheduled_at)->format('H:i') ?? '--',
                     'status' => $appointment->status,
-                    'handled_by' => $appointment->handledBy?->name ?? 'Chua gan staff',
-                    'context' => trim(collect([
-                        $context?->model?->make?->name,
-                        $context?->model?->name,
-                        $context?->name,
-                    ])->filter()->implode(' ')) ?: 'Khong co context xe',
+                    'status_label' => $this->formatAppointmentStatus($appointment->status),
+                    'handled_by' => $handledBy ? $handledBy->name : 'Chưa phân công nhân viên',
+                    'context' => $this->formatCarContext($context) ?: 'Không có thông tin xe',
                     'url' => route('admin.appointments.edit', $appointment),
                 ];
             });
@@ -168,25 +190,28 @@ class DashboardController extends AdminBaseController
             ->limit(6)
             ->get()
             ->map(function (Sale $sale) use ($currency): object {
-                $trim = $sale->carUnit?->trim;
+                /** @var CarUnit|null $carUnit */
+                $carUnit = $sale->carUnit;
+                /** @var Trim|null $trim */
+                $trim = $carUnit?->trim;
+                /** @var User|null $buyer */
+                $buyer = $sale->buyer;
 
                 return (object) [
-                    'buyer_name' => $sale->buyer?->name ?? 'Khach hang an danh',
-                    'car_name' => trim(collect([
-                        $trim?->model?->make?->name,
-                        $trim?->model?->name,
-                        $trim?->name,
-                    ])->filter()->implode(' ')) ?: 'Dang cap nhat phien ban',
-                    'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Dang cap nhat',
+                    'buyer_name' => $buyer ? $buyer->name : 'Khách hàng ẩn danh',
+                    'car_name' => $this->formatCarContext($trim) ?: 'Đang cập nhật phiên bản',
+                    'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Đang cập nhật',
                     'sold_price_label' => $this->formatCurrency($sale->sold_price, $currency),
                     'url' => route('admin.sales.index'),
                 ];
             });
 
         return $this->adminView('admin.dashboard', [
-            'adminPageTitle' => 'Dashboard',
-            'adminPageDescription' => 'Theo doi inventory, CRM va cac giao dich quan trong cua showroom.',
+            'adminPageTitle' => 'Bảng điều khiển tổng quan',
+            'adminPageDescription' => 'Theo dõi toàn diện kho xe, khách hàng tiềm năng, lịch hẹn và giao dịch bán hàng của showroom.',
             'summaryCards' => $summaryCards,
+            'totalInventory' => $totalInventory,
+            'inventoryBreakdown' => $inventoryBreakdown,
             'inventoryCounts' => [
                 'draft' => (int) $inventoryCounts->get('draft', 0),
                 'available' => (int) $inventoryCounts->get('available', 0),
@@ -206,6 +231,28 @@ class DashboardController extends AdminBaseController
         ]);
     }
 
+    protected function formatCarContext(?Trim $trim): string
+    {
+        if ($trim === null) {
+            return '';
+        }
+
+        /** @var CarModel|null $model */
+        $model = $trim->model;
+        /** @var Make|null $make */
+        $make = $model?->make;
+
+        return trim(collect([
+            $make?->name,
+            $model?->name,
+            $trim->name,
+        ])->filter()->implode(' '));
+    }
+
+    /**
+     * @param  Collection<int, mixed>  $trimIds
+     * @return Collection<int|string, Trim>
+     */
     protected function loadContextTrims(Collection $trimIds): Collection
     {
         $trimIds = $trimIds
@@ -224,16 +271,38 @@ class DashboardController extends AdminBaseController
             ->keyBy('id');
     }
 
+    protected function formatLeadStatus(string $status): string
+    {
+        return match ($status) {
+            'new' => 'Mới',
+            'contacted' => 'Đã liên hệ',
+            'qualified' => 'Tiềm năng',
+            'lost' => 'Đã hủy',
+            default => mb_strtoupper($status),
+        };
+    }
+
+    protected function formatAppointmentStatus(string $status): string
+    {
+        return match ($status) {
+            'pending' => 'Chờ duyệt',
+            'confirmed' => 'Đã xác nhận',
+            'completed' => 'Hoàn tất',
+            'cancelled' => 'Đã hủy',
+            default => mb_strtoupper($status),
+        };
+    }
+
     protected function formatRelativeDate(?CarbonInterface $dateTime): string
     {
         if ($dateTime === null) {
-            return 'Vua cap nhat';
+            return 'Vừa cập nhật';
         }
 
         $now = Carbon::now();
 
         if ($dateTime->isSameDay($now)) {
-            return 'Hom nay, ' . $dateTime->format('H:i');
+            return 'Hôm nay, ' . $dateTime->format('H:i');
         }
 
         return $dateTime->format('d/m/Y H:i');
