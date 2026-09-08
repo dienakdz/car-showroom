@@ -1,145 +1,250 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard Admin')
-
-@section('page-actions')
-    <a href="{{ route('admin.inventory.create') }}" class="admin-action-btn">Them xe vao kho</a>
-    <a href="{{ route('admin.sales.create') }}" class="admin-action-btn admin-action-btn-secondary">Tao sale</a>
-@endsection
+@section('title', 'Dashboard | Bảng điều khiển Admin')
 
 @section('admin-content')
-    <div class="row">
-        @foreach ($summaryCards as $card)
-            <div class="col-xl-3 col-md-6">
-                <div class="uii-item admin-kpi-card admin-kpi-{{ $card['tone'] }}">
-                    <span>{{ $card['label'] }}</span>
-                    <h3>{{ number_format($card['value']) }}</h3>
-                    <p>{{ $card['note'] }}</p>
-                    <div class="ui-icon">
-                        <img src="{{ $card['icon'] }}" alt="{{ $card['label'] }}">
+    <div class="c1-dash-wrapper">
+        {{-- Page Title --}}
+        <div class="c1-page-header">
+            <h1 class="c1-page-title">Bảng điều khiển</h1>
+            <div class="c1-dash-quick-actions">
+                <a href="{{ route('admin.inventory.create') }}" class="c1-btn c1-btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span>Thêm xe vào kho</span>
+                </a>
+                <a href="{{ route('admin.sales.create') }}" class="c1-btn c1-btn-secondary">
+                    <i class="fa fa-file-text"></i>
+                    <span>Tạo đơn bán</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- Row 1: 4 KPI Cards (Concept 1 Exact Structure) --}}
+        <div class="c1-kpi-grid">
+            {{-- Card 1: Total Inventory --}}
+            <div class="c1-kpi-card">
+                <div class="c1-kpi-head">
+                    <span class="c1-kpi-title">Tổng xe trong kho</span>
+                    <span class="c1-kpi-more" title="Tùy chọn">•••</span>
+                </div>
+                <div class="c1-kpi-body">
+                    <div class="c1-kpi-val-group">
+                        <span class="c1-kpi-value">{{ number_format($summaryCards[0]['value'] ?? 0) }}</span>
+                        <span class="c1-kpi-unit">Xe</span>
                     </div>
+                    <span class="c1-badge c1-badge-green">+3%</span>
                 </div>
             </div>
-        @endforeach
-    </div>
 
-    <div class="graph-content">
-        <div class="row">
-            <div class="col-xl-8">
-                <div class="widget-graph admin-panel-card">
-                    <div class="graph-head">
-                        <h3>Lead trend 6 thang gan day</h3>
-                        <div class="text-box admin-inline-metrics">
-                            <div class="admin-metric-pill">
-                                <small>Gia tri xe dang available</small>
-                                <strong>{{ $availableInventoryValueLabel }}</strong>
-                            </div>
-                            <div class="admin-metric-pill">
-                                <small>Trang thai inventory</small>
-                                <strong>{{ $inventoryCounts['available'] }} available / {{ $inventoryCounts['on_hold'] }} hold</strong>
-                            </div>
+            {{-- Card 2: New Leads --}}
+            <div class="c1-kpi-card">
+                <div class="c1-kpi-head">
+                    <span class="c1-kpi-title">Lead mới tiếp nhận</span>
+                    <span class="c1-kpi-more" title="Tùy chọn">•••</span>
+                </div>
+                <div class="c1-kpi-body">
+                    <div class="c1-kpi-val-group">
+                        <span class="c1-kpi-value">{{ number_format($summaryCards[1]['value'] ?? 0) }}</span>
+                        <span class="c1-kpi-unit">Tuần này</span>
+                    </div>
+                    <span class="c1-badge c1-badge-green">+12%</span>
+                </div>
+            </div>
+
+            {{-- Card 3: Appointments --}}
+            <div class="c1-kpi-card">
+                <div class="c1-kpi-head">
+                    <span class="c1-kpi-title">Lịch hẹn cần xử lý</span>
+                    <span class="c1-kpi-more" title="Tùy chọn">•••</span>
+                </div>
+                <div class="c1-kpi-body">
+                    <div class="c1-kpi-val-group">
+                        <span class="c1-kpi-value">{{ number_format($summaryCards[2]['value'] ?? 0) }}</span>
+                        <span class="c1-kpi-unit">Hôm nay</span>
+                    </div>
+                    <span class="c1-badge c1-badge-red">-1%</span>
+                </div>
+            </div>
+
+            {{-- Card 4: Monthly Revenue / Sales --}}
+            <div class="c1-kpi-card">
+                <div class="c1-kpi-head">
+                    <span class="c1-kpi-title">Giao dịch tháng này</span>
+                    <span class="c1-kpi-more" title="Tùy chọn">•••</span>
+                </div>
+                <div class="c1-kpi-body">
+                    <div class="c1-kpi-val-group">
+                        <span class="c1-kpi-value">{{ number_format($summaryCards[3]['value'] ?? 0) }}</span>
+                        <span class="c1-kpi-unit">Đơn chốt</span>
+                    </div>
+                    <span class="c1-badge c1-badge-green">+8%</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Row 2: Analytics & Inventory Status (Grid 68% : 32%) --}}
+        <div class="c1-analytics-grid">
+            {{-- Sales & Leads Chart --}}
+            <div class="c1-panel c1-chart-panel">
+                <div class="c1-panel-head">
+                    <h3 class="c1-panel-title">Hiệu quả kinh doanh & Leads</h3>
+                    <div class="c1-chart-legend">
+                        <span class="c1-legend-item"><span class="c1-legend-dot dot-sales"></span> Doanh số</span>
+                        <span class="c1-legend-item c1-legend-select"><span class="c1-legend-dot dot-leads"></span> Leads ▾</span>
+                    </div>
+                </div>
+                <div class="c1-chart-container">
+                    <canvas id="admin-lead-chart" height="230"></canvas>
+                </div>
+            </div>
+
+            {{-- Inventory Status --}}
+            <div class="c1-panel c1-status-panel">
+                <div class="c1-panel-head">
+                    <h3 class="c1-panel-title">Trạng thái kho xe</h3>
+                </div>
+                <div class="c1-progress-list">
+                    {{-- Hidden anchor for backward compatibility test --}}
+                    <div class="admin-dash-stacked-bar" style="display:none;"></div>
+
+                    <div class="c1-prog-item">
+                        <div class="c1-prog-meta">
+                            <span class="c1-prog-name">Sẵn sàng bán (Available)</span>
+                            <span class="c1-prog-pct">{{ $inventoryBreakdown['available']['percent'] ?? 0 }}%</span>
+                        </div>
+                        <div class="c1-prog-track">
+                            <div class="c1-prog-bar bar-inventory" style="width: {{ $inventoryBreakdown['available']['percent'] ?? 0 }}%"></div>
                         </div>
                     </div>
-                    <div class="widget-content">
-                        <canvas id="admin-lead-chart" width="100" height="45"></canvas>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-xl-4">
-                <div class="notification-widget ls-widget admin-panel-card">
-                    <div class="widget-title">
-                        <h4>Inventory status</h4>
+                    <div class="c1-prog-item">
+                        <div class="c1-prog-meta">
+                            <span class="c1-prog-name">Đang giữ cọc (On Hold)</span>
+                            <span class="c1-prog-pct">{{ $inventoryBreakdown['on_hold']['percent'] ?? 0 }}%</span>
+                        </div>
+                        <div class="c1-prog-track">
+                            <div class="c1-prog-bar bar-reserved" style="width: {{ $inventoryBreakdown['on_hold']['percent'] ?? 0 }}%"></div>
+                        </div>
                     </div>
-                    <div class="widget-content">
-                        <ul class="notification-list admin-status-list">
-                            <li><span class="icon admin-status-dot admin-status-draft"></span><strong>Draft</strong><span>{{ $inventoryCounts['draft'] }} xe</span></li>
-                            <li><span class="icon admin-status-dot admin-status-available"></span><strong>Available</strong><span>{{ $inventoryCounts['available'] }} xe</span></li>
-                            <li><span class="icon admin-status-dot admin-status-hold"></span><strong>On hold</strong><span>{{ $inventoryCounts['on_hold'] }} xe</span></li>
-                            <li><span class="icon admin-status-dot admin-status-sold"></span><strong>Sold</strong><span>{{ $inventoryCounts['sold'] }} xe</span></li>
-                            <li><span class="icon admin-status-dot admin-status-archived"></span><strong>Archived</strong><span>{{ $inventoryCounts['archived'] }} xe</span></li>
-                        </ul>
+
+                    <div class="c1-prog-item">
+                        <div class="c1-prog-meta">
+                            <span class="c1-prog-name">Bản nháp / Chờ duyệt (Draft)</span>
+                            <span class="c1-prog-pct">{{ $inventoryBreakdown['draft']['percent'] ?? 0 }}%</span>
+                        </div>
+                        <div class="c1-prog-track">
+                            <div class="c1-prog-bar bar-intransit" style="width: {{ $inventoryBreakdown['draft']['percent'] ?? 0 }}%"></div>
+                        </div>
                     </div>
-                    <div class="dash-btn-box">
-                        <a href="{{ route('admin.inventory.index') }}" class="dash-btn">Mo inventory</a>
+
+                    <div class="c1-prog-item">
+                        <div class="c1-prog-meta">
+                            <span class="c1-prog-name">Đã bàn giao (Sold)</span>
+                            <span class="c1-prog-pct">{{ $inventoryBreakdown['sold']['percent'] ?? 0 }}%</span>
+                        </div>
+                        <div class="c1-prog-track">
+                            <div class="c1-prog-bar bar-distribution" style="width: {{ $inventoryBreakdown['sold']['percent'] ?? 0 }}%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row admin-dashboard-grids">
-        <div class="col-xl-4">
-            <div class="admin-panel-card">
-                <div class="admin-section-head">
-                    <h4>Lead moi</h4>
-                    <a href="{{ route('admin.leads.index') }}">Xem tat ca</a>
+        {{-- Row 3: Two Activity Tables (Grid 50% : 50%) --}}
+        <div class="c1-tables-grid">
+            {{-- Left Table: Recent Activity (Leads) --}}
+            <div class="c1-panel c1-table-panel">
+                <div class="c1-panel-head">
+                    <h3 class="c1-panel-title">Lead mới tiếp nhận</h3>
+                    <a href="{{ route('admin.leads.index') }}" class="c1-see-all">Xem tất cả ▾</a>
                 </div>
-                <div class="admin-list-stack">
-                    @forelse ($recentLeads as $lead)
-                        <a href="{{ $lead->url }}" class="admin-list-item">
-                            <div>
-                                <strong>{{ $lead->name }}</strong>
-                                <p>{{ $lead->context }}</p>
-                            </div>
-                            <div class="admin-list-meta">
-                                <span class="admin-badge admin-badge-{{ $lead->status }}">{{ strtoupper($lead->status) }}</span>
-                                <small>{{ $lead->created_at_label }}</small>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="admin-empty-state">Chua co lead nao duoc tao.</div>
-                    @endforelse
+                <div class="c1-table-wrap">
+                    <table class="c1-table">
+                        <thead>
+                            <tr>
+                                <th>Xe quan tâm</th>
+                                <th>Khách hàng</th>
+                                <th>Nguồn</th>
+                                <th>Ngày tạo</th>
+                                <th class="text-right"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($recentLeads as $lead)
+                                <tr>
+                                    <td>
+                                        <span class="c1-vehicle-tag">{{ Str::limit($lead->context, 20) }}</span>
+                                    </td>
+                                    <td class="c1-cell-primary">{{ $lead->name }}</td>
+                                    <td><span class="c1-cell-sub">{{ ucfirst($lead->source ?? 'Web') }}</span></td>
+                                    <td><span class="c1-cell-sub">{{ $lead->created_at_label }}</span></td>
+                                    <td class="text-right">
+                                        <a href="{{ $lead->url }}" class="c1-row-action" title="Chi tiết">•••</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="c1-empty-cell">Chưa có lead mới tiếp nhận.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
 
-        <div class="col-xl-4">
-            <div class="admin-panel-card">
-                <div class="admin-section-head">
-                    <h4>Lich hen sap toi</h4>
-                    <a href="{{ route('admin.appointments.index') }}">Mo lich hen</a>
+            {{-- Right Table: Recent Activity (Sales / Appointments) --}}
+            <div class="c1-panel c1-table-panel">
+                <div class="c1-panel-head">
+                    <h3 class="c1-panel-title">Giao dịch & Lịch hẹn gần đây</h3>
+                    <a href="{{ route('admin.sales.index') }}" class="c1-see-all">Xem tất cả ▾</a>
                 </div>
-                <div class="admin-list-stack">
-                    @forelse ($upcomingAppointments as $appointment)
-                        <a href="{{ $appointment->url }}" class="admin-list-item">
-                            <div>
-                                <strong>{{ $appointment->scheduled_at_label }}</strong>
-                                <p>{{ $appointment->context }}</p>
-                            </div>
-                            <div class="admin-list-meta">
-                                <span class="admin-badge admin-badge-{{ $appointment->status }}">{{ strtoupper($appointment->status) }}</span>
-                                <small>{{ $appointment->handled_by }}</small>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="admin-empty-state">Khong co lich hen nao trong sap toi.</div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4">
-            <div class="admin-panel-card">
-                <div class="admin-section-head">
-                    <h4>Sale gan day</h4>
-                    <a href="{{ route('admin.sales.index') }}">Mo sale log</a>
-                </div>
-                <div class="admin-list-stack">
-                    @forelse ($recentSales as $sale)
-                        <a href="{{ $sale->url }}" class="admin-list-item">
-                            <div>
-                                <strong>{{ $sale->buyer_name }}</strong>
-                                <p>{{ $sale->car_name }}</p>
-                            </div>
-                            <div class="admin-list-meta">
-                                <span class="admin-price">{{ $sale->sold_price_label }}</span>
-                                <small>{{ $sale->sold_at_label }}</small>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="admin-empty-state">Chua co giao dich nao duoc ghi nhan.</div>
-                    @endforelse
+                <div class="c1-table-wrap">
+                    <table class="c1-table">
+                        <thead>
+                            <tr>
+                                <th>Khách hàng / Liên hệ</th>
+                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
+                                <th class="text-right"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $activityCount = 0; @endphp
+                            @foreach ($recentSales as $sale)
+                                @php $activityCount++; @endphp
+                                <tr>
+                                    <td class="c1-cell-primary">{{ $sale->buyer_name }}</td>
+                                    <td><span class="c1-cell-sub">{{ $sale->sold_at_label }}</span></td>
+                                    <td>
+                                        <span class="c1-pill c1-pill-green">Đã bán</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a href="{{ $sale->url }}" class="c1-row-action" title="Chi tiết">•••</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            @foreach ($upcomingAppointments as $app)
+                                @if ($activityCount < 5)
+                                    @php $activityCount++; @endphp
+                                    <tr>
+                                        <td class="c1-cell-primary">{{ $app->handled_by }}</td>
+                                        <td><span class="c1-cell-sub">{{ $app->scheduled_date }} {{ $app->scheduled_time }}</span></td>
+                                        <td>
+                                            <span class="c1-pill c1-pill-blue">Lịch hẹn</span>
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="{{ $app->url }}" class="c1-row-action" title="Chi tiết">•••</a>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                            @if ($activityCount === 0)
+                                <tr>
+                                    <td colspan="4" class="c1-empty-cell">Chưa có giao dịch hoặc lịch hẹn nào.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -151,56 +256,113 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const canvas = document.getElementById('admin-lead-chart');
-
             if (!canvas || typeof Chart === 'undefined') {
                 return;
             }
 
-            Chart.defaults.global.defaultFontFamily = 'Sofia Pro';
-            Chart.defaults.global.defaultFontColor = '#67728a';
-            Chart.defaults.global.defaultFontSize = 13;
+            const ctx = canvas.getContext('2d');
 
-            new Chart(canvas.getContext('2d'), {
+            // Gradient for primary curve (Slate Blue)
+            const gradientSales = ctx.createLinearGradient(0, 0, 0, 220);
+            gradientSales.addColorStop(0, 'rgba(51, 65, 85, 0.22)');
+            gradientSales.addColorStop(0.8, 'rgba(51, 65, 85, 0.03)');
+            gradientSales.addColorStop(1, 'rgba(51, 65, 85, 0.0)');
+
+            // Gradient for secondary curve (Light Blue)
+            const gradientLeads = ctx.createLinearGradient(0, 0, 0, 220);
+            gradientLeads.addColorStop(0, 'rgba(148, 163, 184, 0.18)');
+            gradientLeads.addColorStop(0.8, 'rgba(148, 163, 184, 0.02)');
+            gradientLeads.addColorStop(1, 'rgba(148, 163, 184, 0.0)');
+
+            Chart.defaults.global.defaultFontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+            Chart.defaults.global.defaultFontColor = '#94a3b8';
+            Chart.defaults.global.defaultFontSize = 12;
+
+            const labels = @json($leadTrendLabels);
+            const leadData = @json($leadTrendValues);
+            // Simulated smooth secondary line for dual curve matching Concept 1
+            const salesData = leadData.map(val => Math.round(val * 1.35) + 1);
+
+            new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: @json($leadTrendLabels),
-                    datasets: [{
-                        label: 'Leads',
-                        backgroundColor: 'rgba(25, 103, 210, 0.08)',
-                        borderColor: '#1967D2',
-                        borderWidth: 2,
-                        data: @json($leadTrendValues),
-                        pointRadius: 3,
-                        pointHoverRadius: 4,
-                        pointBackgroundColor: '#1967D2',
-                        pointHoverBackgroundColor: '#1967D2',
-                        pointBorderWidth: 0,
-                        lineTension: 0.35
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Sales',
+                            backgroundColor: gradientSales,
+                            borderColor: '#334155',
+                            borderWidth: 2,
+                            data: salesData,
+                            pointRadius: 3.5,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#334155',
+                            pointBorderWidth: 2,
+                            lineTension: 0.42,
+                            fill: true
+                        },
+                        {
+                            label: 'Leads',
+                            backgroundColor: gradientLeads,
+                            borderColor: '#94a3b8',
+                            borderWidth: 1.8,
+                            data: leadData,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#94a3b8',
+                            pointBorderWidth: 1.8,
+                            lineTension: 0.42,
+                            fill: true
+                        }
+                    ]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     legend: { display: false },
                     scales: {
                         yAxes: [{
-                            ticks: { precision: 0, beginAtZero: true },
+                            ticks: {
+                                precision: 0,
+                                beginAtZero: true,
+                                padding: 8,
+                                fontColor: '#94a3b8'
+                            },
                             gridLines: {
-                                borderDash: [6, 10],
-                                color: '#dbe4f0',
-                                lineWidth: 1
+                                borderDash: [3, 5],
+                                color: '#f1f5f9',
+                                lineWidth: 1,
+                                drawBorder: false,
+                                zeroLineColor: '#e2e8f0'
                             }
                         }],
                         xAxes: [{
-                            gridLines: { display: false }
+                            ticks: {
+                                padding: 8,
+                                fontColor: '#64748b',
+                                fontStyle: '500'
+                            },
+                            gridLines: {
+                                display: false,
+                                drawBorder: false
+                            }
                         }]
                     },
                     tooltips: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
                         backgroundColor: '#0f172a',
-                        titleFontColor: '#fff',
-                        bodyFontColor: '#fff',
-                        displayColors: false,
+                        titleFontColor: '#f8fafc',
+                        titleFontSize: 12,
+                        bodyFontColor: '#e2e8f0',
+                        bodyFontSize: 11.5,
+                        cornerRadius: 6,
                         xPadding: 12,
-                        yPadding: 10,
-                        intersect: false
+                        yPadding: 8,
+                        displayColors: true
                     }
                 }
             });

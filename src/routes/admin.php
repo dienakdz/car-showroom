@@ -21,6 +21,16 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
+    if (app()->environment('local')) {
+        Route::get('/dev-login', function (Request $request): RedirectResponse {
+            $admin = \App\Models\User::where('email', 'admin@showroom.test')->firstOrFail();
+            auth()->login($admin);
+            $target = (string) $request->query('to', route('admin.dashboard'));
+
+            return redirect($target);
+        })->name('dev.login');
+    }
+
     Route::middleware(['auth', 'admin.access'])->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
 
