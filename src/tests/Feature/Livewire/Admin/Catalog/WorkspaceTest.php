@@ -50,7 +50,7 @@ class WorkspaceTest extends TestCase
         ]);
 
         Livewire::test(ModelsManager::class)
-            ->assertSee('Model directory')
+            ->assertSee('Tạo dòng xe mới')
             ->assertSee('Corolla Cross');
     }
 
@@ -75,7 +75,7 @@ class WorkspaceTest extends TestCase
         ]);
 
         Livewire::test(TrimsManager::class)
-            ->assertSee('Trim directory')
+            ->assertSee('Tạo phiên bản xe')
             ->assertSee('RS');
     }
 }

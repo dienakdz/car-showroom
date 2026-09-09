@@ -1,351 +1,279 @@
-@php($editIcon = asset('boxcar/images/icons/edit.svg'))
-@php($deleteIcon = asset('boxcar/images/icons/remove.svg'))
-@php($fallbackLogo = asset('boxcar/images/resource/list2-1.png'))
-
-<div class="catalog-module">
+<div class="c1-catalog-workspace-tab">
     @if ($feedback !== [])
-        <div class="catalog-feedback {{ ($feedback['type'] ?? 'success') === 'error' ? 'is-error' : 'is-success' }}">
+        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
             <div>
-                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Can xu ly' : 'Da cap nhat' }}</strong>
-                <p>{{ $feedback['message'] ?? '' }}</p>
+                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Lưu ý:' : 'Thành công:' }}</strong>
+                <span>{{ $feedback['message'] ?? '' }}</span>
             </div>
-            <button type="button" wire:click="dismissFeedback">Dong</button>
+            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Close" style="font-size: 11px;"></button>
         </div>
     @endif
 
-    <div class="form-box catalog-form-box">
-        <div class="catalog-box-head">
+    <!-- Quick Add Trim Card -->
+    <div class="c1-catalog-card" id="c1-trim-form-section">
+        <div class="c1-catalog-card-header">
             <div>
-                <h4>Tao trim nhanh</h4>
-                <p>Trim van co form chi tiet rieng, nhung metadata co ban nen duoc tao ngay trong workspace.</p>
+                <h4 class="c1-catalog-card-title">Tạo phiên bản xe (Trim)</h4>
+                <p class="c1-catalog-card-desc">Thêm phiên bản nhanh với các thông tin cơ bản hoặc mở form đầy đủ để cấu hình chi tiết trang bị.</p>
             </div>
-            <a href="{{ route('admin.catalog.trims.create') }}" class="catalog-text-link">Mo form day du</a>
+            <a href="{{ route('admin.catalog.trims.create') }}" class="c1-action-btn" style="color: var(--c1-primary); font-weight: 600;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                Mở form đầy đủ
+            </a>
         </div>
 
-        <form class="row" wire:submit="create">
-            <div class="form-column col-xl-4 col-md-6">
-                <div class="form_boxes">
-                    <label>Model</label>
-                    <div class="drop-menu catalog-native-control">
-                        <select wire:model.blur="createForm.model_id">
-                            <option value="">Chon model</option>
-                            @foreach ($modelOptions as $modelOption)
-                                <option value="{{ $modelOption->id }}">{{ $modelOption->make?->name }} / {{ $modelOption->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @error('createForm.model_id') <small class="catalog-field-error">{{ $message }}</small> @enderror
+        <form wire:submit="create">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Dòng xe (Model) <span class="text-danger">*</span></label>
+                    <select class="c1-catalog-select w-100" wire:model.blur="createForm.model_id">
+                        <option value="">-- Chọn dòng xe --</option>
+                        @foreach ($modelOptions as $modelOption)
+                            <option value="{{ $modelOption->id }}">{{ $modelOption->make?->name }} / {{ $modelOption->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('createForm.model_id') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-xl-4 col-md-6">
-                <div class="form_boxes">
-                    <label>Ten trim</label>
-                    <div class="drop-menu catalog-native-control">
-                        <input type="text" wire:model.blur="createForm.name" placeholder="RS">
-                    </div>
-                    @error('createForm.name') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Tên phiên bản <span class="text-danger">*</span></label>
+                    <input type="text" class="c1-catalog-search-input" wire:model.blur="createForm.name" placeholder="Ví dụ: RS, 2.5Q, Wildtrak 4x4...">
+                    @error('createForm.name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-xl-4 col-md-6">
-                <div class="form_boxes">
-                    <label>Slug</label>
-                    <div class="drop-menu catalog-native-control">
-                        <input type="text" wire:model.blur="createForm.slug" placeholder="rs">
-                    </div>
-                    @error('createForm.slug') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Mã slug <span class="text-danger">*</span></label>
+                    <input type="text" class="c1-catalog-search-input" wire:model.blur="createForm.slug" placeholder="Ví dụ: rs, 2-5q, wildtrak-4x4...">
+                    @error('createForm.slug') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-xl-3 col-md-6">
-                <div class="form_boxes">
-                    <label>Year from</label>
-                    <div class="drop-menu catalog-native-control">
-                        <input type="number" wire:model.blur="createForm.year_from" min="1900" max="{{ now()->addYear()->format('Y') }}">
-                    </div>
-                    @error('createForm.year_from') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-bold">Năm bắt đầu</label>
+                    <input type="number" class="c1-catalog-search-input" wire:model.blur="createForm.year_from" min="1900" max="{{ now()->addYear()->format('Y') }}" placeholder="2020">
+                    @error('createForm.year_from') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-xl-3 col-md-6">
-                <div class="form_boxes">
-                    <label>Year to</label>
-                    <div class="drop-menu catalog-native-control">
-                        <input type="number" wire:model.blur="createForm.year_to" min="1900" max="{{ now()->addYear()->format('Y') }}">
-                    </div>
-                    @error('createForm.year_to') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-bold">Năm kết thúc</label>
+                    <input type="number" class="c1-catalog-search-input" wire:model.blur="createForm.year_to" min="1900" max="{{ now()->addYear()->format('Y') }}" placeholder="{{ now()->format('Y') }}">
+                    @error('createForm.year_to') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-xl-3 col-md-6">
-                <div class="form_boxes">
-                    <label>MSRP</label>
-                    <div class="drop-menu catalog-native-control">
-                        <input type="number" wire:model.blur="createForm.msrp" min="0" placeholder="890000000">
-                    </div>
-                    @error('createForm.msrp') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold">Giá niêm yết (MSRP - VNĐ)</label>
+                    <input type="number" class="c1-catalog-search-input" wire:model.blur="createForm.msrp" min="0" placeholder="Ví dụ: 870000000">
+                    @error('createForm.msrp') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="form-column col-12">
-                <div class="form_boxes">
-                    <label>Ghi chu ngan</label>
-                    <div class="drop-menu catalog-native-control">
-                        <textarea wire:model.blur="createForm.description" rows="4" placeholder="Mo ta ngan cho trim"></textarea>
-                    </div>
-                    @error('createForm.description') <small class="catalog-field-error">{{ $message }}</small> @enderror
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold">Ghi chú ngắn</label>
+                    <textarea class="c1-catalog-search-input" style="height: auto; padding: 8px 12px;" wire:model.blur="createForm.description" rows="2" placeholder="Ghi chú nhanh về động cơ, nhiên liệu hoặc điểm nổi bật của phiên bản..."></textarea>
+                    @error('createForm.description') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
-            </div>
 
-            <div class="col-12">
-                <div class="form-submit catalog-form-submit">
-                    <div class="catalog-form-submit-copy">
-                        Feature groups va attributes van duoc xu ly tai form chi tiet de giu workspace gon.
-                    </div>
-                    <button type="submit" class="theme-btn" wire:loading.attr="disabled" wire:target="create">
-                        Tao trim
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="c1-btn c1-btn-primary" wire:loading.attr="disabled" wire:target="create">
+                        <span wire:loading.remove wire:target="create">+ Thêm nhanh phiên bản</span>
+                        <span wire:loading wire:target="create">Đang lưu...</span>
                     </button>
                 </div>
             </div>
         </form>
     </div>
 
-    <div class="my-listing-table wrap-listing">
-        <div class="title-listing">
-            <div>
-                <h4 class="catalog-section-title">Trim directory</h4>
-                <p class="catalog-section-text">Table nay duoc lam theo pattern my-listings va uu tien thao tac nhanh cho admin.</p>
+    <!-- Trims Table Card -->
+    <div class="c1-catalog-card">
+        <div class="c1-catalog-toolbar">
+            <!-- Search -->
+            <div class="c1-catalog-search-wrap">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="search" class="c1-catalog-search-input" wire:model.live.debounce.300ms="search" placeholder="Tìm theo tên phiên bản, slug hoặc ghi chú...">
             </div>
 
-            <div class="catalog-toolbar">
-                <div class="box-ip-search catalog-search-box">
-                    <span class="icon">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6.29301 0.287598C2.9872 0.287598 0.294312 2.98048 0.294312 6.28631C0.294312 9.59211 2.9872 12.2902 6.29301 12.2902C7.70502 12.2902 9.00364 11.7954 10.03 10.9738L12.5287 13.4712C12.6548 13.5921 12.8232 13.6588 12.9979 13.657C13.1725 13.6552 13.3395 13.5851 13.4631 13.4617C13.5867 13.3382 13.6571 13.1713 13.6591 12.9967C13.6611 12.822 13.5947 12.6535 13.474 12.5272L10.9753 10.0285C11.7976 9.00061 12.293 7.69995 12.293 6.28631C12.293 2.98048 9.59882 0.287598 6.29301 0.287598ZM6.29301 1.62095C8.87824 1.62095 10.9584 3.70108 10.9584 6.28631C10.9584 8.87153 8.87824 10.9569 6.29301 10.9569C3.70778 10.9569 1.62764 8.87153 1.62764 6.28631C1.62764 3.70108 3.70778 1.62095 6.29301 1.62095Z" fill="#050B20"/>
-                        </svg>
-                    </span>
-                    <input type="search" wire:model.live.debounce.300ms="search" placeholder="Tim trim, slug hoac mo ta">
-                </div>
+            <!-- Filters -->
+            <div class="c1-catalog-filter-group">
+                <select class="c1-catalog-select" wire:model.live="modelFilter">
+                    <option value="">Tất cả dòng xe</option>
+                    @foreach ($modelOptions as $modelOption)
+                        <option value="{{ $modelOption->id }}">{{ $modelOption->make?->name }} / {{ $modelOption->name }}</option>
+                    @endforeach
+                </select>
 
-                <div class="text-box v1 catalog-toolbar-boxes">
-                    <div class="form_boxes v3 catalog-control-box">
-                        <small>Model</small>
-                        <div class="drop-menu catalog-native-control">
-                            <select wire:model.live="modelFilter">
-                                <option value="">Tat ca model</option>
-                                @foreach ($modelOptions as $modelOption)
-                                    <option value="{{ $modelOption->id }}">{{ $modelOption->make?->name }} / {{ $modelOption->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                <select class="c1-catalog-select" wire:model.live="sort">
+                    <option value="updated_desc">Mới cập nhật</option>
+                    <option value="updated_asc">Cũ nhất</option>
+                    <option value="name_asc">Tên phiên bản A - Z</option>
+                    <option value="name_desc">Tên phiên bản Z - A</option>
+                    <option value="year_desc">Năm đời mới nhất</option>
+                    <option value="year_asc">Năm đời cũ nhất</option>
+                    <option value="msrp_desc">Giá MSRP cao đến thấp</option>
+                    <option value="msrp_asc">Giá MSRP thấp đến cao</option>
+                </select>
 
-                    <div class="form_boxes v3 catalog-control-box">
-                        <small>Sort by</small>
-                        <div class="drop-menu catalog-native-control">
-                            <select wire:model.live="sort">
-                                <option value="updated_desc">Updated moi nhat</option>
-                                <option value="updated_asc">Updated cu nhat</option>
-                                <option value="name_asc">Ten A-Z</option>
-                                <option value="name_desc">Ten Z-A</option>
-                                <option value="year_desc">Year moi nhat</option>
-                                <option value="year_asc">Year cu nhat</option>
-                                <option value="msrp_desc">MSRP cao den thap</option>
-                                <option value="msrp_asc">MSRP thap den cao</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <select class="c1-catalog-select" wire:model.live="perPage">
+                    <option value="10">10 dòng / trang</option>
+                    <option value="25">25 dòng / trang</option>
+                    <option value="50">50 dòng / trang</option>
+                </select>
             </div>
         </div>
 
-        <div class="cart-table">
-            <table>
+        <!-- Modern Data Table -->
+        <div class="c1-table-responsive">
+            <table class="c1-table">
                 <thead>
-                <tr>
-                    <th>Trim</th>
-                    <th>Model</th>
-                    <th>Years</th>
-                    <th>MSRP</th>
-                    <th>Usage</th>
-                    <th>Actions</th>
-                </tr>
+                    <tr>
+                        <th>Phiên bản (Trim)</th>
+                        <th>Dòng xe & Hãng</th>
+                        <th>Năm đời</th>
+                        <th>Giá niêm yết (MSRP)</th>
+                        <th>Tồn kho</th>
+                        <th style="width: 180px; text-align: right;">Thao tác</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @forelse ($trims as $trim)
-                    <tr wire:key="trim-row-{{ $trim->id }}">
-                        <td>
-                            <div class="shop-cart-product">
-                                <div class="shop-product-cart-img catalog-listing-thumb">
-                                    <img src="{{ $trim->model?->make?->logo_url ?: $fallbackLogo }}" alt="{{ $trim->name }}">
-                                </div>
-                                <div class="shop-product-cart-info">
-                                    <h3>{{ $trim->name }}</h3>
-                                    <p>{{ $trim->slug }}</p>
-                                    <div class="price">
-                                        <span>{{ $trim->model?->make?->name }} / {{ $trim->model?->name }}</span>
+                    @forelse ($trims as $trim)
+                        <tr wire:key="trim-row-{{ $trim->id }}">
+                            <td>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 14px; color: var(--c1-text-heading);">
+                                        {{ $trim->name }}
                                     </div>
+                                    <span class="c1-slug-tag mt-1">{{ $trim->slug }}</span>
                                 </div>
-                            </div>
-                        </td>
-                        <td><span>{{ $trim->model?->make?->name }} / {{ $trim->model?->name }}</span></td>
-                        <td><span>{{ $trim->year_from ?: '...' }} - {{ $trim->year_to ?: 'Nay' }}</span></td>
-                        <td><span>{{ $trim->msrp ? number_format((int) $trim->msrp, 0, ',', '.') . ' VND' : 'Chua co MSRP' }}</span></td>
-                        <td>
-                            <span>{{ $trim->car_units_count }} inventory</span>
-                            <p class="catalog-cell-note">{{ $trim->reviews_count }} reviews</p>
-                        </td>
-                        <td>
-                            <a href="{{ route('admin.catalog.trims.edit', $trim) }}" class="catalog-text-link">Chi tiet</a>
-                            <button type="button" class="remove-cart-item" wire:click="startEdit({{ $trim->id }})" title="Sua trim">
-                                <img src="{{ $editIcon }}" alt="Edit">
-                            </button>
-                            <button type="button" class="remove-cart-item" wire:click="delete({{ $trim->id }})" onclick="return confirm('Xac nhan xoa trim nay?')" title="Xoa trim">
-                                <img src="{{ $deleteIcon }}" alt="Delete">
-                            </button>
-                        </td>
-                    </tr>
+                            </td>
+                            <td>
+                                <span style="font-weight: 500; color: var(--c1-text-heading);">
+                                    {{ $trim->model?->make?->name }} {{ $trim->model?->name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ $trim->year_from ?: '...' }} - {{ $trim->year_to ?: 'Hiện tại' }}</span>
+                            </td>
+                            <td>
+                                @if ($trim->msrp)
+                                    <span class="c1-price-highlight">{{ number_format((int) $trim->msrp, 0, ',', '.') }} ₫</span>
+                                @else
+                                    <span class="text-muted small">Chưa có MSRP</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="c1-pill-badge {{ $trim->car_units_count > 0 ? 'c1-pill-green' : 'c1-pill-slate' }}">
+                                    {{ $trim->car_units_count }} xe có sẵn
+                                </span>
+                            </td>
+                            <td>
+                                <div class="c1-actions-cell" style="justify-content: flex-end;">
+                                    <button type="button" class="c1-action-btn" wire:click="startEdit({{ $trim->id }})" title="Sửa nhanh">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Sửa
+                                    </button>
+                                    <a href="{{ route('admin.catalog.trims.edit', $trim) }}" class="c1-action-btn" title="Chi tiết đầy đủ">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        Chi tiết
+                                    </a>
+                                    <button type="button" class="c1-action-btn c1-action-btn-danger" wire:click="delete({{ $trim->id }})" onclick="return confirm('Xác nhận xóa phiên bản {{ $trim->name }}?')" title="Xóa phiên bản">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-                    @if ($editingId === $trim->id)
-                        <tr class="catalog-inline-row" wire:key="trim-editor-{{ $trim->id }}">
-                            <td colspan="6">
-                                <div class="form-box catalog-inline-form-box">
-                                    <div class="catalog-box-head">
-                                        <div>
-                                            <h4>Sua trim</h4>
-                                            <p>Quick edit metadata co ban, sau do co the vao form chi tiet neu can mo rong.</p>
+                        @if ($editingId === $trim->id)
+                            <tr wire:key="trim-editor-{{ $trim->id }}" style="background-color: #f8fafc;">
+                                <td colspan="6" style="padding: 20px;">
+                                    <div class="c1-catalog-card mb-0" style="border: 1px solid #bfdbfe; background: #ffffff;">
+                                        <div class="c1-catalog-card-header mb-3">
+                                            <div>
+                                                <h5 class="c1-catalog-card-title text-primary">Chỉnh sửa nhanh: {{ $trim->name }}</h5>
+                                                <p class="c1-catalog-card-desc">Cập nhật thông tin phiên bản hoặc chuyển sang trang chi tiết để cấu hình trang bị đầy đủ.</p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <form class="row" wire:submit="update">
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Model</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <select wire:model.blur="editForm.model_id">
+                                        <form wire:submit="update">
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label text-muted small fw-bold">Dòng xe</label>
+                                                    <select class="c1-catalog-select w-100" wire:model.blur="editForm.model_id">
                                                         @foreach ($modelOptions as $modelOption)
                                                             <option value="{{ $modelOption->id }}">{{ $modelOption->make?->name }} / {{ $modelOption->name }}</option>
                                                         @endforeach
                                                     </select>
+                                                    @error('editForm.model_id') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.model_id') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Ten trim</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.name">
+                                                <div class="col-md-4">
+                                                    <label class="form-label text-muted small fw-bold">Tên phiên bản</label>
+                                                    <input type="text" class="c1-catalog-search-input" wire:model.blur="editForm.name">
+                                                    @error('editForm.name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.name') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-xl-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Slug</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.slug">
+                                                <div class="col-md-4">
+                                                    <label class="form-label text-muted small fw-bold">Mã slug</label>
+                                                    <input type="text" class="c1-catalog-search-input" wire:model.blur="editForm.slug">
+                                                    @error('editForm.slug') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.slug') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-xl-3 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Year from</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="number" wire:model.blur="editForm.year_from" min="1900" max="{{ now()->addYear()->format('Y') }}">
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-muted small fw-bold">Năm bắt đầu</label>
+                                                    <input type="number" class="c1-catalog-search-input" wire:model.blur="editForm.year_from" min="1900" max="{{ now()->addYear()->format('Y') }}">
+                                                    @error('editForm.year_from') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.year_from') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-xl-3 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Year to</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="number" wire:model.blur="editForm.year_to" min="1900" max="{{ now()->addYear()->format('Y') }}">
+                                                <div class="col-md-3">
+                                                    <label class="form-label text-muted small fw-bold">Năm kết thúc</label>
+                                                    <input type="number" class="c1-catalog-search-input" wire:model.blur="editForm.year_to" min="1900" max="{{ now()->addYear()->format('Y') }}">
+                                                    @error('editForm.year_to') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.year_to') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-xl-3 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>MSRP</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="number" wire:model.blur="editForm.msrp" min="0">
+                                                <div class="col-md-6">
+                                                    <label class="form-label text-muted small fw-bold">Giá niêm yết (MSRP)</label>
+                                                    <input type="number" class="c1-catalog-search-input" wire:model.blur="editForm.msrp" min="0">
+                                                    @error('editForm.msrp') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.msrp') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="form-column col-12">
-                                            <div class="form_boxes">
-                                                <label>Ghi chu ngan</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <textarea wire:model.blur="editForm.description" rows="4"></textarea>
+                                                <div class="col-12">
+                                                    <label class="form-label text-muted small fw-bold">Ghi chú</label>
+                                                    <textarea class="c1-catalog-search-input" style="height: auto; padding: 8px 12px;" wire:model.blur="editForm.description" rows="2"></textarea>
+                                                    @error('editForm.description') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                                                 </div>
-                                                @error('editForm.description') <small class="catalog-field-error">{{ $message }}</small> @enderror
-                                            </div>
-                                        </div>
 
-                                        <div class="col-12">
-                                            <div class="form-submit catalog-form-submit">
-                                                <div class="catalog-form-submit-copy">
-                                                    Neu can sua feature groups, attributes hoac media, chuyen sang form chi tiet.
-                                                </div>
-                                                <div class="catalog-submit-actions">
-                                                    <button type="button" class="catalog-text-btn" wire:click="cancelEdit">Huy</button>
-                                                    <button type="submit" class="theme-btn" wire:loading.attr="disabled" wire:target="update">
-                                                        Luu thay doi
+                                                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                                                    <button type="button" class="c1-action-btn" wire:click="cancelEdit">Hủy</button>
+                                                    <button type="submit" class="c1-btn c1-btn-primary" wire:loading.attr="disabled" wire:target="update">
+                                                        <span wire:loading.remove wire:target="update">Lưu thay đổi</span>
+                                                        <span wire:loading wire:target="update">Đang lưu...</span>
                                                     </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </form>
-                                </div>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                Chưa có phiên bản nào phù hợp với điều kiện tìm kiếm.
                             </td>
                         </tr>
-                    @endif
-                @empty
-                    <tr>
-                        <td colspan="6">
-                            <div class="catalog-empty-state">Chua co trim nao phu hop bo loc hien tai.</div>
-                        </td>
-                    </tr>
-                @endforelse
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="catalog-table-footer">
-            <div class="catalog-table-summary">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-4 pt-3 border-top">
+            <div class="text-muted small">
                 @if ($trims->total() > 0)
-                    Hien thi {{ $trims->firstItem() }}-{{ $trims->lastItem() }} / {{ number_format($trims->total()) }} trim
+                    Hiển thị {{ $trims->firstItem() }} - {{ $trims->lastItem() }} trên tổng số {{ number_format($trims->total()) }} phiên bản
                 @else
-                    Khong co du lieu
+                    0 phiên bản
                 @endif
             </div>
-
-            <div class="catalog-table-footer-actions">
-                <div class="form_boxes v3 catalog-per-page catalog-control-box">
-                    <small>Rows</small>
-                    <div class="drop-menu catalog-native-control">
-                        <select wire:model.live="perPage">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="catalog-pagination">
-                    {{ $trims->links() }}
-                </div>
+            <div>
+                {{ $trims->links() }}
             </div>
         </div>
     </div>

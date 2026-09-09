@@ -325,12 +325,12 @@ class Manager extends Component
 
     private function temporaryPreviewUrl(mixed $upload): ?string
     {
-        if (! $upload instanceof UploadedFile) {
+        if (! is_object($upload) || ! method_exists($upload, 'temporaryUrl')) {
             return null;
         }
 
         try {
-            return $upload->temporaryUrl();
+            return (string) $upload->temporaryUrl();
         } catch (\Throwable) {
             return null;
         }

@@ -1,93 +1,73 @@
-@php($editIcon = asset('boxcar/images/icons/edit.svg'))
-@php($deleteIcon = asset('boxcar/images/icons/remove.svg'))
-@php($fallbackLogo = asset('boxcar/images/resource/brandf.png'))
-@php($uploadIcon = asset('boxcar/images/resource/uplode.svg'))
-@php($createPreview = $this->createLogoPreviewUrl ?: $fallbackLogo)
 @php($createUploadName = is_object($logoUpload) && method_exists($logoUpload, 'getClientOriginalName') ? $logoUpload->getClientOriginalName() : null)
 @php($editingMake = $editingId ? $makes->getCollection()->firstWhere('id', $editingId) : null)
-@php($editPreview = $this->editLogoPreviewUrl ?: ($editingMake?->logo_url ?: $fallbackLogo))
 @php($editUploadName = is_object($editLogoUpload) && method_exists($editLogoUpload, 'getClientOriginalName') ? $editLogoUpload->getClientOriginalName() : null)
 
-<div class="catalog-module">
-    <div class="form-box catalog-form-box">
-        <div class="catalog-box-head">
+<div class="c1-catalog-workspace-tab">
+    @if ($feedback !== [])
+        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
             <div>
-                <h4>Tao make moi</h4>
-                <p>Dung form template de them thuong hieu va logo ma khong can roi workspace.</p>
+                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Lưu ý:' : 'Thành công:' }}</strong>
+                <span>{{ $feedback['message'] ?? '' }}</span>
+            </div>
+            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Close" style="font-size: 11px;"></button>
+        </div>
+    @endif
+
+    <!-- Quick Add Make Card -->
+    <div class="c1-catalog-card" id="c1-make-form-section">
+        <div class="c1-catalog-card-header">
+            <div>
+                <h4 class="c1-catalog-card-title">Tạo hãng xe mới</h4>
+                <p class="c1-catalog-card-desc">Thêm thương hiệu và logo vào hệ thống quản lý danh mục xe.</p>
             </div>
         </div>
 
-        <form wire:submit="create" class="catalog-make-form catalog-make-profile-form">
-            <div class="gallery-sec catalog-make-gallery-section">
-                <div class="right-box-three catalog-make-gallery-block">
-                    <h6 class="title">Gallery</h6>
-
-                    <div class="gallery-box">
-                        <div class="inner-box catalog-upload-with-preview">
-                            <div class="image-box catalog-upload-preview">
-                                <img src="{{ $createPreview }}" alt="Logo preview">
+        <form wire:submit="create">
+            <div class="c1-make-form-grid">
+                <!-- Logo Upload Dropzone -->
+                <div>
+                    <label class="form-label text-muted small fw-bold mb-2">Logo thương hiệu</label>
+                    <div class="c1-logo-dropzone">
+                        <input type="file" wire:model="logoUpload" accept=".png,.jpg,.jpeg,.svg,.webp">
+                        @if ($this->createLogoPreviewUrl)
+                            <div class="c1-logo-preview-box">
+                                <img src="{{ $this->createLogoPreviewUrl }}" alt="Logo preview" class="c1-logo-preview-img">
+                                <span class="c1-logo-dropzone-text">{{ $createUploadName ?: 'Logo đã chọn' }}</span>
+                                <button type="button" class="c1-action-btn c1-action-btn-danger mt-1" wire:click.stop="removeCreateLogo">
+                                    Bỏ chọn file
+                                </button>
                             </div>
-
-                            <label class="uplode-box catalog-upload-trigger catalog-upload-trigger-wide">
-                                <input type="file" class="catalog-upload-input" wire:model="logoUpload"
-                                    accept=".png,.jpg,.jpeg,.svg,.webp">
-                                <div class="content-box">
-                                    <img src="{{ $uploadIcon }}" alt="Upload">
-                                    <span>{{ $logoUpload ? 'Doi logo' : 'Upload' }}</span>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="text catalog-make-gallery-text">
-                            Max file size 2MB. Dinh dang ho tro: SVG, PNG, JPG, WebP.
-                            @if ($createUploadName)
-                                <br>Dang chon: {{ $createUploadName }}
-                            @endif
-                        </div>
-
-                        @if ($logoUpload)
-                            <button type="button" class="catalog-upload-clear" wire:click="removeCreateLogo">Bo chon
-                                file</button>
+                        @else
+                            <svg class="c1-logo-dropzone-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <div class="c1-logo-dropzone-text">Kéo logo vào đây hoặc <span style="color: var(--c1-primary); font-weight: 600;">chọn tệp</span></div>
+                            <div class="c1-logo-dropzone-hint">SVG, PNG trong suốt, JPG, WebP. Tối đa 2MB</div>
                         @endif
                     </div>
-
-                    <span class="catalog-head-note" wire:loading wire:target="logoUpload">Dang tai logo...</span>
-                    @error('logoUpload')
-                        <small class="catalog-field-error">{{ $message }}</small>
-                    @enderror
+                    <div wire:loading wire:target="logoUpload" class="text-primary small mt-1">Đang tải logo...</div>
+                    @error('logoUpload') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                 </div>
 
-                <div class="form-sec catalog-make-gallery-form">
-                    <div class="row">
-                        <div class="form-column col-lg-4 col-md-6">
-                            <div class="form_boxes">
-                                <label>Ten hang xe</label>
-                                <div class="drop-menu catalog-native-control">
-                                    <input type="text" wire:model.blur="createForm.name" placeholder="Toyota">
-                                </div>
-                                @error('createForm.name')
-                                    <small class="catalog-field-error">{{ $message }}</small>
-                                @enderror
-                            </div>
+                <!-- Make Name & Slug -->
+                <div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Tên hãng xe <span class="text-danger">*</span></label>
+                            <input type="text" class="c1-catalog-search-input" wire:model.blur="createForm.name" placeholder="Ví dụ: Toyota, Honda, Ford, Porsche...">
+                            @error('createForm.name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
 
-                        <div class="form-column col-lg-4 col-md-6">
-                            <div class="form_boxes">
-                                <label>Slug</label>
-                                <div class="drop-menu catalog-native-control">
-                                    <input type="text" wire:model.blur="createForm.slug" placeholder="toyota">
-                                </div>
-                                @error('createForm.slug')
-                                    <small class="catalog-field-error">{{ $message }}</small>
-                                @enderror
-                            </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Đường dẫn slug <span class="text-danger">*</span></label>
+                            <input type="text" class="c1-catalog-search-input" wire:model.blur="createForm.slug" placeholder="Ví dụ: toyota, honda, ford...">
+                            @error('createForm.slug') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
 
-                        <div class="form-column col-lg-4 col-md-12"
-                            style="display:flex; flex-direction: column; justify-content: flex-end;">
-                            <button type="submit" class="theme-btn catalog-make-action-btn" wire:loading.attr="disabled"
-                                wire:target="create,logoUpload">
-                                Tao make
+                        <div class="col-12 text-end mt-4">
+                            <button type="submit" class="c1-btn c1-btn-primary" wire:loading.attr="disabled" wire:target="create,logoUpload">
+                                <span wire:loading.remove wire:target="create">+ Thêm nhanh hãng xe</span>
+                                <span wire:loading wire:target="create">Đang lưu...</span>
                             </button>
                         </div>
                     </div>
@@ -96,88 +76,97 @@
         </form>
     </div>
 
-    <div class="my-listing-table wrap-listing">
-        <div class="title-listing">
-            <div>
-                <h4 class="catalog-section-title">Make directory</h4>
-                <p class="catalog-section-text">UI table cua template duoc dung lai de quan ly danh muc thuong hieu ro
-                    rang hon.</p>
+    <!-- Table Directory Card -->
+    <div class="c1-catalog-card">
+        <div class="c1-catalog-toolbar">
+            <!-- Search -->
+            <div class="c1-catalog-search-wrap">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="search" class="c1-catalog-search-input" wire:model.live.debounce.300ms="search" placeholder="Tìm theo tên hãng xe hoặc mã slug...">
             </div>
 
-            <div class="catalog-toolbar">
-                <div class="box-ip-search catalog-search-box">
-                    <span class="icon">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M6.29301 0.287598C2.9872 0.287598 0.294312 2.98048 0.294312 6.28631C0.294312 9.59211 2.9872 12.2902 6.29301 12.2902C7.70502 12.2902 9.00364 11.7954 10.03 10.9738L12.5287 13.4712C12.6548 13.5921 12.8232 13.6588 12.9979 13.657C13.1725 13.6552 13.3395 13.5851 13.4631 13.4617C13.5867 13.3382 13.6571 13.1713 13.6591 12.9967C13.6611 12.822 13.5947 12.6535 13.474 12.5272L10.9753 10.0285C11.7976 9.00061 12.293 7.69995 12.293 6.28631C12.293 2.98048 9.59882 0.287598 6.29301 0.287598ZM6.29301 1.62095C8.87824 1.62095 10.9584 3.70108 10.9584 6.28631C10.9584 8.87153 8.87824 10.9569 6.29301 10.9569C3.70778 10.9569 1.62764 8.87153 1.62764 6.28631C1.62764 3.70108 3.70778 1.62095 6.29301 1.62095Z"
-                                fill="#050B20" />
-                        </svg>
-                    </span>
-                    <input type="search" wire:model.live.debounce.300ms="search" placeholder="Tim theo ten hoac slug">
-                </div>
+            <!-- Sort & Pagination Count -->
+            <div class="c1-catalog-filter-group">
+                <select class="c1-catalog-select" wire:model.live="sort">
+                    <option value="updated_desc">Mới cập nhật</option>
+                    <option value="updated_asc">Cũ nhất</option>
+                    <option value="name_asc">Tên hãng A - Z</option>
+                    <option value="name_desc">Tên hãng Z - A</option>
+                    <option value="models_desc">Nhiều dòng xe nhất</option>
+                    <option value="models_asc">Ít dòng xe nhất</option>
+                </select>
 
-                <div class="text-box v1 catalog-toolbar-boxes">
-                    <div class="form_boxes v3 catalog-control-box">
-                        <small>Sort by</small>
-                        <div class="drop-menu">
-                            <select wire:model.live="sort">
-                                <option value="updated_desc"> moi nhat</option>
-                                <option value="updated_asc">cu nhat</option>
-                                <option value="name_asc">Ten A-Z</option>
-                                <option value="name_desc">Ten Z-A</option>
-                                <option value="models_desc">Nhieu models nhat</option>
-                                <option value="models_asc">It models nhat</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <select class="c1-catalog-select" wire:model.live="perPage">
+                    <option value="10">10 dòng / trang</option>
+                    <option value="25">25 dòng / trang</option>
+                    <option value="50">50 dòng / trang</option>
+                </select>
             </div>
         </div>
 
-        <div class="cart-table">
-            <table>
+        <!-- Modern Data Table -->
+        <div class="c1-table-responsive">
+            <table class="c1-table">
                 <thead>
                     <tr>
-                        <th>Make</th>
-                        <th>Name</th>
-                        <th>Slug</th>
-                        <th>Models</th>
-                        <th>Updated</th>
-                        <th>Actions</th>
+                        <th style="width: 80px;">Logo</th>
+                        <th>Tên hãng xe</th>
+                        <th>Mã slug</th>
+                        <th>Số dòng xe</th>
+                        <th>Trạng thái</th>
+                        <th>Cập nhật</th>
+                        <th style="width: 140px; text-align: right;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($makes as $make)
                         <tr wire:key="make-row-{{ $make->id }}">
                             <td>
-                                <div class="shop-cart-product">
-                                    <div class="shop-product-cart-img catalog-listing-thumb">
-                                        <img src="{{ $make->logo_url ?: $fallbackLogo }}"
-                                            alt="{{ $make->name }} logo">
-                                    </div>
+                                <div class="c1-brand-logo-wrap">
+                                    @if ($make->logo_url)
+                                        <img src="{{ $make->logo_url }}" alt="{{ $make->name }} logo">
+                                    @else
+                                        <span style="font-weight: 700; font-size: 16px; color: #2563eb;">{{ strtoupper(substr($make->name, 0, 1)) }}</span>
+                                    @endif
                                 </div>
                             </td>
-                            <td><span>{{ $make->name }}</span></td>
-                            <td><span>{{ $make->slug }}</span></td>
-                            <td><span>{{ number_format($make->models_count) }}</span></td>
-                            <td><span>{{ optional($make->updated_at)->format('d/m/Y H:i') ?: '--' }}</span></td>
                             <td>
-                                <button type="button" class="remove-cart-item"
-                                    wire:click="startEdit({{ $make->id }})" title="Sua make">
-                                    <img src="{{ $editIcon }}" alt="Edit">
-                                </button>
-                                <button type="button" class="remove-cart-item"
-                                    wire:click="delete({{ $make->id }})"
-                                    onclick="return confirm('Xac nhan xoa make nay?')" title="Xoa make">
-                                    <img src="{{ $deleteIcon }}" alt="Delete">
-                                </button>
+                                <div style="font-weight: 600; font-size: 14px; color: var(--c1-text-heading);">
+                                    {{ $make->name }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="c1-slug-tag">{{ $make->slug }}</span>
+                            </td>
+                            <td>
+                                <span class="c1-pill-badge c1-pill-blue">
+                                    {{ number_format($make->models_count) }} dòng xe
+                                </span>
+                            </td>
+                            <td>
+                                <span class="c1-pill-badge c1-pill-green">Đang kinh doanh</span>
+                            </td>
+                            <td>
+                                <span class="text-muted small">{{ optional($make->updated_at)->format('d/m/Y H:i') ?: '--' }}</span>
+                            </td>
+                            <td>
+                                <div class="c1-actions-cell" style="justify-content: flex-end;">
+                                    <button type="button" class="c1-action-btn" wire:click="startEdit({{ $make->id }})" title="Sửa hãng xe">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Sửa
+                                    </button>
+                                    <button type="button" class="c1-action-btn c1-action-btn-danger" wire:click="delete({{ $make->id }})" onclick="return confirm('Xác nhận xóa hãng xe {{ $make->name }}?')" title="Xóa hãng xe">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">
-                                <div class="catalog-empty-state">Chua co make nao phu hop bo loc hien tai.</div>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                Chưa có hãng xe nào phù hợp với điều kiện tìm kiếm.
                             </td>
                         </tr>
                     @endforelse
@@ -185,129 +174,86 @@
             </table>
         </div>
 
-        <div class="catalog-table-footer">
-            <div class="catalog-table-summary">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-4 pt-3 border-top">
+            <div class="text-muted small">
                 @if ($makes->total() > 0)
-                    Hien thi {{ $makes->firstItem() }}-{{ $makes->lastItem() }} /
-                    {{ number_format($makes->total()) }} make
+                    Hiển thị {{ $makes->firstItem() }} - {{ $makes->lastItem() }} trên tổng số {{ number_format($makes->total()) }} hãng xe
                 @else
-                    Khong co du lieu
+                    0 hãng xe
                 @endif
             </div>
-
-            <div class="catalog-table-footer-actions">
-                <div class="form_boxes v3 catalog-per-page catalog-control-box">
-                    <small>Rows</small>
-                    <div class="drop-menu">
-                        <select wire:model.live="perPage">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="catalog-pagination">
-                    {{ $makes->links() }}
-                </div>
+            <div>
+                {{ $makes->links() }}
             </div>
         </div>
     </div>
 
+    <!-- Edit Make Modal -->
     <div class="modal fade" id="catalogMakeEditModal" tabindex="-1" aria-labelledby="catalogMakeEditModalLabel"
         aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable catalog-edit-modal-dialog">
-            <div class="modal-content catalog-edit-modal-content">
-                <div class="modal-header catalog-edit-modal-header">
+        <div class="modal-dialog modal-dialog-centered c1-modal-dialog">
+            <div class="modal-content c1-modal-content">
+                <div class="c1-modal-header">
                     <div>
-                        <h5 class="modal-title catalog-edit-modal-title" id="catalogMakeEditModalLabel">Sua make</h5>
-                        <p class="catalog-edit-modal-text">Cap nhat ten, slug va logo trong mot modal gon hon, de doc va de thao tac.</p>
+                        <h5 class="c1-modal-title" id="catalogMakeEditModalLabel">Chỉnh sửa hãng xe</h5>
+                        <p class="c1-catalog-card-desc">Cập nhật thông tin nhận diện và logo thương hiệu.</p>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="cancelEdit"></button>
                 </div>
 
-                <div class="modal-body catalog-edit-modal-body">
+                <div class="c1-modal-body">
                     @if ($editingMake)
-                        <form wire:submit="update" class="catalog-make-form catalog-make-profile-form">
-                            <div class="gallery-sec catalog-make-gallery-section">
-                                <div class="right-box-three catalog-make-gallery-block">
-                                    <h6 class="title">Gallery</h6>
-
-                                    <div class="gallery-box">
-                                        <div class="inner-box catalog-upload-with-preview">
-                                            <div class="image-box catalog-upload-preview">
-                                                <img src="{{ $editPreview }}" alt="Edit logo preview">
-                                            </div>
-
-                                            <label class="uplode-box catalog-upload-trigger catalog-upload-trigger-wide">
-                                                <input type="file" class="catalog-upload-input" wire:model="editLogoUpload"
-                                                    accept=".png,.jpg,.jpeg,.svg,.webp">
-                                                <div class="content-box">
-                                                    <img src="{{ $uploadIcon }}" alt="Upload">
-                                                    <span>{{ $editLogoUpload ? 'Doi logo' : 'Upload' }}</span>
-                                                </div>
-                                            </label>
-                                        </div>
-
-                                        <div class="text catalog-make-gallery-text">
-                                            Max file size 2MB. Dinh dang ho tro: SVG, PNG, JPG, WebP.
-                                            @if ($editUploadName)
-                                                <br>Dang chon: {{ $editUploadName }}
+                        <form wire:submit="update" id="editMakeForm">
+                            <!-- Logo Upload in Modal -->
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold mb-2">Logo thương hiệu</label>
+                                <div class="c1-logo-dropzone" style="min-height: 120px;">
+                                    <input type="file" wire:model="editLogoUpload" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    @if ($this->editLogoPreviewUrl || $editingMake->logo_url)
+                                        <div class="c1-logo-preview-box">
+                                            <img src="{{ $this->editLogoPreviewUrl ?: $editingMake->logo_url }}" alt="Logo preview" class="c1-logo-preview-img">
+                                            <span class="c1-logo-dropzone-text">{{ $editUploadName ?: 'Nhấn để đổi logo mới' }}</span>
+                                            @if ($editLogoUpload)
+                                                <button type="button" class="c1-action-btn c1-action-btn-danger mt-1" wire:click.stop="removeEditLogo">
+                                                    Bỏ chọn file
+                                                </button>
                                             @endif
                                         </div>
-
-                                        @if ($editLogoUpload)
-                                            <button type="button" class="catalog-upload-clear" wire:click="removeEditLogo">Bo
-                                                chon file</button>
-                                        @endif
-                                    </div>
-
-                                    <span class="catalog-head-note" wire:loading wire:target="editLogoUpload">Dang tai
-                                        logo...</span>
-                                    @error('editLogoUpload')
-                                        <small class="catalog-field-error">{{ $message }}</small>
-                                    @enderror
+                                    @else
+                                        <svg class="c1-logo-dropzone-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <div class="c1-logo-dropzone-text">Chọn logo mới</div>
+                                    @endif
                                 </div>
+                                <div wire:loading wire:target="editLogoUpload" class="text-primary small mt-1">Đang tải logo...</div>
+                                @error('editLogoUpload') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                            </div>
 
-                                <div class="form-sec catalog-make-gallery-form">
-                                    <div class="row">
-                                        <div class="form-column col-lg-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Ten hang xe</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.name" placeholder="Toyota">
-                                                </div>
-                                                @error('editForm.name')
-                                                    <small class="catalog-field-error">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Tên hãng xe <span class="text-danger">*</span></label>
+                                <input type="text" class="c1-catalog-search-input" wire:model.blur="editForm.name">
+                                @error('editForm.name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                            </div>
 
-                                        <div class="form-column col-lg-4 col-md-6">
-                                            <div class="form_boxes">
-                                                <label>Slug</label>
-                                                <div class="drop-menu catalog-native-control">
-                                                    <input type="text" wire:model.blur="editForm.slug" placeholder="toyota">
-                                                </div>
-                                                @error('editForm.slug')
-                                                    <small class="catalog-field-error">{{ $message }}</small>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="form-column col-lg-4 col-md-12"
-                                            style="display:flex; flex-direction: column; justify-content: flex-end;">
-                                            <button type="submit" class="theme-btn catalog-make-action-btn"
-                                                wire:loading.attr="disabled" wire:target="update,editLogoUpload">
-                                                Luu thay doi
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">Đường dẫn slug <span class="text-danger">*</span></label>
+                                <input type="text" class="c1-catalog-search-input" wire:model.blur="editForm.slug">
+                                @error('editForm.slug') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                             </div>
                         </form>
                     @else
-                        <div class="catalog-empty-state">Khong tim thay make can sua.</div>
+                        <div class="text-center py-4 text-muted">Không tìm thấy thông tin hãng xe cần sửa.</div>
+                    @endif
+                </div>
+
+                <div class="c1-modal-footer">
+                    <button type="button" class="c1-action-btn" data-bs-dismiss="modal" wire:click="cancelEdit">Hủy bỏ</button>
+                    @if ($editingMake)
+                        <button type="submit" form="editMakeForm" class="c1-btn c1-btn-primary" wire:loading.attr="disabled" wire:target="update,editLogoUpload">
+                            <span wire:loading.remove wire:target="update">Lưu thay đổi</span>
+                            <span wire:loading wire:target="update">Đang lưu...</span>
+                        </button>
                     @endif
                 </div>
             </div>

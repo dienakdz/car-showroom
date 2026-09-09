@@ -1,51 +1,58 @@
-<div class="catalog-workspace">
-    <div class="list-title catalog-list-title">
+<div class="c1-catalog-workspace">
+    <div class="c1-page-header">
         <div>
-            <h3 class="title">Catalog Workspace</h3>
-            <div class="text">Dung lai pattern cua template dashboard de quan ly makes, models va trims ro rang hon.</div>
+            <h1 class="c1-page-title">Danh mục xe</h1>
+            <p class="c1-page-subtitle">Quản lý Hãng xe (Makes), Dòng xe (Models) và Phiên bản xe (Trims) đồng bộ và trực quan.</p>
         </div>
 
-        <a href="{{ route('admin.catalog.trims.create') }}" class="theme-btn small">
-            Tao trim chi tiet
-        </a>
+        <div class="c1-header-actions">
+            @if ($tab === 'makes')
+                <button type="button" class="c1-btn c1-btn-primary" onclick="document.getElementById('c1-make-form-section')?.scrollIntoView({behavior: 'smooth'})">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    + Thêm hãng xe
+                </button>
+            @elseif ($tab === 'models')
+                <button type="button" class="c1-btn c1-btn-primary" onclick="document.getElementById('c1-model-form-section')?.scrollIntoView({behavior: 'smooth'})">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    + Thêm dòng xe
+                </button>
+            @else
+                <a href="{{ route('admin.catalog.trims.create') }}" class="c1-btn c1-btn-primary">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    + Thêm phiên bản
+                </a>
+            @endif
+        </div>
     </div>
 
-    <div class="form-box catalog-module-box">
-        <ul class="nav nav-tabs catalog-module-tabs" role="tablist" aria-label="Catalog sections">
-            <li class="nav-item" role="presentation">
-                <button
-                    type="button"
-                    class="nav-link {{ $tab === 'makes' ? 'active' : '' }}"
-                    wire:click="switchTab('makes')"
-                    aria-selected="{{ $tab === 'makes' ? 'true' : 'false' }}"
-                >
-                    Makes
-                    <span>{{ number_format($summary['makes']) }}</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button
-                    type="button"
-                    class="nav-link {{ $tab === 'models' ? 'active' : '' }}"
-                    wire:click="switchTab('models')"
-                    aria-selected="{{ $tab === 'models' ? 'true' : 'false' }}"
-                >
-                    Models
-                    <span>{{ number_format($summary['models']) }}</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button
-                    type="button"
-                    class="nav-link {{ $tab === 'trims' ? 'active' : '' }}"
-                    wire:click="switchTab('trims')"
-                    aria-selected="{{ $tab === 'trims' ? 'true' : 'false' }}"
-                >
-                    Trims
-                    <span>{{ number_format($summary['trims']) }}</span>
-                </button>
-            </li>
-        </ul>
+    <div class="c1-catalog-tabs" role="tablist" aria-label="Catalog sections">
+        <button
+            type="button"
+            class="c1-catalog-tab-btn {{ $tab === 'makes' ? 'active' : '' }}"
+            wire:click="switchTab('makes')"
+            aria-selected="{{ $tab === 'makes' ? 'true' : 'false' }}"
+        >
+            <span>Hãng xe (Makes)</span>
+            <span class="c1-catalog-tab-badge">{{ number_format($summary['makes']) }}</span>
+        </button>
+        <button
+            type="button"
+            class="c1-catalog-tab-btn {{ $tab === 'models' ? 'active' : '' }}"
+            wire:click="switchTab('models')"
+            aria-selected="{{ $tab === 'models' ? 'true' : 'false' }}"
+        >
+            <span>Dòng xe (Models)</span>
+            <span class="c1-catalog-tab-badge">{{ number_format($summary['models']) }}</span>
+        </button>
+        <button
+            type="button"
+            class="c1-catalog-tab-btn {{ $tab === 'trims' ? 'active' : '' }}"
+            wire:click="switchTab('trims')"
+            aria-selected="{{ $tab === 'trims' ? 'true' : 'false' }}"
+        >
+            <span>Phiên bản (Trims)</span>
+            <span class="c1-catalog-tab-badge">{{ number_format($summary['trims']) }}</span>
+        </button>
     </div>
 
     @if ($tab === 'makes')
