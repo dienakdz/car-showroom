@@ -26,7 +26,7 @@ class CarUnitController extends AdminBaseController
         $trimId = $request->integer('trim_id');
 
         $carUnits = CarUnit::query()
-            ->with(['trim.model.make'])
+            ->with(['trim.model.make', 'media'])
             ->withCount(['leads', 'appointments'])
             ->when($status !== '', fn ($query) => $query->where('status', $status))
             ->when($condition !== '', fn ($query) => $query->where('condition', $condition))
@@ -42,10 +42,18 @@ class CarUnitController extends AdminBaseController
             ->paginate(12)
             ->withQueryString();
 
+        $statusCounts = [
+            'all' => CarUnit::query()->count(),
+            'available' => CarUnit::query()->where('status', 'available')->count(),
+            'on_hold' => CarUnit::query()->where('status', 'on_hold')->count(),
+            'sold' => CarUnit::query()->where('status', 'sold')->count(),
+        ];
+
         return $this->adminView('admin.inventory.index', [
-            'adminPageTitle' => 'Inventory',
-            'adminPageDescription' => 'Quan ly xe trong kho, workflow publish/archive va giu xe.',
+            'adminPageTitle' => 'Quản lý kho xe',
+            'adminPageDescription' => 'Theo dõi chi tiết xe trong kho, định giá và quy trình xuất bản, giữ xe.',
             'carUnits' => $carUnits,
+            'statusCounts' => $statusCounts,
             'trims' => Trim::query()->with('model.make')->orderBy('name')->get(),
             'filters' => [
                 'q' => $search,

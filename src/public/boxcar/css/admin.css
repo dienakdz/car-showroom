@@ -792,6 +792,250 @@ body.c1-body {
     color: #92400e;
 }
 
+.c1-pill-gray {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.c1-pill-red {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Chips Bar & Filter Toolbar */
+.c1-chips-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.c1-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--c1-radius-card);
+    border: 1px solid var(--c1-border-card);
+    background-color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c1-text-body);
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.c1-chip:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--c1-text-heading);
+    text-decoration: none;
+}
+
+.c1-chip.is-active {
+    background-color: #eff6ff;
+    border-color: #bfdbfe;
+    color: var(--c1-primary);
+    font-weight: 600;
+}
+
+.c1-filter-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.c1-filter-search {
+    position: relative;
+    flex: 1;
+    min-width: 240px;
+}
+
+.c1-filter-search .fa {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c1-text-light);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.c1-filter-search input {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px 0 34px;
+    border-radius: var(--c1-radius-card);
+    border: 1px solid var(--c1-border-card);
+    background-color: #ffffff;
+    font-size: 13px;
+    color: var(--c1-text-heading);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.c1-filter-search input:focus {
+    border-color: var(--c1-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.c1-select {
+    height: 38px;
+    padding: 0 28px 0 12px;
+    border-radius: var(--c1-radius-card);
+    border: 1px solid var(--c1-border-card);
+    background-color: #ffffff;
+    font-size: 13px;
+    color: var(--c1-text-body);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.c1-select:focus {
+    border-color: var(--c1-primary);
+}
+
+/* Car Cell & Thumbnails */
+.c1-car-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.c1-car-thumb {
+    width: 54px;
+    height: 38px;
+    border-radius: 6px;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    overflow: hidden;
+}
+
+.c1-car-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.c1-car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.c1-car-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--c1-text-heading);
+}
+
+.c1-car-meta {
+    font-size: 11.5px;
+    color: var(--c1-text-muted);
+}
+
+.c1-price-cell {
+    font-weight: 600;
+    color: var(--c1-text-heading);
+    white-space: nowrap;
+}
+
+/* Action buttons small */
+.c1-btn-sm {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+    gap: 4px;
+}
+
+.c1-btn-ghost {
+    background-color: #ffffff;
+    border: 1px solid var(--c1-border-card);
+    color: var(--c1-text-body) !important;
+}
+
+.c1-btn-ghost:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--c1-text-heading) !important;
+    text-decoration: none;
+}
+
+.c1-btn-danger-ghost {
+    background-color: #ffffff;
+    border: 1px solid #fecdd3;
+    color: #e11d48 !important;
+}
+
+.c1-btn-danger-ghost:hover {
+    background-color: #fff1f2;
+    border-color: #fda4af;
+    color: #be123c !important;
+    text-decoration: none;
+}
+
+/* Kanban Board & Cards for CRM */
+.c1-kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.c1-kanban-col {
+    background-color: #f8fafc;
+    border: 1px solid var(--c1-border-card);
+    border-radius: var(--c1-radius-card);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 480px;
+}
+
+.c1-kanban-col-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--c1-border-card);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c1-text-heading);
+}
+
+.c1-kanban-card {
+    background-color: #ffffff;
+    border: 1px solid var(--c1-border-card);
+    border-radius: var(--c1-radius-card);
+    padding: 12px 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.c1-kanban-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    text-decoration: none;
+    color: inherit;
+}
+
 /* ==========================================================================
    Universal Styling for all other admin pages (inventory, catalog, sales, etc.)
    ========================================================================== */

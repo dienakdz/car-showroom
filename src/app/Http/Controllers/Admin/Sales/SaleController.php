@@ -25,10 +25,17 @@ class SaleController extends AdminBaseController
             ->orderByDesc('sold_at')
             ->paginate(12);
 
+        $totalRevenue = (int) Sale::query()->sum('sold_price');
+        $monthlyCount = Sale::query()->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
+        $totalCount = Sale::query()->count();
+
         return $this->adminView('admin.sales.index', [
-            'adminPageTitle' => 'Sales log',
-            'adminPageDescription' => 'Theo doi xe da chot, buyer va nguoi tao giao dich.',
+            'adminPageTitle' => 'Quản lý Bán hàng & Hợp đồng',
+            'adminPageDescription' => 'Theo dõi chi tiết hợp đồng bán xe, doanh thu và đối soát thanh toán.',
             'sales' => $sales,
+            'totalRevenue' => $totalRevenue,
+            'monthlyCount' => $monthlyCount,
+            'totalCount' => $totalCount,
         ]);
     }
 

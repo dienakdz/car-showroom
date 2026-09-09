@@ -43,10 +43,44 @@ class LeadController extends AdminBaseController
             ->paginate(12)
             ->withQueryString();
 
+        $viewMode = $request->query('view', 'kanban');
+
+        $stageCounts = [
+            'all' => Lead::query()->count(),
+            'new' => Lead::query()->where('status', 'new')->count(),
+            'consulting' => Lead::query()->whereIn('status', ['contacted', 'qualified'])->count(),
+            'negotiating' => Lead::query()->where('status', 'booked')->count(),
+            'closed' => Lead::query()->where('status', 'closed')->count(),
+        ];
+
+        // For Kanban view, get all recent active leads across stages
+        $kanbanLeads = null;
+        if ($viewMode === 'kanban') {
+            $allLeads = Lead::query()
+                ->with([
+                    'assignedTo:id,name',
+                    'carUnit.trim.model.make',
+                    'trim.model.make',
+                ])
+                ->latest()
+                ->limit(40)
+                ->get();
+
+            $kanbanLeads = [
+                'new' => $allLeads->where('status', 'new'),
+                'consulting' => $allLeads->whereIn('status', ['contacted', 'qualified']),
+                'negotiating' => $allLeads->where('status', 'booked'),
+                'closed' => $allLeads->where('status', 'closed'),
+            ];
+        }
+
         return $this->adminView('admin.leads.index', [
-            'adminPageTitle' => 'Lead CRM',
-            'adminPageDescription' => 'Filter lead, xem context xe va dieu phoi cho staff.',
+            'adminPageTitle' => 'Khách hàng & Leads (CRM)',
+            'adminPageDescription' => 'Quản lý phễu khách hàng tiềm năng, lịch hẹn và điều phối chuyên viên tư vấn.',
             'leads' => $leads,
+            'kanbanLeads' => $kanbanLeads,
+            'viewMode' => $viewMode,
+            'stageCounts' => $stageCounts,
             'filters' => $filters,
             'staffUsers' => $this->assignableUsers(),
         ]);

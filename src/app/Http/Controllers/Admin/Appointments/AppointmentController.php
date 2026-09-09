@@ -37,10 +37,20 @@ class AppointmentController extends AdminBaseController
             ->paginate(12)
             ->withQueryString();
 
+        $appointmentCounts = [
+            'today' => Appointment::query()->whereDate('scheduled_at', now()->today())->count(),
+            'week' => Appointment::query()->whereBetween('scheduled_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'pending' => Appointment::query()->where('status', 'pending')->count(),
+            'confirmed' => Appointment::query()->where('status', 'confirmed')->count(),
+            'done' => Appointment::query()->where('status', 'done')->count(),
+            'all' => Appointment::query()->count(),
+        ];
+
         return $this->adminView('admin.appointments.index', [
-            'adminPageTitle' => 'Appointments',
-            'adminPageDescription' => 'Confirm, reschedule va theo doi lich hen showroom.',
+            'adminPageTitle' => 'Lịch hẹn xem xe & Lái thử',
+            'adminPageDescription' => 'Điều phối lịch lái thử, đón tiếp khách hàng và phân công chuyên viên tư vấn.',
             'appointments' => $appointments,
+            'appointmentCounts' => $appointmentCounts,
             'filters' => $filters,
             'staffUsers' => $this->staffUsers(),
         ]);
