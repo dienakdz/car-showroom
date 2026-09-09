@@ -87,6 +87,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                 Route::get('/{carUnit}/edit', [CarUnitController::class, 'edit'])->name('edit');
                 Route::match(['put', 'patch'], '/{carUnit}', [CarUnitController::class, 'update'])->name('update');
 
+                Route::post('/media/upload', [CarUnitController::class, 'uploadMedia'])->name('media.upload');
                 Route::post('/{carUnit}/publish', [CarUnitWorkflowController::class, 'publish'])->name('publish');
                 Route::post('/{carUnit}/archive', [CarUnitWorkflowController::class, 'archive'])->name('archive');
                 Route::post('/{carUnit}/hold', [CarUnitWorkflowController::class, 'hold'])->name('hold');

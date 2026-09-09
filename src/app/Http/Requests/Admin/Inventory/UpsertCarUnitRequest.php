@@ -20,7 +20,7 @@ class UpsertCarUnitRequest extends FormRequest
                 $payload = is_array($row) ? $row : [];
 
                 return [
-                    'id' => $payload['id'] ?? null,
+                    'id' => filled($payload['id'] ?? null) ? (int) $payload['id'] : null,
                     'type' => $payload['type'] ?? 'image',
                     'path_or_url' => trim((string) ($payload['path_or_url'] ?? '')),
                     'caption' => trim((string) ($payload['caption'] ?? '')),

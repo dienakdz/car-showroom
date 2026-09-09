@@ -12,6 +12,7 @@ use App\Models\FuelType;
 use App\Models\Transmission;
 use App\Models\Trim;
 use App\Services\Admin\InventoryWorkflowService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -66,13 +67,13 @@ class CarUnitController extends AdminBaseController
 
     public function create(): View
     {
-        return $this->formView(new CarUnit, 'Them xe vao kho', 'Khai bao inventory item, media va thong tin noi bo cho xe.');
+        return $this->formView(new CarUnit, 'Thêm xe mới vào kho', 'Khai báo thông tin định danh, thông số kỹ thuật, hình ảnh và định giá cho xe.');
     }
 
     public function store(UpsertCarUnitRequest $request, InventoryWorkflowService $service): RedirectResponse
     {
         $carUnit = $service->save($request->validated(), $request->user());
-        $this->pushSuccessToast('Da tao car unit moi.');
+        $this->pushSuccessToast('Đã tạo xe mới trong kho thành công.');
 
         return redirect()->route('admin.inventory.edit', $carUnit);
     }
@@ -87,17 +88,33 @@ class CarUnitController extends AdminBaseController
                 'priceHistories.changedBy',
                 'sale',
             ]),
-            'Cap nhat inventory item',
-            'Chinh sua listing, media, ghi chu noi bo va theo doi lich su workflow.'
+            'Cập nhật thông tin xe',
+            'Chỉnh sửa thông tin định danh, thông số kỹ thuật, hình ảnh và quản lý lịch sử trạng thái của xe.'
         );
     }
 
     public function update(UpsertCarUnitRequest $request, CarUnit $carUnit, InventoryWorkflowService $service): RedirectResponse
     {
         $service->save($request->validated(), $request->user(), $carUnit);
-        $this->pushSuccessToast('Da cap nhat inventory item.');
+        $this->pushSuccessToast('Đã cập nhật thông tin xe thành công.');
 
         return redirect()->route('admin.inventory.edit', $carUnit);
+    }
+
+    public function uploadMedia(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'image', 'max:10240'],
+        ]);
+
+        $path = $request->file('file')->store('inventory-media', 'public');
+        $url = '/storage/' . $path;
+
+        return response()->json([
+            'success' => true,
+            'path_or_url' => $url,
+            'filename' => $request->file('file')->getClientOriginalName(),
+        ]);
     }
 
     protected function formView(CarUnit $carUnit, string $title, string $description): View
@@ -111,6 +128,8 @@ class CarUnitController extends AdminBaseController
             'fuelTypes' => FuelType::query()->orderBy('name')->get(),
             'transmissions' => Transmission::query()->orderBy('name')->get(),
             'drivetrains' => Drivetrain::query()->orderBy('name')->get(),
+            'exteriorColors' => Color::query()->where('type', 'exterior')->orderBy('name')->get(),
+            'interiorColors' => Color::query()->where('type', 'interior')->orderBy('name')->get(),
             'colors' => Color::query()->orderBy('name')->get(),
         ]);
     }
