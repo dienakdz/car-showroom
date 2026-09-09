@@ -42,15 +42,7 @@
         </div>
     </div>
 @else
-    <main class="admin-auth-shell">
-        @if ($errors->any())
-            <div class="admin-auth-errors">
-                @foreach ($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
-
+    <main class="c1-auth-shell admin-auth-shell">
         @yield('admin-content')
     </main>
 @endunless
