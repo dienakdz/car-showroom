@@ -84,9 +84,6 @@ class CarUnitController extends AdminBaseController
             $carUnit->load([
                 'trim.model.make',
                 'media',
-                'holds.createdBy',
-                'priceHistories.changedBy',
-                'sale',
             ]),
             'Cập nhật thông tin xe',
             'Chỉnh sửa thông tin định danh, thông số kỹ thuật, hình ảnh và quản lý lịch sử trạng thái của xe.'

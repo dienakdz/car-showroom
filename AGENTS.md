@@ -4,6 +4,7 @@
 
 - The main application lives in `src/`. Run Laravel, Composer, npm, Pint, PHPStan, and tests from `src/`.
 - Files outside `src/` are mostly repo tooling, docs, and infrastructure. Do not move application code out of `src/` unless explicitly requested.
+- Read `docs/application-architecture.md` before changing application structure, routes, controllers, Livewire components, services, or view placement.
 - Follow the existing project standards in `docs/coding-standards.md`, `src/pint.json`, `src/.editorconfig`, `.husky/pre-commit`, and `src/composer.json`.
 
 ## UI Reuse First
@@ -28,8 +29,8 @@
 - Prefer existing Blade partials under `src/resources/views/client/partials` before creating new partials.
 - Keep custom inline `<style>` and `<script>` blocks small and page-specific. If styling or behavior becomes shared or substantial, move it into the existing asset and partial structure.
 - For admin pages, preserve the current admin shell and patterns built around `admin.layouts.app`, `admin.layouts.livewire`, `src/public/boxcar/css/admin.css`, and existing `admin-*` classes.
-- For admin modules with heavy database interaction, dynamic filters, pagination, inline validation, modal workflows, or repeated CRUD actions, prefer Livewire over plain controller + Blade pages.
-- Plain Blade admin pages are still acceptable for simple read-only screens, straightforward detail pages, or one-shot forms that do not need rich stateful interaction.
+- New admin pages and interactive admin workflows must use Livewire. Existing controller + Blade admin modules are migration backlog, not templates for new work.
+- Keep client-facing pages controller + Blade by default. Use services for non-trivial business rules regardless of presentation layer.
 - Reuse existing admin table, toolbar, form, modal, and feedback patterns before introducing new structures.
 - Keep asset paths consistent with `asset('boxcar/...')`.
 - Reuse existing icons, placeholders, and BoxCar images before adding new assets.
@@ -52,7 +53,7 @@
 - In admin catalog modules, preserve the current pattern: `Page.php` as the workspace container and `*/Manager.php` for per-entity CRUD panels.
 - In this project, "using Livewire" still means rendering through Blade view files under `src/resources/views/livewire/...`. Do not interpret "avoid Blade" as a reason to avoid Livewire.
 - For new admin CRUD-heavy modules, default to Livewire unless the existing module clearly follows a simpler controller + Blade pattern and does not need rich interaction.
-- For HTTP controller entry points, prefer Form Requests when validation is non-trivial or reused.
+- Validate small one-off HTTP payloads directly in the controller. Use Form Requests when validation is non-trivial, reused, needs normalization, has cross-field rules, or owns request authorization; do not create a Request class for every endpoint by default.
 - For Livewire, follow the local module pattern already in place. Extract shared validation or normalization only when it is clearly reused across flows.
 - Use Eloquent relationships and eager loading intentionally to avoid N+1 queries.
 - Wrap multi-table writes and destructive multi-step updates in transactions.
@@ -64,6 +65,7 @@
 - Keep diffs minimal and avoid formatting churn in untouched files.
 - Reuse existing partials before creating new ones. Extract a new partial only when a section is reused or large enough to justify the split.
 - Remove dead code, unused imports, stale comments, and obsolete branches when touching an area.
+- Remove routes, methods, and request classes that have no production caller when their feature is not intentionally reserved or externally consumed.
 - Do not mass-rewrite copy, labels, or messages outside the requested scope.
 - When adapting template markup, connect it to real routes, data, validation, and permissions used by the application.
 
@@ -71,5 +73,5 @@
 
 - After PHP, Blade, or Livewire changes, run `composer lint` from `src/`.
 - After non-trivial PHP logic, query, validation, or service changes, also run `composer stan`.
-- After behavioral changes that can be covered by tests, also run `composer test`.
+- Do not add or run automated tests unless the project owner explicitly requests them. Never delete or weaken existing tests to avoid failures.
 - If a relevant check cannot be run, say so clearly in the final response.

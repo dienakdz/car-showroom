@@ -3,11 +3,10 @@
 namespace App\Services\Admin;
 
 use App\Models\CarUnit;
-use App\Models\CarUnitHold;
+use App\Models\CarUnitMedia;
 use App\Models\CarUnitPriceHistory;
 use App\Models\User;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -62,13 +61,7 @@ class InventoryWorkflowService
 
             $this->syncMedia($carUnit, collect($validated['media'] ?? []));
 
-            return $carUnit->fresh([
-                'trim.model.make',
-                'media',
-                'holds.createdBy',
-                'priceHistories.changedBy',
-                'sale',
-            ]);
+            return $carUnit;
         });
     }
 
@@ -93,60 +86,6 @@ class InventoryWorkflowService
             'status' => 'archived',
             'hold_until' => null,
         ])->save();
-    }
-
-    public function hold(CarUnit $carUnit, Carbon $holdUntil, ?string $reason, User $actor): void
-    {
-        if ($carUnit->status === 'sold') {
-            throw ValidationException::withMessages([
-                'carUnit' => 'Khong the giu mot xe da sold.',
-            ]);
-        }
-
-        DB::transaction(function () use ($carUnit, $holdUntil, $reason, $actor): void {
-            $carUnit->forceFill([
-                'status' => 'on_hold',
-                'hold_until' => $holdUntil,
-            ])->save();
-
-            CarUnitHold::query()->create([
-                'car_unit_id' => $carUnit->id,
-                'created_by' => $actor->id,
-                'hold_until' => $holdUntil,
-                'reason' => $reason,
-            ]);
-        });
-    }
-
-    public function release(CarUnit $carUnit): void
-    {
-        if ($carUnit->status !== 'on_hold') {
-            return;
-        }
-
-        $carUnit->forceFill([
-            'status' => 'available',
-            'hold_until' => null,
-            'published_at' => $carUnit->published_at ?? now(),
-        ])->save();
-    }
-
-    public function updatePrice(CarUnit $carUnit, ?int $price, User $actor): void
-    {
-        if ($carUnit->price === $price) {
-            return;
-        }
-
-        DB::transaction(function () use ($carUnit, $price, $actor): void {
-            CarUnitPriceHistory::query()->create([
-                'car_unit_id' => $carUnit->id,
-                'changed_by' => $actor->id,
-                'old_price' => $carUnit->price,
-                'new_price' => $price,
-            ]);
-
-            $carUnit->update(['price' => $price]);
-        });
     }
 
     protected function syncMedia(CarUnit $carUnit, Collection $mediaRows): void
@@ -184,6 +123,7 @@ class InventoryWorkflowService
                 $media = $carUnit->media()->create(Arr::except($row, 'id'));
             }
 
+            /** @var CarUnitMedia $media */
             $keptIds[] = $media->id;
         }
 

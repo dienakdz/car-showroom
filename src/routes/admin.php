@@ -88,9 +88,6 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                 Route::post('/media/upload', [CarUnitController::class, 'uploadMedia'])->name('media.upload');
                 Route::post('/{carUnit}/publish', [CarUnitWorkflowController::class, 'publish'])->name('publish');
                 Route::post('/{carUnit}/archive', [CarUnitWorkflowController::class, 'archive'])->name('archive');
-                Route::post('/{carUnit}/hold', [CarUnitWorkflowController::class, 'hold'])->name('hold');
-                Route::delete('/{carUnit}/hold', [CarUnitWorkflowController::class, 'release'])->name('hold.release');
-                Route::post('/{carUnit}/price', [CarUnitWorkflowController::class, 'updatePrice'])->name('price.update');
             });
 
         Route::prefix('leads')
