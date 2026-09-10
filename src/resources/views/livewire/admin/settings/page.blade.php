@@ -1,12 +1,12 @@
-@extends('admin.layouts.app')
+<div>
+    @if (($feedback['message'] ?? '') !== '')
+        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span>{{ $feedback['message'] }}</span>
+            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
+        </div>
+    @endif
 
-@section('title', 'Settings Admin')
-
-@section('admin-content')
-    <form action="{{ route('admin.settings.update') }}" method="POST">
-        @csrf
-        @method('PATCH')
-
+    <form wire:submit="save">
         <div class="gallery-sec admin-settings-shell">
             <div class="right-box-three admin-side-box">
                 <h6 class="title">Showroom snapshot</h6>
@@ -15,20 +15,20 @@
                         <div class="image-box admin-settings-card">
                             <div class="content-box">
                                 <ul class="social-icon">
-                                    <li><a href="javascript:void(0)">{{ substr(strtoupper(data_get($adminSettings, 'site.default_currency.value', 'VND')), 0, 3) }}</a></li>
-                                    <li><a href="javascript:void(0)">{{ old('show_on_hold_public', data_get($adminSettings, 'inventory.show_on_hold_public.enabled', false)) ? 'ON' : 'OFF' }}</a></li>
+                                    <li><span>{{ substr(strtoupper((string) ($form['default_currency'] ?? 'VND')), 0, 3) }}</span></li>
+                                    <li><span>{{ ($form['show_on_hold_public'] ?? false) ? 'ON' : 'OFF' }}</span></li>
                                 </ul>
                             </div>
                             <div class="admin-settings-copy">
                                 <span class="admin-overline">Brand</span>
-                                <h4>{{ old('brand_name', data_get($adminSettings, 'site.brand_name.value', $showroom?->name)) }}</h4>
-                                <p>{{ $showroom?->phone ?? data_get($adminSettings, 'contact.sales_hotline.value', '0900 000 000') }}</p>
+                                <h4>{{ $form['brand_name'] ?: ($form['showroom_name'] ?: 'Car Showroom') }}</h4>
+                                <p>{{ $form['showroom_phone'] ?: ($form['sales_hotline'] ?: '0900 000 000') }}</p>
                             </div>
                         </div>
                         <div class="uplode-box admin-settings-note">
                             <div class="content-box">
                                 <span>Public policy</span>
-                                <small>{{ old('email_lead_notifications', data_get($adminSettings, 'notifications.lead_email_enabled.enabled', false)) ? 'Email lead alerts dang bat.' : 'Email lead alerts dang tat.' }}</small>
+                                <small>{{ ($form['email_lead_notifications'] ?? false) ? 'Email lead alerts dang bat.' : 'Email lead alerts dang tat.' }}</small>
                             </div>
                         </div>
                     </div>
@@ -41,31 +41,36 @@
                     <div class="col-lg-6">
                         <div class="form_boxes">
                             <label>Showroom name</label>
-                            <input type="text" name="showroom_name" value="{{ old('showroom_name', $showroom?->name ?? '') }}" required>
+                            <input type="text" wire:model.live.debounce.300ms="form.showroom_name" required>
+                            @error('form.showroom_name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="form_boxes">
                             <label>Showroom phone</label>
-                            <input type="text" name="showroom_phone" value="{{ old('showroom_phone', $showroom?->phone ?? '') }}" required>
+                            <input type="text" wire:model.live.debounce.300ms="form.showroom_phone" required>
+                            @error('form.showroom_phone') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="form_boxes">
                             <label>Showroom email</label>
-                            <input type="email" name="showroom_email" value="{{ old('showroom_email', $showroom?->email ?? '') }}">
+                            <input type="email" wire:model.blur="form.showroom_email">
+                            @error('form.showroom_email') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="form_boxes">
                             <label>Showroom address</label>
-                            <input type="text" name="showroom_address" value="{{ old('showroom_address', $showroom?->address ?? '') }}">
+                            <input type="text" wire:model.blur="form.showroom_address">
+                            @error('form.showroom_address') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                     </div>
                     <div class="col-lg-12">
                         <div class="form_boxes">
                             <label>Description</label>
-                            <textarea name="showroom_description" rows="5">{{ old('showroom_description', $showroom?->description ?? '') }}</textarea>
+                            <textarea rows="5" wire:model.blur="form.showroom_description"></textarea>
+                            @error('form.showroom_description') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                     </div>
                 </div>
@@ -77,46 +82,50 @@
                         <div class="col-lg-6">
                             <div class="form_boxes">
                                 <label>Brand name</label>
-                                <input type="text" name="brand_name" value="{{ old('brand_name', data_get($adminSettings, 'site.brand_name.value', $showroom?->name)) }}" required>
+                                <input type="text" wire:model.live.debounce.300ms="form.brand_name" required>
+                                @error('form.brand_name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form_boxes">
                                 <label>Default currency</label>
-                                <input type="text" name="default_currency" maxlength="3" value="{{ old('default_currency', data_get($adminSettings, 'site.default_currency.value', 'VND')) }}" required>
+                                <input type="text" maxlength="3" wire:model.live.debounce.300ms="form.default_currency" required>
+                                @error('form.default_currency') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form_boxes">
                                 <label>Sales hotline</label>
-                                <input type="text" name="sales_hotline" value="{{ old('sales_hotline', data_get($adminSettings, 'contact.sales_hotline.value', $showroom?->phone)) }}">
+                                <input type="text" wire:model.blur="form.sales_hotline">
+                                @error('form.sales_hotline') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <label class="admin-check-panel">
-                                <input type="hidden" name="show_on_hold_public" value="0">
-                                <input type="checkbox" name="show_on_hold_public" value="1" {{ old('show_on_hold_public', data_get($adminSettings, 'inventory.show_on_hold_public.enabled', false)) ? 'checked' : '' }}>
+                                <input type="checkbox" wire:model.live="form.show_on_hold_public">
                                 <span>
                                     <strong>Cho phep hien thi xe on_hold tren public</strong>
                                     <small>Neu tat, chi show xe `available` tren public site.</small>
                                 </span>
                             </label>
+                            @error('form.show_on_hold_public') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-lg-12">
                             <label class="admin-check-panel">
-                                <input type="hidden" name="email_lead_notifications" value="0">
-                                <input type="checkbox" name="email_lead_notifications" value="1" {{ old('email_lead_notifications', data_get($adminSettings, 'notifications.lead_email_enabled.enabled', false)) ? 'checked' : '' }}>
+                                <input type="checkbox" wire:model.live="form.email_lead_notifications">
                                 <span>
                                     <strong>Bat thong bao email cho lead</strong>
                                     <small>Placeholder cho workflow notification sau nay.</small>
                                 </span>
                             </label>
+                            @error('form.email_lead_notifications') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-lg-12">
                             <div class="form-submit admin-form-submit-end">
-                                <button type="submit" class="theme-btn btn-style-one">
-                                    <span>Luu settings</span>
-                                    <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="Arrow">
+                                <button type="submit" class="theme-btn btn-style-one" wire:loading.attr="disabled" wire:target="save">
+                                    <span wire:loading.remove wire:target="save">Luu settings</span>
+                                    <span wire:loading wire:target="save">Dang luu...</span>
+                                    <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="Arrow" wire:loading.remove wire:target="save">
                                 </button>
                             </div>
                         </div>
@@ -125,4 +134,4 @@
             </div>
         </div>
     </form>
-@endsection
+</div>

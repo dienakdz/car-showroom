@@ -7,11 +7,11 @@ use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
 use App\Http\Controllers\Admin\Leads\LeadController;
 use App\Http\Controllers\Admin\Leads\LeadNoteController;
-use App\Http\Controllers\Admin\Reviews\TrimReviewController;
 use App\Http\Controllers\Admin\Sales\SaleController;
-use App\Http\Controllers\Admin\Settings\SettingController;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
+use App\Livewire\Admin\Reviews\Page as ReviewsPage;
+use App\Livewire\Admin\Settings\Page as SettingsPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -127,16 +127,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('reviews.')
             ->middleware('admin.permission:reviews.approve')
             ->group(function (): void {
-                Route::get('/', [TrimReviewController::class, 'index'])->name('index');
-                Route::match(['put', 'patch'], '/{trimReview}', [TrimReviewController::class, 'update'])->name('update');
+                Route::get('/', ReviewsPage::class)->name('index');
             });
 
         Route::prefix('settings')
             ->name('settings.')
             ->middleware('admin.permission:settings.manage')
             ->group(function (): void {
-                Route::get('/', [SettingController::class, 'index'])->name('index');
-                Route::match(['put', 'patch'], '/', [SettingController::class, 'update'])->name('update');
+                Route::get('/', SettingsPage::class)->name('index');
             });
     });
 });
