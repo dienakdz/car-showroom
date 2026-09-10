@@ -52,6 +52,11 @@ class Page extends AdminPageComponent
         ]));
     }
 
+    protected function requiredPermission(): ?string
+    {
+        return 'catalog.manage';
+    }
+
     private function ensureValidTab(): void
     {
         if (! in_array($this->tab, self::TABS, true)) {

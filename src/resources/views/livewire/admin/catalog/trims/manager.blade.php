@@ -16,7 +16,7 @@
                 <h4 class="c1-catalog-card-title">Tạo phiên bản xe (Trim)</h4>
                 <p class="c1-catalog-card-desc">Thêm phiên bản nhanh với các thông tin cơ bản hoặc mở form đầy đủ để cấu hình chi tiết trang bị.</p>
             </div>
-            <a href="{{ route('admin.catalog.trims.create') }}" class="c1-action-btn" style="color: var(--c1-primary); font-weight: 600;">
+            <a href="{{ route('admin.catalog.trims.create') }}" wire:navigate class="c1-action-btn" style="color: var(--c1-primary); font-weight: 600;">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                 Mở form đầy đủ
             </a>
@@ -170,7 +170,7 @@
                                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         Sửa
                                     </button>
-                                    <a href="{{ route('admin.catalog.trims.edit', $trim) }}" class="c1-action-btn" title="Chi tiết đầy đủ">
+                                    <a href="{{ route('admin.catalog.trims.edit', $trim) }}" wire:navigate class="c1-action-btn" title="Chi tiết đầy đủ">
                                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                         Chi tiết
                                     </a>

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\Appointments\AppointmentController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\Catalog\TrimFormController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
@@ -12,6 +11,7 @@ use App\Http\Controllers\Admin\Reviews\TrimReviewController;
 use App\Http\Controllers\Admin\Sales\SaleController;
 use App\Http\Controllers\Admin\Settings\SettingController;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
+use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,7 +46,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                     return redirect()->route('admin.catalog.index', array_filter([
                         'tab' => 'makes',
                         'make_q' => $search !== '' ? $search : null,
-                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                    ], static fn (mixed $value): bool => $value !== null));
                 })->name('makes.index');
 
                 Route::get('/models', function (Request $request): RedirectResponse {
@@ -57,7 +57,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                         'tab' => 'models',
                         'model_q' => $search !== '' ? $search : null,
                         'model_make' => $makeId > 0 ? $makeId : null,
-                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                    ], static fn (mixed $value): bool => $value !== null));
                 })->name('models.index');
 
                 Route::get('/trims', function (Request $request): RedirectResponse {
@@ -68,13 +68,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                         'tab' => 'trims',
                         'trim_q' => $search !== '' ? $search : null,
                         'trim_model' => $modelId > 0 ? $modelId : null,
-                    ], static fn (mixed $value): bool => $value !== null && $value !== ''));
+                    ], static fn (mixed $value): bool => $value !== null));
                 })->name('trims.index');
 
-                Route::get('/trims/create', [TrimFormController::class, 'create'])->name('trims.create');
-                Route::post('/trims', [TrimFormController::class, 'store'])->name('trims.store');
-                Route::get('/trims/{trimRecord}/edit', [TrimFormController::class, 'edit'])->name('trims.edit');
-                Route::match(['put', 'patch'], '/trims/{trimRecord}', [TrimFormController::class, 'update'])->name('trims.update');
+                Route::get('/trims/create', TrimForm::class)->name('trims.create');
+                Route::get('/trims/{trimRecord}/edit', TrimForm::class)->name('trims.edit');
             });
 
         Route::prefix('inventory')

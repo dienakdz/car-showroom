@@ -2,16 +2,16 @@
 
 namespace App\Livewire\Admin\Catalog\Models;
 
+use App\Livewire\Admin\AdminPageComponent;
 use App\Models\CarModel;
 use App\Models\Make;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class Manager extends Component
+class Manager extends AdminPageComponent
 {
     use WithPagination;
 
@@ -202,6 +202,11 @@ class Manager extends Component
                 ->orderBy($sortField, $sortDirection)
                 ->paginate($this->perPage, ['*'], 'modelsPage'),
         ]);
+    }
+
+    protected function requiredPermission(): ?string
+    {
+        return 'catalog.manage';
     }
 
     private function resetCreateForm(): void

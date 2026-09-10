@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Catalog\Makes;
 
+use App\Livewire\Admin\AdminPageComponent;
 use App\Models\Make;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -9,11 +10,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class Manager extends Component
+class Manager extends AdminPageComponent
 {
     use WithFileUploads;
     use WithPagination;
@@ -195,6 +195,11 @@ class Manager extends Component
                 ->orderBy($sortField, $sortDirection)
                 ->paginate($this->perPage, ['*'], 'makesPage'),
         ]);
+    }
+
+    protected function requiredPermission(): ?string
+    {
+        return 'catalog.manage';
     }
 
     private function resetCreateForm(): void
