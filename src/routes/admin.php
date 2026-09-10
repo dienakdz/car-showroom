@@ -5,11 +5,11 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
-use App\Http\Controllers\Admin\Leads\LeadController;
-use App\Http\Controllers\Admin\Leads\LeadNoteController;
 use App\Http\Controllers\Admin\Sales\SaleController;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
+use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
+use App\Livewire\Admin\Leads\ShowPage as LeadShowPage;
 use App\Livewire\Admin\Reviews\Page as ReviewsPage;
 use App\Livewire\Admin\Settings\Page as SettingsPage;
 use Illuminate\Http\RedirectResponse;
@@ -97,10 +97,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('leads.')
             ->middleware('admin.permission:leads.manage')
             ->group(function (): void {
-                Route::get('/', [LeadController::class, 'index'])->name('index');
-                Route::get('/{lead}', [LeadController::class, 'show'])->name('show');
-                Route::match(['put', 'patch'], '/{lead}', [LeadController::class, 'update'])->name('update');
-                Route::post('/{lead}/notes', [LeadNoteController::class, 'store'])->name('notes.store');
+                Route::get('/', LeadsIndexPage::class)->name('index');
+                Route::get('/{lead}', LeadShowPage::class)->name('show');
             });
 
         Route::prefix('appointments')
