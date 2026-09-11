@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
 use App\Livewire\Admin\Appointments\Form as AppointmentForm;
 use App\Livewire\Admin\Appointments\IndexPage as AppointmentsIndexPage;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
+use App\Livewire\Admin\Dashboard\Page as DashboardPage;
 use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
 use App\Livewire\Admin\Leads\ShowPage as LeadShowPage;
 use App\Livewire\Admin\Reviews\Page as ReviewsPage;
@@ -34,7 +34,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     }
 
     Route::middleware(['auth', 'admin.access'])->group(function (): void {
-        Route::get('/', DashboardController::class)->name('dashboard');
+        Route::get('/', DashboardPage::class)->name('dashboard');
 
         Route::prefix('catalog')
             ->name('catalog.')

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Livewire\Admin\Dashboard;
 
+use App\Livewire\Admin\AdminPageComponent;
 use App\Models\Appointment;
 use App\Models\CarModel;
 use App\Models\CarUnit;
@@ -17,11 +18,21 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
-class DashboardController extends AdminBaseController
+class Page extends AdminPageComponent
 {
-    public function __invoke(): View
+    public int $leadTrendMonths = 6;
+
+    public function setLeadTrendMonths(int $months): void
     {
-        $settings = $this->loadAdminSettings();
+        if (in_array($months, [3, 6, 12], true)) {
+            $this->leadTrendMonths = $months;
+        }
+    }
+
+    public function render(): View
+    {
+        $adminData = $this->adminLayoutData();
+        $settings = $adminData['adminSettings'] ?? collect();
         $currency = (string) data_get($settings, 'site.default_currency.value', 'VND');
 
         $inventoryCounts = CarUnit::query()
@@ -29,19 +40,21 @@ class DashboardController extends AdminBaseController
             ->groupBy('status')
             ->pluck('aggregate', 'status');
 
-        $leadTrendPeriodStart = now()->startOfMonth()->subMonths(5);
+        $offsetRange = max(2, min(12, $this->leadTrendMonths)) - 1;
+        $leadTrendPeriodStart = now()->startOfMonth()->subMonths($offsetRange);
         $leadTrendPeriodExpression = match (DB::getDriverName()) {
             'sqlite' => "strftime('%Y-%m', created_at)",
             'pgsql' => "to_char(created_at, 'YYYY-MM')",
             default => "DATE_FORMAT(created_at, '%Y-%m')",
         };
+
         $leadTrendCounts = Lead::query()
             ->selectRaw($leadTrendPeriodExpression . ' as period_key, COUNT(*) as total')
             ->whereBetween('created_at', [$leadTrendPeriodStart, now()->endOfMonth()])
             ->groupBy('period_key')
             ->pluck('total', 'period_key');
 
-        $leadTrend = collect(range(5, 0))
+        $leadTrend = collect(range($offsetRange, 0))
             ->map(function (int $offset) use ($leadTrendCounts): array {
                 $periodStart = now()->startOfMonth()->subMonths($offset);
 
@@ -83,8 +96,7 @@ class DashboardController extends AdminBaseController
                 'label' => 'Tổng xe trong kho',
                 'value' => $totalInventory,
                 'note' => $inventoryCounts->get('available', 0) . ' xe sẵn sàng lên sàn',
-                'icon' => asset('boxcar/images/icons/cart1.svg'),
-                'fa_icon' => 'fa-car',
+                'url' => route('admin.inventory.index'),
                 'tone' => 'primary',
             ],
             [
@@ -94,8 +106,7 @@ class DashboardController extends AdminBaseController
                     ->where('created_at', '>=', now()->subDays(7))
                     ->count(),
                 'note' => Lead::query()->where('status', 'new')->count() . ' lead đang chờ phản hồi',
-                'icon' => asset('boxcar/images/icons/cart2.svg'),
-                'fa_icon' => 'fa-users',
+                'url' => route('admin.leads.index'),
                 'tone' => 'info',
             ],
             [
@@ -108,8 +119,7 @@ class DashboardController extends AdminBaseController
                     ->where('scheduled_at', '>=', now())
                     ->where('scheduled_at', '<=', now()->addDays(3))
                     ->count() . ' lịch trong 3 ngày tới',
-                'icon' => asset('boxcar/images/icons/cart3.svg'),
-                'fa_icon' => 'fa-calendar-check',
+                'url' => route('admin.appointments.index'),
                 'tone' => 'warning',
             ],
             [
@@ -119,8 +129,7 @@ class DashboardController extends AdminBaseController
                     ->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])
                     ->count(),
                 'note' => TrimReview::query()->where('status', 'pending')->count() . ' review đang chờ duyệt',
-                'icon' => asset('boxcar/images/icons/cart4.svg'),
-                'fa_icon' => 'fa-line-chart',
+                'url' => route('admin.sales.index'),
                 'tone' => 'success',
             ],
         ];
@@ -206,9 +215,7 @@ class DashboardController extends AdminBaseController
                 ];
             });
 
-        return $this->adminView('admin.dashboard', [
-            'adminPageTitle' => 'Bảng điều khiển tổng quan',
-            'adminPageDescription' => 'Theo dõi toàn diện kho xe, khách hàng tiềm năng, lịch hẹn và giao dịch bán hàng của showroom.',
+        return view('livewire.admin.dashboard.page', [
             'summaryCards' => $summaryCards,
             'totalInventory' => $totalInventory,
             'inventoryBreakdown' => $inventoryBreakdown,
@@ -228,7 +235,15 @@ class DashboardController extends AdminBaseController
             'recentLeads' => $recentLeads,
             'upcomingAppointments' => $upcomingAppointments,
             'recentSales' => $recentSales,
-        ]);
+        ])->layout('admin.layouts.livewire', $this->adminLayoutData([
+            'adminPageTitle' => 'Bảng điều khiển tổng quan',
+            'adminPageDescription' => 'Theo dõi toàn diện kho xe, khách hàng tiềm năng, lịch hẹn và giao dịch bán hàng của showroom.',
+        ]));
+    }
+
+    protected function requiredPermission(): ?string
+    {
+        return null;
     }
 
     protected function formatCarContext(?Trim $trim): string
@@ -306,5 +321,14 @@ class DashboardController extends AdminBaseController
         }
 
         return $dateTime->format('d/m/Y H:i');
+    }
+
+    protected function formatCurrency(int|float|null $value, ?string $currency = null): string
+    {
+        if ($value === null) {
+            return 'Liên hệ';
+        }
+
+        return number_format((float) $value, 0, ',', '.') . ' ' . ($currency ?? 'VND');
     }
 }

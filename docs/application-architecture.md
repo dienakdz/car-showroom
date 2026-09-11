@@ -349,7 +349,7 @@ incremental. Do not copy a legacy implementation when building new functionality
 | Appointments | Livewire + service | Migrated to Livewire (Phase 1); preserve AppointmentManagementService. |
 | Inventory | Controller + Blade + workflow service | Legacy; preserve `InventoryWorkflowService` during migration. |
 | Sales | Livewire + service | Migrated to Livewire (Phase 2); preserve SaleManagementService. |
-| Dashboard | Controller + Blade | Legacy/read-only; planned for later migration. |
+| Dashboard | Livewire | Migrated to Livewire (Phase 3). |
 
 When a module is migrated, update this table in the same change.
 

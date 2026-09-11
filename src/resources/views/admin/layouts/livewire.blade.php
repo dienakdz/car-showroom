@@ -46,5 +46,6 @@
 <script src="{{ asset('vendor/flasher/toastr.min.js') }}"></script>
 @livewireScripts
 @flasher_render
+@stack('scripts')
 </body>
 </html>
