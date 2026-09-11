@@ -346,7 +346,7 @@ incremental. Do not copy a legacy implementation when building new functionality
 | Leads | Livewire | Current reference for list/detail/filter/note workflows. |
 | Review moderation | Livewire | Keep Livewire. |
 | Settings | Livewire + service | Keep Livewire and preserve `ShowroomSettingsService`. |
-| Appointments | Controller + Blade | Legacy; migrate to Livewire before expanding interactive admin behavior. |
+| Appointments | Livewire + service | Migrated to Livewire (Phase 1); preserve AppointmentManagementService. |
 | Inventory | Controller + Blade + workflow service | Legacy; preserve `InventoryWorkflowService` during migration. |
 | Sales | Controller + Blade + service | Legacy; preserve `SaleManagementService` during migration. |
 | Dashboard | Controller + Blade | Legacy/read-only; planned for later migration. |

@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\Appointments\AppointmentController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
 use App\Http\Controllers\Admin\Sales\SaleController;
+use App\Livewire\Admin\Appointments\Form as AppointmentForm;
+use App\Livewire\Admin\Appointments\IndexPage as AppointmentsIndexPage;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
 use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
@@ -102,11 +103,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('appointments.')
             ->middleware('admin.permission:appointments.manage')
             ->group(function (): void {
-                Route::get('/', [AppointmentController::class, 'index'])->name('index');
-                Route::get('/create', [AppointmentController::class, 'create'])->name('create');
-                Route::post('/', [AppointmentController::class, 'store'])->name('store');
-                Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
-                Route::match(['put', 'patch'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');
+                Route::get('/', AppointmentsIndexPage::class)->name('index');
+                Route::get('/create', AppointmentForm::class)->name('create');
+                Route::get('/{appointmentRecord}/edit', AppointmentForm::class)->name('edit');
             });
 
         Route::prefix('sales')
