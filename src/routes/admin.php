@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Inventory\CarUnitController;
 use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
-use App\Http\Controllers\Admin\Sales\SaleController;
 use App\Livewire\Admin\Appointments\Form as AppointmentForm;
 use App\Livewire\Admin\Appointments\IndexPage as AppointmentsIndexPage;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
@@ -12,6 +11,8 @@ use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
 use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
 use App\Livewire\Admin\Leads\ShowPage as LeadShowPage;
 use App\Livewire\Admin\Reviews\Page as ReviewsPage;
+use App\Livewire\Admin\Sales\Form as SaleForm;
+use App\Livewire\Admin\Sales\IndexPage as SalesIndexPage;
 use App\Livewire\Admin\Settings\Page as SettingsPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -112,9 +113,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('sales.')
             ->middleware('admin.permission:sales.manage')
             ->group(function (): void {
-                Route::get('/', [SaleController::class, 'index'])->name('index');
-                Route::get('/create', [SaleController::class, 'create'])->name('create');
-                Route::post('/', [SaleController::class, 'store'])->name('store');
+                Route::get('/', SalesIndexPage::class)->name('index');
+                Route::get('/create', SaleForm::class)->name('create');
             });
 
         Route::prefix('reviews')
