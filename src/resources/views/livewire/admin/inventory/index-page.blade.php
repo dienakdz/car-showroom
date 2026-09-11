@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="c1-dash-quick-actions">
-                <a href="{{ route('admin.inventory.create') }}" class="c1-btn c1-btn-primary">
+                <a href="{{ route('admin.inventory.create') }}" wire:navigate.hover class="c1-btn c1-btn-primary">
                     <i class="fa fa-plus"></i>
                     <span>Thêm xe mới</span>
                 </a>
@@ -217,7 +217,7 @@
                                 </td>
                                 <td class="text-right">
                                     <div style="display: inline-flex; align-items: center; gap: 6px;">
-                                        <a href="{{ route('admin.inventory.edit', $carUnit) }}" class="c1-btn c1-btn-sm c1-btn-ghost" title="Chỉnh sửa chi tiết xe">
+                                        <a href="{{ route('admin.inventory.edit', $carUnit) }}" wire:navigate.hover class="c1-btn c1-btn-sm c1-btn-ghost" title="Chỉnh sửa chi tiết xe">
                                             <i class="fa fa-pencil"></i>
                                             <span>Sửa</span>
                                         </a>

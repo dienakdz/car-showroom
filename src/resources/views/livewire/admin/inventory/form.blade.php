@@ -30,7 +30,7 @@
             </div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <a href="{{ route('admin.inventory.index') }}" wire:navigate class="c1-btn c1-btn-secondary">
+            <a href="{{ route('admin.inventory.index') }}" wire:navigate.hover class="c1-btn c1-btn-secondary">
                 <i class="fa fa-arrow-left me-1"></i> Về kho xe
             </a>
             <button

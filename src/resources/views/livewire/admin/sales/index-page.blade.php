@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="c1-dash-quick-actions">
-                <a href="{{ route('admin.sales.create') }}" wire:navigate class="c1-btn c1-btn-primary">
+                <a href="{{ route('admin.sales.create') }}" wire:navigate.hover class="c1-btn c1-btn-primary">
                     <i class="fa fa-plus"></i>
                     <span>Tạo hợp đồng mới</span>
                 </a>

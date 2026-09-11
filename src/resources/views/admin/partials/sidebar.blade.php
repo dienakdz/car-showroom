@@ -61,7 +61,7 @@
 
 <aside class="c1-sidebar" aria-label="Điều hướng quản trị">
     <div class="c1-sidebar-brand">
-        <a href="{{ route('admin.dashboard') }}" class="c1-brand-link">
+        <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="c1-brand-link">
             <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="BoxCar" class="c1-brand-logo">
         </a>
     </div>
@@ -77,6 +77,7 @@
                     @if ($canAccess)
                         <a
                             href="{{ route($module['route']) }}"
+                            wire:navigate.hover
                             class="c1-nav-link {{ $isActive ? 'is-active' : '' }}"
                             @if ($isActive) aria-current="page" @endif
                         >

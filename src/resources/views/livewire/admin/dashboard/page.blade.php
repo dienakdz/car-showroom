@@ -9,11 +9,11 @@
                 </div>
             </div>
             <div class="c1-dash-quick-actions">
-                <a href="{{ route('admin.inventory.create') }}" wire:navigate class="c1-btn c1-btn-primary">
+                <a href="{{ route('admin.inventory.create') }}" wire:navigate.hover class="c1-btn c1-btn-primary">
                     <i class="fa fa-plus"></i>
                     <span>Thêm xe vào kho</span>
                 </a>
-                <a href="{{ route('admin.sales.create') }}" wire:navigate class="c1-btn c1-btn-secondary">
+                <a href="{{ route('admin.sales.create') }}" wire:navigate.hover class="c1-btn c1-btn-secondary">
                     <i class="fa fa-file-text"></i>
                     <span>Tạo hợp đồng bán</span>
                 </a>
@@ -23,7 +23,7 @@
         {{-- Row 1: 4 KPI Cards (Clickable to jump to modules) --}}
         <div class="c1-kpi-grid">
             {{-- Card 1: Total Inventory --}}
-            <a href="{{ route('admin.inventory.index') }}" wire:navigate class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
+            <a href="{{ route('admin.inventory.index') }}" wire:navigate.hover class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
                 <div class="c1-kpi-head">
                     <span class="c1-kpi-title">Tổng xe trong kho</span>
                     <span class="c1-badge" style="background: #e2e8f0; color: #334155;">Kho xe</span>
@@ -41,7 +41,7 @@
             </a>
 
             {{-- Card 2: New Leads --}}
-            <a href="{{ route('admin.leads.index') }}" wire:navigate class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
+            <a href="{{ route('admin.leads.index') }}" wire:navigate.hover class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
                 <div class="c1-kpi-head">
                     <span class="c1-kpi-title">Lead mới tiếp nhận</span>
                     <span class="c1-badge" style="background: #e0f2fe; color: #0369a1;">CRM</span>
@@ -59,7 +59,7 @@
             </a>
 
             {{-- Card 3: Appointments --}}
-            <a href="{{ route('admin.appointments.index') }}" wire:navigate class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
+            <a href="{{ route('admin.appointments.index') }}" wire:navigate.hover class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
                 <div class="c1-kpi-head">
                     <span class="c1-kpi-title">Lịch hẹn cần xử lý</span>
                     <span class="c1-badge" style="background: #fef3c7; color: #92400e;">Lịch hẹn</span>
@@ -77,7 +77,7 @@
             </a>
 
             {{-- Card 4: Monthly Sales --}}
-            <a href="{{ route('admin.sales.index') }}" wire:navigate class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
+            <a href="{{ route('admin.sales.index') }}" wire:navigate.hover class="c1-kpi-card" style="text-decoration: none; display: block; color: inherit;">
                 <div class="c1-kpi-head">
                     <span class="c1-kpi-title">Giao dịch tháng này</span>
                     <span class="c1-badge c1-badge-green">Doanh số</span>
@@ -194,7 +194,7 @@
             <div class="c1-panel c1-table-panel">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 class="c1-panel-title">Lead mới tiếp nhận</h3>
-                    <a href="{{ route('admin.leads.index') }}" wire:navigate class="c1-see-all">Xem tất cả ▾</a>
+                    <a href="{{ route('admin.leads.index') }}" wire:navigate.hover class="c1-see-all">Xem tất cả ▾</a>
                 </div>
                 <div class="c1-table-wrap">
                     <table class="c1-table">
@@ -210,16 +210,16 @@
                         <tbody>
                             @forelse ($recentLeads as $lead)
                                 <tr wire:key="recent-lead-{{ $loop->index }}">
-                                    <td>
-                                        <span class="c1-vehicle-tag">{{ \Illuminate\Support\Str::limit($lead->context, 20) }}</span>
-                                    </td>
-                                    <td class="c1-cell-primary">{{ $lead->name }}</td>
-                                    <td><span class="c1-cell-sub">{{ ucfirst($lead->source ?? 'Web') }}</span></td>
-                                    <td><span class="c1-cell-sub">{{ $lead->created_at_label }}</span></td>
-                                    <td class="text-right">
-                                        <a href="{{ $lead->url }}" wire:navigate class="c1-row-action" title="Xem chi tiết lead">•••</a>
-                                    </td>
-                                </tr>
+                                     <td>
+                                         <span class="c1-vehicle-tag">{{ \Illuminate\Support\Str::limit($lead->context, 20) }}</span>
+                                     </td>
+                                     <td class="c1-cell-primary">{{ $lead->name }}</td>
+                                     <td><span class="c1-cell-sub">{{ ucfirst($lead->source ?? 'Web') }}</span></td>
+                                     <td><span class="c1-cell-sub">{{ $lead->created_at_label }}</span></td>
+                                     <td class="text-right">
+                                         <a href="{{ $lead->url }}" wire:navigate class="c1-row-action" title="Xem chi tiết lead">•••</a>
+                                     </td>
+                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="5" class="c1-empty-cell">Chưa có lead mới tiếp nhận.</td>
@@ -234,7 +234,7 @@
             <div class="c1-panel c1-table-panel">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 class="c1-panel-title">Giao dịch & Lịch hẹn gần đây</h3>
-                    <a href="{{ route('admin.sales.index') }}" wire:navigate class="c1-see-all">Xem tất cả ▾</a>
+                    <a href="{{ route('admin.sales.index') }}" wire:navigate.hover class="c1-see-all">Xem tất cả ▾</a>
                 </div>
                 <div class="c1-table-wrap">
                     <table class="c1-table">

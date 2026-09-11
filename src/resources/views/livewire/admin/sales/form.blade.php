@@ -6,9 +6,10 @@
                 Chốt giao dịch offline, kết nối khách hàng và lưu trữ hợp đồng mua bán xe.
             </div>
         </div>
-        <div>
-            <a href="{{ route('admin.sales.index') }}" wire:navigate class="admin-action-btn admin-action-btn-secondary">
-                <i class="fa fa-arrow-left me-1"></i> Về danh sách hợp đồng
+        <div class="c1-dash-quick-actions">
+            <a href="{{ route('admin.sales.index') }}" wire:navigate.hover class="c1-btn c1-btn-secondary">
+                <i class="fa fa-arrow-left"></i>
+                <span>Quay lại danh sách</span>
             </a>
         </div>
     </div>
