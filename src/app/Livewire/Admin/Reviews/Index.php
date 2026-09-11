@@ -9,7 +9,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
-class Page extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     use WithPagination;
 
@@ -58,7 +58,7 @@ class Page extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.reviews.page', [
+        return view('livewire.admin.reviews.index', [
             'statuses' => self::STATUSES,
             'reviews' => TrimReview::query()
                 ->with(['trim.model.make', 'user:id,name'])

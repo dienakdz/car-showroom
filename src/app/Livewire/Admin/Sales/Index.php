@@ -9,7 +9,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
-class IndexPage extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     use WithPagination;
 
@@ -47,7 +47,7 @@ class IndexPage extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.sales.index-page', [
+        return view('livewire.admin.sales.index', [
             'sales' => $this->filteredQuery()->paginate(12, ['*'], 'salesPage'),
             'totalRevenue' => (int) Sale::query()->sum('sold_price'),
             'monthlyCount' => Sale::query()->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),

@@ -13,7 +13,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
-class IndexPage extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     use WithPagination;
 
@@ -96,7 +96,7 @@ class IndexPage extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.appointments.index-page', [
+        return view('livewire.admin.appointments.index', [
             'appointments' => $this->filteredQuery()->paginate(12, ['*'], 'appointmentsPage'),
             'appointmentCounts' => [
                 'today' => Appointment::query()->whereDate('scheduled_at', now()->today())->count(),

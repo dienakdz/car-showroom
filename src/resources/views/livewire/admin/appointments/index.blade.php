@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="c1-dash-quick-actions">
-                <a href="{{ route('admin.appointments.create') }}" wire:navigate class="c1-btn c1-btn-primary">
+                <a href="{{ route('admin.appointments.create') }}" wire:navigate.hover class="c1-btn c1-btn-primary">
                     <i class="fa fa-plus"></i>
                     <span>Đặt lịch hẹn mới</span>
                 </a>
@@ -197,7 +197,7 @@
                                     </div>
                                 </td>
                                 <td class="text-right">
-                                    <a href="{{ route('admin.appointments.edit', $appointment) }}" wire:navigate class="c1-btn c1-btn-sm c1-btn-ghost" title="Xem và chỉnh sửa chi tiết">
+                                    <a href="{{ route('admin.appointments.edit', $appointment) }}" wire:navigate.hover class="c1-btn c1-btn-sm c1-btn-ghost" title="Xem và chỉnh sửa chi tiết">
                                         <i class="fa fa-pencil"></i>
                                         <span>Chi tiết</span>
                                     </a>

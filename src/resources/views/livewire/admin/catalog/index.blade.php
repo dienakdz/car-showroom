@@ -17,7 +17,7 @@
                     Thêm dòng xe
                 </button>
             @else
-                <a href="{{ route('admin.catalog.trims.create') }}" wire:navigate class="c1-btn c1-btn-primary">
+                <a href="{{ route('admin.catalog.trims.create') }}" wire:navigate.hover class="c1-btn c1-btn-primary">
                     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
                     Thêm phiên bản
                 </a>

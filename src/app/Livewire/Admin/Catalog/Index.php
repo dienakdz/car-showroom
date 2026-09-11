@@ -10,7 +10,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
-class Page extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     private const TABS = ['makes', 'models', 'trims'];
 
@@ -40,7 +40,7 @@ class Page extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.catalog.page', [
+        return view('livewire.admin.catalog.index', [
             'summary' => [
                 'makes' => Make::query()->count(),
                 'models' => CarModel::query()->count(),

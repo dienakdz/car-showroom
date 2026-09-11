@@ -156,7 +156,7 @@ class Form extends AdminPageComponent
             'form.car_unit_id' => ['nullable', 'integer', 'exists:car_units,id'],
             'form.trim_id' => ['nullable', 'integer', 'exists:trims,id'],
             'form.handled_by' => ['nullable', 'integer', 'exists:users,id'],
-            'form.status' => ['required', Rule::in(IndexPage::STATUSES)],
+            'form.status' => ['required', Rule::in(Index::STATUSES)],
             'form.scheduled_at' => ['required', 'date'],
             'form.note' => ['nullable', 'string', 'max:2000'],
         ];

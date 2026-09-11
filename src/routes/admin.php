@@ -2,18 +2,18 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Livewire\Admin\Appointments\Form as AppointmentForm;
-use App\Livewire\Admin\Appointments\IndexPage as AppointmentsIndexPage;
-use App\Livewire\Admin\Catalog\Page as CatalogPage;
+use App\Livewire\Admin\Appointments\Index as AppointmentsIndex;
+use App\Livewire\Admin\Catalog\Index as CatalogIndex;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
-use App\Livewire\Admin\Dashboard\Page as DashboardPage;
+use App\Livewire\Admin\Dashboard\Index as DashboardIndex;
 use App\Livewire\Admin\Inventory\Form as InventoryForm;
-use App\Livewire\Admin\Inventory\IndexPage as InventoryIndexPage;
-use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
-use App\Livewire\Admin\Leads\ShowPage as LeadShowPage;
-use App\Livewire\Admin\Reviews\Page as ReviewsPage;
+use App\Livewire\Admin\Inventory\Index as InventoryIndex;
+use App\Livewire\Admin\Leads\Index as LeadsIndex;
+use App\Livewire\Admin\Leads\Show as LeadShow;
+use App\Livewire\Admin\Reviews\Index as ReviewsIndex;
 use App\Livewire\Admin\Sales\Form as SaleForm;
-use App\Livewire\Admin\Sales\IndexPage as SalesIndexPage;
-use App\Livewire\Admin\Settings\Page as SettingsPage;
+use App\Livewire\Admin\Sales\Index as SalesIndex;
+use App\Livewire\Admin\Settings\Index as SettingsIndex;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,13 +34,13 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     }
 
     Route::middleware(['auth', 'admin.access'])->group(function (): void {
-        Route::get('/', DashboardPage::class)->name('dashboard');
+        Route::get('/', DashboardIndex::class)->name('dashboard');
 
         Route::prefix('catalog')
             ->name('catalog.')
             ->middleware('admin.permission:catalog.manage')
             ->group(function (): void {
-                Route::get('', CatalogPage::class)->name('index');
+                Route::get('', CatalogIndex::class)->name('index');
 
                 Route::get('/makes', function (Request $request): RedirectResponse {
                     $search = trim((string) $request->string('q'));
@@ -81,7 +81,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('inventory.')
             ->middleware('admin.permission:inventory.manage')
             ->group(function (): void {
-                Route::get('/', InventoryIndexPage::class)->name('index');
+                Route::get('/', InventoryIndex::class)->name('index');
                 Route::get('/create', InventoryForm::class)->name('create');
                 Route::get('/{carUnit}/edit', InventoryForm::class)->name('edit');
             });
@@ -90,15 +90,15 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('leads.')
             ->middleware('admin.permission:leads.manage')
             ->group(function (): void {
-                Route::get('/', LeadsIndexPage::class)->name('index');
-                Route::get('/{lead}', LeadShowPage::class)->name('show');
+                Route::get('/', LeadsIndex::class)->name('index');
+                Route::get('/{lead}', LeadShow::class)->name('show');
             });
 
         Route::prefix('appointments')
             ->name('appointments.')
             ->middleware('admin.permission:appointments.manage')
             ->group(function (): void {
-                Route::get('/', AppointmentsIndexPage::class)->name('index');
+                Route::get('/', AppointmentsIndex::class)->name('index');
                 Route::get('/create', AppointmentForm::class)->name('create');
                 Route::get('/{appointmentRecord}/edit', AppointmentForm::class)->name('edit');
             });
@@ -107,7 +107,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('sales.')
             ->middleware('admin.permission:sales.manage')
             ->group(function (): void {
-                Route::get('/', SalesIndexPage::class)->name('index');
+                Route::get('/', SalesIndex::class)->name('index');
                 Route::get('/create', SaleForm::class)->name('create');
             });
 
@@ -115,14 +115,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('reviews.')
             ->middleware('admin.permission:reviews.approve')
             ->group(function (): void {
-                Route::get('/', ReviewsPage::class)->name('index');
+                Route::get('/', ReviewsIndex::class)->name('index');
             });
 
         Route::prefix('settings')
             ->name('settings.')
             ->middleware('admin.permission:settings.manage')
             ->group(function (): void {
-                Route::get('/', SettingsPage::class)->name('index');
+                Route::get('/', SettingsIndex::class)->name('index');
             });
     });
 });

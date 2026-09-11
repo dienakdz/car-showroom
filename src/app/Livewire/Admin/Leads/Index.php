@@ -11,7 +11,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
-class IndexPage extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     use WithPagination;
 
@@ -106,7 +106,7 @@ class IndexPage extends AdminPageComponent
             ];
         }
 
-        return view('livewire.admin.leads.index-page', [
+        return view('livewire.admin.leads.index', [
             'leads' => $leads,
             'kanbanLeads' => $kanbanLeads,
             'stageCounts' => [

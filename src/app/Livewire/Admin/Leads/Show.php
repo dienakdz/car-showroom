@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 
-class ShowPage extends AdminPageComponent
+class Show extends AdminPageComponent
 {
     private const STATUSES = ['new', 'contacted', 'qualified', 'booked', 'closed', 'lost'];
 
@@ -99,7 +99,7 @@ class ShowPage extends AdminPageComponent
             ])
             ->findOrFail($this->leadId);
 
-        return view('livewire.admin.leads.show-page', [
+        return view('livewire.admin.leads.show', [
             'lead' => $lead,
             'staffUsers' => $this->assignableUsers(),
             'statusOptions' => self::STATUSES,

@@ -12,7 +12,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
-class IndexPage extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     use WithPagination;
 
@@ -106,7 +106,7 @@ class IndexPage extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.inventory.index-page', [
+        return view('livewire.admin.inventory.index', [
             'carUnits' => $this->filteredQuery()->paginate(12, ['*'], 'inventoryPage'),
             'statusCounts' => [
                 'all' => CarUnit::query()->count(),

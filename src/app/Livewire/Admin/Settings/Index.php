@@ -7,7 +7,7 @@ use App\Services\Admin\ShowroomSettingsService;
 use App\Support\ViewDataCache;
 use Illuminate\View\View;
 
-class Page extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     /** @var array<string, mixed> */
     public array $form = [];
@@ -46,7 +46,7 @@ class Page extends AdminPageComponent
 
     public function render(): View
     {
-        return view('livewire.admin.settings.page')
+        return view('livewire.admin.settings.index')
             ->layout('admin.layouts.livewire', $this->adminLayoutData([
                 'adminPageTitle' => 'Settings & Showroom',
                 'adminPageDescription' => 'Cap nhat thong tin showroom va mot so policy van hanh co ban.',

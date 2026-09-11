@@ -50,7 +50,7 @@
 ## Laravel And Livewire Patterns
 
 - Match the existing file pairing between `src/app/Livewire/...` and `src/resources/views/livewire/...`.
-- In admin catalog modules, preserve the current pattern: `Page.php` as the workspace container and `*/Manager.php` for per-entity CRUD panels.
+- In admin catalog modules, preserve the current pattern: `Index.php` as the workspace container and `*/Manager.php` for per-entity CRUD panels.
 - In this project, "using Livewire" still means rendering through Blade view files under `src/resources/views/livewire/...`. Do not interpret "avoid Blade" as a reason to avoid Livewire.
 - For new admin CRUD-heavy modules, default to Livewire unless the existing module clearly follows a simpler controller + Blade pattern and does not need rich interaction.
 - Validate small one-off HTTP payloads directly in the controller. Use Form Requests when validation is non-trivial, reused, needs normalization, has cross-field rules, or owns request authorization; do not create a Request class for every endpoint by default.

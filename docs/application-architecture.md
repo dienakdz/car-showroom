@@ -192,24 +192,23 @@ final class InventoryController extends ClientBaseController
 Every full-page admin component must have a matching Livewire Blade view.
 
 ```text
-src/app/Livewire/Admin/Leads/IndexPage.php
-src/resources/views/livewire/admin/leads/index-page.blade.php
+src/app/Livewire/Admin/Leads/Index.php
+src/resources/views/livewire/admin/leads/index.blade.php
 ```
 
 Use these naming patterns:
 
-| Screen type | Preferred class name |
-|---|---|
-| Single module workspace | `Page.php` |
-| List with a separate detail page | `IndexPage.php` |
-| Detail page | `ShowPage.php` |
-| Create/edit page | `Form.php` |
-| CRUD panel nested in a workspace | `Manager.php` |
+| Screen type | Preferred class name | Preferred view name |
+|---|---|---|
+| Module root / List page | `Index.php` | `index.blade.php` |
+| Detail page | `Show.php` | `show.blade.php` |
+| Create/edit page | `Form.php` | `form.blade.php` |
+| CRUD panel nested in a workspace | `Manager.php` | `manager.blade.php` |
 
 Catalog is a deliberate composite workspace:
 
 ```text
-Catalog/Page.php
+Catalog/Index.php
 ├── Makes/Manager.php
 ├── Models/Manager.php
 └── Trims/Manager.php
@@ -361,8 +360,8 @@ Client routes belong in `src/routes/web.php`. Admin routes belong in
 Admin full-page Livewire route:
 
 ```php
-Route::get('/leads', LeadsIndexPage::class)->name('leads.index');
-Route::get('/leads/{lead}', LeadShowPage::class)->name('leads.show');
+Route::get('/leads', LeadsIndex::class)->name('leads.index');
+Route::get('/leads/{lead}', LeadShow::class)->name('leads.show');
 ```
 
 Livewire actions such as `save`, `updateStatus`, or `addNote` do not need custom

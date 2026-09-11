@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
-class Page extends AdminPageComponent
+class Index extends AdminPageComponent
 {
     public int $leadTrendMonths = 6;
 
@@ -215,7 +215,7 @@ class Page extends AdminPageComponent
                 ];
             });
 
-        return view('livewire.admin.dashboard.page', [
+        return view('livewire.admin.dashboard.index', [
             'summaryCards' => $summaryCards,
             'totalInventory' => $totalInventory,
             'inventoryBreakdown' => $inventoryBreakdown,
