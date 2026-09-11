@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\Inventory\CarUnitController;
-use App\Http\Controllers\Admin\Inventory\CarUnitWorkflowController;
 use App\Livewire\Admin\Appointments\Form as AppointmentForm;
 use App\Livewire\Admin\Appointments\IndexPage as AppointmentsIndexPage;
 use App\Livewire\Admin\Catalog\Page as CatalogPage;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
 use App\Livewire\Admin\Dashboard\Page as DashboardPage;
+use App\Livewire\Admin\Inventory\Form as InventoryForm;
+use App\Livewire\Admin\Inventory\IndexPage as InventoryIndexPage;
 use App\Livewire\Admin\Leads\IndexPage as LeadsIndexPage;
 use App\Livewire\Admin\Leads\ShowPage as LeadShowPage;
 use App\Livewire\Admin\Reviews\Page as ReviewsPage;
@@ -81,15 +81,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('inventory.')
             ->middleware('admin.permission:inventory.manage')
             ->group(function (): void {
-                Route::get('/', [CarUnitController::class, 'index'])->name('index');
-                Route::get('/create', [CarUnitController::class, 'create'])->name('create');
-                Route::post('/', [CarUnitController::class, 'store'])->name('store');
-                Route::get('/{carUnit}/edit', [CarUnitController::class, 'edit'])->name('edit');
-                Route::match(['put', 'patch'], '/{carUnit}', [CarUnitController::class, 'update'])->name('update');
-
-                Route::post('/media/upload', [CarUnitController::class, 'uploadMedia'])->name('media.upload');
-                Route::post('/{carUnit}/publish', [CarUnitWorkflowController::class, 'publish'])->name('publish');
-                Route::post('/{carUnit}/archive', [CarUnitWorkflowController::class, 'archive'])->name('archive');
+                Route::get('/', InventoryIndexPage::class)->name('index');
+                Route::get('/create', InventoryForm::class)->name('create');
+                Route::get('/{carUnit}/edit', InventoryForm::class)->name('edit');
             });
 
         Route::prefix('leads')
