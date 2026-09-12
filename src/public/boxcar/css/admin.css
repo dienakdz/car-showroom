@@ -2630,3 +2630,318 @@ body.c1-body {
         padding: 32px 24px;
     }
 }
+
+/* ========================================================
+   C1 ADMIN SETTINGS & SHOWROOM SYSTEM
+   Matches concept_settings_b.jpg
+   ======================================================== */
+
+.c1-settings-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.c1-settings-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .c1-settings-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.c1-settings-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.c1-settings-sidebar {
+    position: sticky;
+    top: 90px;
+}
+
+/* Form inputs */
+.c1-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.c1-field-group:last-child {
+    margin-bottom: 0;
+}
+
+.c1-field-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c1-text-heading);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.c1-field-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--c1-border-card);
+    border-radius: var(--c1-radius-btn);
+    background: #ffffff;
+    font-size: 13.5px;
+    color: var(--c1-text-heading);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.c1-field-input:focus {
+    border-color: var(--c1-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.c1-field-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--c1-border-card);
+    border-radius: var(--c1-radius-btn);
+    background: #ffffff;
+    font-size: 13.5px;
+    color: var(--c1-text-heading);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+}
+
+.c1-field-textarea:focus {
+    border-color: var(--c1-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Toggle Switch rows */
+.c1-toggle-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.c1-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 20px;
+}
+
+.c1-toggle-row:first-child {
+    padding-top: 4px;
+}
+
+.c1-toggle-row:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+}
+
+.c1-toggle-info {
+    flex: 1;
+}
+
+.c1-toggle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--c1-text-heading);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.c1-toggle-desc {
+    font-size: 12.5px;
+    color: var(--c1-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.c1-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+    cursor: pointer;
+    margin: 0;
+}
+
+.c1-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.c1-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: background-color 0.2s;
+    border-radius: 26px;
+}
+
+.c1-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: transform 0.2s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.c1-toggle-switch input:checked + .c1-toggle-slider {
+    background-color: var(--c1-primary);
+}
+
+.c1-toggle-switch input:focus + .c1-toggle-slider {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.c1-toggle-switch input:checked + .c1-toggle-slider:before {
+    transform: translateX(22px);
+}
+
+.c1-toggle-grid {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.c1-toggle-item-inline {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.c1-toggle-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--c1-text-heading);
+    user-select: none;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Showroom Snapshot Card */
+.c1-snapshot-card {
+    background: #ffffff;
+    border: 1px solid var(--c1-border-card);
+    border-radius: var(--c1-radius-card);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    padding: 24px;
+}
+
+.c1-snapshot-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.c1-snapshot-brand-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.c1-snapshot-icon-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c1-primary);
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+}
+
+.c1-snapshot-brand-info {
+    overflow: hidden;
+}
+
+.c1-snapshot-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c1-text-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.c1-snapshot-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.c1-snapshot-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #16a34a;
+}
+
+.c1-snapshot-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.c1-snapshot-metric-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.c1-snapshot-metric-label {
+    color: var(--c1-text-muted);
+}
+
+.c1-snapshot-metric-value {
+    font-weight: 600;
+    color: var(--c1-text-heading);
+}
