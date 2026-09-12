@@ -23,55 +23,60 @@
             </div>
         </div>
 
-        {{-- Status Chips Bar (Interactive Livewire Filter) --}}
-        <div class="c1-chips-bar" style="user-select: none;">
+        {{-- Status Segmented Tabs Bar --}}
+        <div class="c1-inventory-tabs mb-4" role="tablist" aria-label="Bộ lọc trạng thái kho xe">
             <button
                 type="button"
                 wire:click="filterByStatus('')"
-                class="c1-chip {{ empty($status) ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ empty($status) ? 'active' : '' }}"
             >
-                <span>Tất cả ({{ $statusCounts['all'] ?? 0 }})</span>
+                <span>Tất cả</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['all'] ?? 0 }}</span>
             </button>
             <button
                 type="button"
                 wire:click="filterByStatus('available')"
-                class="c1-chip {{ $status === 'available' ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ $status === 'available' ? 'active' : '' }}"
             >
-                <span>Sẵn sàng bán ({{ $statusCounts['available'] ?? 0 }})</span>
+                <span class="c1-status-dot c1-dot-green"></span>
+                <span>Sẵn sàng bán</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['available'] ?? 0 }}</span>
             </button>
             <button
                 type="button"
                 wire:click="filterByStatus('on_hold')"
-                class="c1-chip {{ $status === 'on_hold' ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ $status === 'on_hold' ? 'active' : '' }}"
             >
-                <span>Đang giữ cọc ({{ $statusCounts['on_hold'] ?? 0 }})</span>
+                <span class="c1-status-dot c1-dot-amber"></span>
+                <span>Đang giữ cọc</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['on_hold'] ?? 0 }}</span>
             </button>
             <button
                 type="button"
                 wire:click="filterByStatus('draft')"
-                class="c1-chip {{ $status === 'draft' ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ $status === 'draft' ? 'active' : '' }}"
             >
-                <span>Bản nháp ({{ $statusCounts['draft'] ?? 0 }})</span>
+                <span class="c1-status-dot c1-dot-slate"></span>
+                <span>Bản nháp</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['draft'] ?? 0 }}</span>
             </button>
             <button
                 type="button"
                 wire:click="filterByStatus('sold')"
-                class="c1-chip {{ $status === 'sold' ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ $status === 'sold' ? 'active' : '' }}"
             >
-                <span>Đã giao xe ({{ $statusCounts['sold'] ?? 0 }})</span>
+                <span class="c1-status-dot c1-dot-purple"></span>
+                <span>Đã giao xe</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['sold'] ?? 0 }}</span>
             </button>
             <button
                 type="button"
                 wire:click="filterByStatus('archived')"
-                class="c1-chip {{ $status === 'archived' ? 'is-active' : '' }}"
-                style="background: none; border: none; cursor: pointer;"
+                class="c1-inventory-tab-btn {{ $status === 'archived' ? 'active' : '' }}"
             >
-                <span>Lưu kho ({{ $statusCounts['archived'] ?? 0 }})</span>
+                <span class="c1-status-dot c1-dot-red"></span>
+                <span>Lưu kho</span>
+                <span class="c1-inventory-tab-badge">{{ $statusCounts['archived'] ?? 0 }}</span>
             </button>
         </div>
 
