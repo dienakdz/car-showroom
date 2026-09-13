@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100%" height="100%">
+  <!-- Peugeot Crest Shield -->
+  <path d="M12,10 L88,10 C88,10 88,68 50,105 C12,68 12,10 12,10 Z" fill="#18181B"/>
+  <path d="M16,14 L84,14 C84,14 84,66 50,99 C16,66 16,14 16,14 Z" fill="none" stroke="#FFFFFF" stroke-width="1.6"/>
+  <!-- PEUGEOT Text -->
+  <text x="50" y="24" font-family="Arial, Helvetica, sans-serif" font-size="8" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">PEUGEOT</text>
+  <!-- Lion Profile Silhouette -->
+  <path fill="#FFFFFF" d="M38,36 C42,34 48,34 54,36 C58,38 64,43 65,49 C66,54 62,58 59,60 C61,63 64,68 63,73 C62,77 58,81 53,83 C48,81 44,76 43,71 C42,67 43,63 45,60 C42,58 38,54 39,49 C40,43 46,38 50,36 Z M50,42 C46,44 44,47 44,50 C44,53 47,56 50,56 C53,56 56,53 56,50 C56,47 54,44 50,42 Z"/>
+</svg>
