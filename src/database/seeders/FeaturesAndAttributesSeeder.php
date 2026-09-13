@@ -27,15 +27,15 @@ class FeaturesAndAttributesSeeder extends Seeder
             ->pluck('id', 'name');
 
         $features = [
-            ['feature_group' => 'An toàn', 'name' => 'ABS', 'slug' => 'abs'],
-            ['feature_group' => 'An toàn', 'name' => '6 túi khí', 'slug' => 'six-airbags'],
-            ['feature_group' => 'An toàn', 'name' => 'Blind Spot Monitoring', 'slug' => 'blind-spot-monitoring'],
-            ['feature_group' => 'Tiện nghi', 'name' => 'Ghế da', 'slug' => 'leather-seats'],
-            ['feature_group' => 'Tiện nghi', 'name' => 'Cửa sổ trời toàn cảnh', 'slug' => 'panoramic-sunroof'],
-            ['feature_group' => 'Tiện nghi', 'name' => 'Điều hòa Dual-zone', 'slug' => 'dual-zone-ac'],
+            ['feature_group' => 'An toàn', 'name' => 'Hệ thống phanh ABS', 'slug' => 'abs'],
+            ['feature_group' => 'An toàn', 'name' => 'Hệ thống 6 túi khí', 'slug' => 'six-airbags'],
+            ['feature_group' => 'An toàn', 'name' => 'Cảnh báo điểm mù (BSM)', 'slug' => 'blind-spot-monitoring'],
+            ['feature_group' => 'Tiện nghi', 'name' => 'Ghế bọc da cao cấp', 'slug' => 'leather-seats'],
+            ['feature_group' => 'Tiện nghi', 'name' => 'Cửa sổ trời toàn cảnh Panorama', 'slug' => 'panoramic-sunroof'],
+            ['feature_group' => 'Tiện nghi', 'name' => 'Điều hòa tự động 2 vùng', 'slug' => 'dual-zone-ac'],
             ['feature_group' => 'Công nghệ', 'name' => 'Apple CarPlay', 'slug' => 'apple-carplay'],
             ['feature_group' => 'Công nghệ', 'name' => 'Android Auto', 'slug' => 'android-auto'],
-            ['feature_group' => 'Công nghệ', 'name' => 'Adaptive Cruise Control', 'slug' => 'adaptive-cruise-control'],
+            ['feature_group' => 'Công nghệ', 'name' => 'Kiểm soát hành trình thích ứng (ACC)', 'slug' => 'adaptive-cruise-control'],
         ];
 
         foreach ($features as $feature) {

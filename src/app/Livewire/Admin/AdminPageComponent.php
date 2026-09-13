@@ -21,11 +21,11 @@ abstract class AdminPageComponent extends Component
         $user = auth()->user();
 
         if (! $user instanceof User || ! $user->hasAnyRole(['admin', 'staff'])) {
-            abort(403, 'Ban khong co quyen truy cap khu vuc quan tri.');
+            abort(403, 'Bạn không có quyền truy cập khu vực quản trị.');
         }
 
         if ($permission !== null && ! $user->hasPermission($permission)) {
-            abort(403, 'Ban khong du quyen thuc hien thao tac nay.');
+            abort(403, 'Bạn không đủ quyền thực hiện thao tác này.');
         }
 
         return $user;

@@ -47,8 +47,8 @@ class Index extends AdminPageComponent
                 'trims' => Trim::query()->count(),
             ],
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
-            'adminPageTitle' => 'Catalog Workspace',
-            'adminPageDescription' => 'Quan ly makes, models va trims theo module ro rang, uu tien thao tac nhanh va khong reload.',
+            'adminPageTitle' => 'Danh mục xe',
+            'adminPageDescription' => 'Quản lý Hãng xe (Makes), Dòng xe (Models) và Phiên bản xe (Trims) đồng bộ và trực quan.',
         ]));
     }
 

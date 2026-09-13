@@ -99,7 +99,7 @@ class Manager extends AdminPageComponent
 
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da tao model moi.');
+        $this->toast('success', 'Đã tạo dòng xe mới thành công.');
         $this->resetPage('modelsPage');
     }
 
@@ -155,7 +155,7 @@ class Manager extends AdminPageComponent
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->toast('success', 'Da cap nhat model.');
+        $this->toast('success', 'Đã cập nhật dòng xe thành công.');
         $this->closeEditModal();
     }
 
@@ -164,7 +164,7 @@ class Manager extends AdminPageComponent
         $model = CarModel::query()->withCount('trims')->findOrFail($modelId);
 
         if ($model->trims_count > 0) {
-            $this->toast('error', 'Khong the xoa model da co trim lien ket.');
+            $this->toast('error', 'Không thể xóa dòng xe đã có phiên bản liên kết.');
 
             return;
         }
@@ -177,7 +177,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da xoa model.');
+        $this->toast('success', 'Đã xóa dòng xe thành công.');
     }
 
     public function render(): View
@@ -247,9 +247,9 @@ class Manager extends AdminPageComponent
     private function validationAttributes(string $formProperty): array
     {
         return [
-            $formProperty . '.make_id' => 'hang xe',
-            $formProperty . '.name' => 'ten model',
-            $formProperty . '.slug' => 'slug model',
+            $formProperty . '.make_id' => 'hãng xe',
+            $formProperty . '.name' => 'tên dòng xe',
+            $formProperty . '.slug' => 'đường dẫn định danh (slug)',
         ];
     }
 

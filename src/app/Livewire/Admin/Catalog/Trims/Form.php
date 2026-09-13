@@ -91,10 +91,10 @@ class Form extends AdminPageComponent
                 ->orderBy('sort_order')
                 ->get(),
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
-            'adminPageTitle' => $trim === null ? 'Tao trim moi' : 'Cap nhat trim',
+            'adminPageTitle' => $trim === null ? 'Tạo phiên bản mới' : 'Cập nhật phiên bản',
             'adminPageDescription' => $trim === null
-                ? 'Khai bao phien ban va metadata chung de su dung cho inventory + review.'
-                : 'Dieu chinh spec, feature group va attribute value cho phien ban.',
+                ? 'Khai báo phiên bản và dữ liệu kỹ thuật chung để sử dụng cho kho xe và đánh giá.'
+                : 'Điều chỉnh thông số kỹ thuật, trang bị và tính năng cho phiên bản xe.',
         ]));
     }
 
@@ -141,15 +141,15 @@ class Form extends AdminPageComponent
     private function validationAttributes(): array
     {
         return [
-            'form.model_id' => 'dong xe',
-            'form.name' => 'ten phien ban',
-            'form.slug' => 'slug phien ban',
-            'form.year_from' => 'nam bat dau',
-            'form.year_to' => 'nam ket thuc',
-            'form.msrp' => 'gia niem yet',
-            'form.description' => 'mo ta phien ban',
-            'form.feature_ids' => 'danh sach trang bi',
-            'form.attributes' => 'thong so ky thuat',
+            'form.model_id' => 'dòng xe',
+            'form.name' => 'tên phiên bản',
+            'form.slug' => 'đường dẫn định danh (slug)',
+            'form.year_from' => 'năm bắt đầu',
+            'form.year_to' => 'năm kết thúc',
+            'form.msrp' => 'giá niêm yết (MSRP)',
+            'form.description' => 'mô tả phiên bản',
+            'form.feature_ids' => 'danh sách trang bị',
+            'form.attributes' => 'thông số kỹ thuật',
         ];
     }
 

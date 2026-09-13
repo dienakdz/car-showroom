@@ -95,7 +95,7 @@ class Manager extends AdminPageComponent
         $this->logoUpload = null;
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da tao make moi.');
+        $this->toast('success', 'Đã tạo hãng xe mới thành công.');
         $this->resetPage('makesPage');
     }
 
@@ -150,7 +150,7 @@ class Manager extends AdminPageComponent
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->toast('success', 'Da cap nhat make.');
+        $this->toast('success', 'Đã cập nhật hãng xe thành công.');
         $this->closeEditModal();
     }
 
@@ -159,7 +159,7 @@ class Manager extends AdminPageComponent
         $make = Make::query()->withCount('models')->findOrFail($makeId);
 
         if ($make->models_count > 0) {
-            $this->toast('error', 'Khong the xoa make da co model lien ket.');
+            $this->toast('error', 'Không thể xóa hãng xe đã có dòng xe liên kết.');
 
             return;
         }
@@ -173,7 +173,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da xoa make.');
+        $this->toast('success', 'Đã xóa hãng xe thành công.');
     }
 
     public function render(): View
@@ -238,9 +238,9 @@ class Manager extends AdminPageComponent
     private function validationAttributes(string $formProperty, string $uploadProperty): array
     {
         return [
-            $formProperty . '.name' => 'ten hang xe',
-            $formProperty . '.slug' => 'slug make',
-            $uploadProperty => 'file logo',
+            $formProperty . '.name' => 'tên hãng xe',
+            $formProperty . '.slug' => 'đường dẫn định danh (slug)',
+            $uploadProperty => 'tệp logo thương hiệu',
         ];
     }
 

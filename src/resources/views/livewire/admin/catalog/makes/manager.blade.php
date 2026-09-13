@@ -24,7 +24,7 @@
                                 <img src="{{ $this->createLogoPreviewUrl }}" alt="Logo preview" class="c1-logo-preview-img">
                                 <span class="c1-logo-dropzone-text">{{ $createUploadName ?: 'Logo đã chọn' }}</span>
                                 <button type="button" class="c1-action-btn c1-action-btn-danger mt-1" wire:click.stop="removeCreateLogo">
-                                    Bỏ chọn file
+                                    Bỏ chọn tệp
                                 </button>
                             </div>
                         @else
@@ -205,7 +205,7 @@
                                             <span class="c1-logo-dropzone-text">{{ $editUploadName ?: 'Nhấn để đổi logo mới' }}</span>
                                             @if ($editLogoUpload)
                                                 <button type="button" class="c1-action-btn c1-action-btn-danger mt-1" wire:click.stop="removeEditLogo">
-                                                    Bỏ chọn file
+                                                    Bỏ chọn tệp
                                                 </button>
                                             @endif
                                         </div>

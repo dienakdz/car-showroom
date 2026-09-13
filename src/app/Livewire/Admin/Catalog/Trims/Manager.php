@@ -97,7 +97,7 @@ class Manager extends AdminPageComponent
 
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da tao trim moi.');
+        $this->toast('success', 'Đã tạo phiên bản xe mới thành công.');
         $this->resetPage('trimsPage');
     }
 
@@ -157,7 +157,7 @@ class Manager extends AdminPageComponent
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->toast('success', 'Da cap nhat trim.');
+        $this->toast('success', 'Đã cập nhật phiên bản xe thành công.');
     }
 
     public function delete(int $trimId): void
@@ -165,7 +165,7 @@ class Manager extends AdminPageComponent
         $trim = Trim::query()->withCount(['carUnits', 'reviews'])->findOrFail($trimId);
 
         if ($trim->car_units_count > 0 || $trim->reviews_count > 0) {
-            $this->toast('error', 'Khong the xoa trim da co inventory hoac review lien ket.');
+            $this->toast('error', 'Không thể xóa phiên bản đã có xe trong kho hoặc đánh giá liên kết.');
 
             return;
         }
@@ -177,7 +177,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->toast('success', 'Da xoa trim.');
+        $this->toast('success', 'Đã xóa phiên bản xe thành công.');
     }
 
     public function render(): View
@@ -263,13 +263,13 @@ class Manager extends AdminPageComponent
     private function validationAttributes(string $formProperty): array
     {
         return [
-            $formProperty . '.model_id' => 'model',
-            $formProperty . '.name' => 'ten trim',
-            $formProperty . '.slug' => 'slug trim',
-            $formProperty . '.year_from' => 'nam bat dau',
-            $formProperty . '.year_to' => 'nam ket thuc',
-            $formProperty . '.msrp' => 'MSRP',
-            $formProperty . '.description' => 'mo ta trim',
+            $formProperty . '.model_id' => 'dòng xe',
+            $formProperty . '.name' => 'tên phiên bản',
+            $formProperty . '.slug' => 'đường dẫn định danh (slug)',
+            $formProperty . '.year_from' => 'năm bắt đầu',
+            $formProperty . '.year_to' => 'năm kết thúc',
+            $formProperty . '.msrp' => 'giá niêm yết (MSRP)',
+            $formProperty . '.description' => 'mô tả phiên bản',
         ];
     }
 
