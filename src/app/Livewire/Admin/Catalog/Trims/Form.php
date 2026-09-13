@@ -22,9 +22,6 @@ class Form extends AdminPageComponent
     /** @var array<string, mixed> */
     public array $form = [];
 
-    /** @var array{type?: string, message?: string} */
-    public array $feedback = [];
-
     public bool $slugManuallyEdited = false;
 
     public function mount(?Trim $trimRecord = null): void
@@ -32,12 +29,6 @@ class Form extends AdminPageComponent
         $this->trimId = $trimRecord?->id;
         $this->slugManuallyEdited = $trimRecord !== null;
         $this->fillForm($trimRecord);
-
-        $feedback = session()->pull('trim_form_feedback');
-
-        if (is_array($feedback)) {
-            $this->feedback = $feedback;
-        }
     }
 
     public function updatedFormName(string $name): void
@@ -52,14 +43,8 @@ class Form extends AdminPageComponent
         $this->slugManuallyEdited = true;
     }
 
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
-    }
-
     public function save(TrimManagementService $service): void
     {
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->form = $this->normalizeForm($this->form);
 
@@ -75,10 +60,7 @@ class Form extends AdminPageComponent
         $savedTrim = $service->save($validated['form'], $trim);
 
         if ($this->trimId === null) {
-            session()->flash('trim_form_feedback', [
-                'type' => 'success',
-                'message' => 'Da tao phien ban xe moi.',
-            ]);
+            $this->flashToast('success', 'Đã tạo phiên bản xe mới thành công.');
 
             $this->redirectRoute('admin.catalog.trims.edit', $savedTrim, navigate: true);
 
@@ -86,10 +68,7 @@ class Form extends AdminPageComponent
         }
 
         $this->fillForm($savedTrim);
-        $this->feedback = [
-            'type' => 'success',
-            'message' => 'Da cap nhat phien ban xe.',
-        ];
+        $this->toast('success', 'Đã cập nhật phiên bản xe thành công.');
     }
 
     public function render(): View
@@ -108,7 +87,7 @@ class Form extends AdminPageComponent
                 ->with('features')
                 ->orderBy('sort_order')
                 ->get(),
-            'attributes' => CarAttribute::query()
+            'carAttributes' => CarAttribute::query()
                 ->orderBy('sort_order')
                 ->get(),
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([

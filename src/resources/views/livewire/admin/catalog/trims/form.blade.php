@@ -8,7 +8,7 @@
     ])->filter()->implode(' '));
     $previewYearFrom = trim((string) ($form['year_from'] ?? ''));
     $previewYearTo = trim((string) ($form['year_to'] ?? ''));
-    $engineAttribute = $attributes->firstWhere('code', 'engine');
+    $engineAttribute = $carAttributes->firstWhere('code', 'engine');
     $previewEngine = $engineAttribute === null
         ? ''
         : trim((string) ($form['attributes'][(string) $engineAttribute->id]['value_string'] ?? ''));
@@ -34,13 +34,6 @@
             </a>
         </div>
     </div>
-
-    @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'success' ? 'c1-alert-success' : 'c1-alert-danger' }} d-flex align-items-center justify-content-between gap-3">
-            <span>{{ $feedback['message'] }}</span>
-            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
-        </div>
-    @endif
 
     <form wire:submit="save" id="trimForm">
         <div class="c1-form-layout">
@@ -112,7 +105,7 @@
                     </div>
 
                     <div class="row g-3">
-                        @foreach ($attributes as $attribute)
+                        @foreach ($carAttributes as $attribute)
                             <div class="col-md-6" wire:key="trim-attribute-{{ $attribute->id }}">
                                 <label class="form-label text-muted small fw-bold">
                                     {{ $attribute->label }}

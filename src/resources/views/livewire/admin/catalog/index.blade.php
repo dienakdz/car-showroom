@@ -192,18 +192,6 @@
                 cleanupModalArtifacts();
             };
 
-            Livewire.on('catalog-toast', (event) => {
-                const payload = event || {};
-                const type = payload.type || 'success';
-                const message = payload.message || '';
-
-                if (!message || typeof window.toastr === 'undefined' || typeof window.toastr[type] !== 'function') {
-                    return;
-                }
-
-                window.toastr[type](message);
-            });
-
             Livewire.on('catalog-make-edit-modal-opened', () => {
                 openModal('catalogMakeEditModal');
             });

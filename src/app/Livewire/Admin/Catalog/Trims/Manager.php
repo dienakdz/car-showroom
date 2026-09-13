@@ -284,11 +284,6 @@ class Manager extends AdminPageComponent
         return $string === '' ? null : $string;
     }
 
-    private function toast(string $type, string $message): void
-    {
-        $this->dispatch('catalog-toast', type: $type, message: $message);
-    }
-
     /**
      * @return array{0: string, 1: 'asc'|'desc'}
      */

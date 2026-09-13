@@ -11,6 +11,7 @@ abstract class AdminPageComponent extends Component
     public function boot(): void
     {
         $this->authorizeAdminAccess($this->requiredPermission());
+        $this->dispatchFlashedToast();
     }
 
     abstract protected function requiredPermission(): ?string;
@@ -30,6 +31,19 @@ abstract class AdminPageComponent extends Component
         return $user;
     }
 
+    protected function toast(string $type, string $message): void
+    {
+        $this->dispatch('toast', type: $type, message: $message);
+    }
+
+    protected function flashToast(string $type, string $message): void
+    {
+        session()->flash('admin_toast', [
+            'type' => $type,
+            'message' => $message,
+        ]);
+    }
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
@@ -37,5 +51,22 @@ abstract class AdminPageComponent extends Component
     protected function adminLayoutData(array $data = []): array
     {
         return array_merge(app(AdminContextResolver::class)->resolve(), $data);
+    }
+
+    private function dispatchFlashedToast(): void
+    {
+        $toast = session()->pull('admin_toast');
+
+        if (! is_array($toast)) {
+            return;
+        }
+
+        $message = trim((string) ($toast['message'] ?? ''));
+
+        if ($message === '') {
+            return;
+        }
+
+        $this->toast((string) ($toast['type'] ?? 'success'), $message);
     }
 }

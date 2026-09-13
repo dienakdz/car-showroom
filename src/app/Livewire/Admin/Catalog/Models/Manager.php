@@ -253,11 +253,6 @@ class Manager extends AdminPageComponent
         ];
     }
 
-    private function toast(string $type, string $message): void
-    {
-        $this->dispatch('catalog-toast', type: $type, message: $message);
-    }
-
     private function openEditModal(): void
     {
         $this->dispatch('catalog-model-edit-modal-opened');

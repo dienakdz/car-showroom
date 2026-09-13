@@ -1,12 +1,4 @@
 <div>
-    {{-- Feedback Message --}}
-    @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <span><i class="fa {{ ($feedback['type'] ?? 'success') === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle' }} me-2"></i>{{ $feedback['message'] }}</span>
-            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
-        </div>
-    @endif
-
     {{-- Error Banner --}}
     @if ($errors->any())
         <div class="c1-alert c1-alert-danger mb-4" style="padding: 14px 18px; border-radius: 8px;">

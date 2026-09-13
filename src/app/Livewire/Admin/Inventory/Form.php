@@ -36,18 +36,10 @@ class Form extends AdminPageComponent
 
     public string $newMediaUrl = '';
 
-    /** @var array{type?: string, message?: string} */
-    public array $feedback = [];
-
     public function mount(?CarUnit $carUnit = null): void
     {
         $this->carUnitId = $carUnit?->id;
         $this->fillForm($carUnit);
-
-        $feedback = session()->pull('inventory_feedback');
-        if (is_array($feedback)) {
-            $this->feedback = $feedback;
-        }
     }
 
     public function updatedUploads(): void
@@ -157,14 +149,8 @@ class Form extends AdminPageComponent
         $this->save($service);
     }
 
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
-    }
-
     public function save(InventoryWorkflowService $service): void
     {
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->form = $this->normalizeForm($this->form);
 
@@ -199,10 +185,7 @@ class Form extends AdminPageComponent
         $saved = $service->save($payload, $user, $carUnit);
 
         if ($this->carUnitId === null) {
-            session()->flash('inventory_feedback', [
-                'type' => 'success',
-                'message' => "Đã tạo xe mới [{$saved->stock_code}] trong kho thành công.",
-            ]);
+            $this->flashToast('success', "Đã tạo xe mới [{$saved->stock_code}] trong kho thành công.");
 
             $this->redirectRoute('admin.inventory.edit', $saved, navigate: true);
 
@@ -210,10 +193,7 @@ class Form extends AdminPageComponent
         }
 
         $this->fillForm($saved);
-        $this->feedback = [
-            'type' => 'success',
-            'message' => "Đã cập nhật thông tin xe [{$saved->stock_code}] thành công.",
-        ];
+        $this->toast('success', "Đã cập nhật thông tin xe [{$saved->stock_code}] thành công.");
     }
 
     public function render(): View
