@@ -2191,37 +2191,96 @@ body.c1-body {
 
 /* Actions in Table */
 .c1-actions-cell {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 6px;
+    white-space: nowrap;
 }
 
 .c1-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border-radius: var(--c1-radius-btn);
+    justify-content: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 11px;
+    border-radius: var(--c1-radius-btn, 6px);
     font-size: 12.5px;
     font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
     background: #ffffff;
-    border: 1px solid var(--c1-border-card);
-    color: var(--c1-text-body);
+    border: 1px solid var(--c1-border-card, #e2e8f0);
+    color: var(--c1-text-body, #475569);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.15s ease-in-out;
     text-decoration: none;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.c1-action-btn svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    display: block;
 }
 
 .c1-action-btn:hover {
     background: #f8fafc;
     border-color: #cbd5e1;
-    color: var(--c1-text-heading);
+    color: var(--c1-text-heading, #0f172a);
+    text-decoration: none;
+}
+
+.c1-action-btn-edit {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #d97706;
+}
+
+.c1-action-btn-edit:hover {
+    background: #fef3c7;
+    border-color: #fcd34d;
+    color: #b45309;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(217, 119, 6, 0.15);
+}
+
+.c1-action-btn-primary {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+}
+
+.c1-action-btn-primary:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.15);
+}
+
+.c1-action-btn-danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444;
 }
 
 .c1-action-btn-danger:hover {
-    background: #fef2f2;
-    border-color: #fecaca;
+    background: #fee2e2;
+    border-color: #fca5a5;
     color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.18);
+}
+
+.c1-action-btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
 }
 
 /* Modal Enhancements */
