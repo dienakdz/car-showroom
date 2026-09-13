@@ -9,12 +9,15 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Manager extends AdminPageComponent
 {
+    private const PER_PAGE_OPTIONS = [10, 25, 50];
+
     use WithFileUploads;
     use WithPagination;
 
@@ -32,8 +35,7 @@ class Manager extends AdminPageComponent
 
     public array $editForm = [];
 
-    public array $feedback = [];
-
+    #[Locked]
     public ?int $editingId = null;
 
     public mixed $logoUpload = null;
@@ -53,17 +55,16 @@ class Manager extends AdminPageComponent
 
     public function updatedPerPage(): void
     {
+        if (! in_array($this->perPage, self::PER_PAGE_OPTIONS, true)) {
+            $this->perPage = self::PER_PAGE_OPTIONS[0];
+        }
+
         $this->resetPage('makesPage');
     }
 
     public function updatedSort(): void
     {
         $this->resetPage('makesPage');
-    }
-
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
     }
 
     public function syncEditModalClosed(): void
@@ -74,7 +75,6 @@ class Manager extends AdminPageComponent
 
     public function create(): void
     {
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->createForm = $this->normalizeForm($this->createForm);
 
@@ -95,7 +95,7 @@ class Manager extends AdminPageComponent
         $this->logoUpload = null;
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da tao make moi.');
+        $this->toast('success', 'Da tao make moi.');
         $this->resetPage('makesPage');
     }
 
@@ -104,7 +104,6 @@ class Manager extends AdminPageComponent
         $make = Make::query()->findOrFail($makeId);
 
         $this->resetErrorBag();
-        $this->feedback = [];
         $this->editingId = $make->id;
         $this->editForm = [
             'name' => $make->name,
@@ -131,7 +130,6 @@ class Manager extends AdminPageComponent
 
         $make = Make::query()->findOrFail($this->editingId);
 
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->editForm = $this->normalizeForm($this->editForm);
 
@@ -152,7 +150,7 @@ class Manager extends AdminPageComponent
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->setFeedback('success', 'Da cap nhat make.');
+        $this->toast('success', 'Da cap nhat make.');
         $this->closeEditModal();
     }
 
@@ -161,7 +159,7 @@ class Manager extends AdminPageComponent
         $make = Make::query()->withCount('models')->findOrFail($makeId);
 
         if ($make->models_count > 0) {
-            $this->setFeedback('error', 'Khong the xoa make da co model lien ket.');
+            $this->toast('error', 'Khong the xoa make da co model lien ket.');
 
             return;
         }
@@ -175,7 +173,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da xoa make.');
+        $this->toast('success', 'Da xoa make.');
     }
 
     public function render(): View
@@ -341,9 +339,8 @@ class Manager extends AdminPageComponent
         }
     }
 
-    private function setFeedback(string $type, string $message): void
+    private function toast(string $type, string $message): void
     {
-        $this->feedback = [];
         $this->dispatch('catalog-toast', type: $type, message: $message);
     }
 
