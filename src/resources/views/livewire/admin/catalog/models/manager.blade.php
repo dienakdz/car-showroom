@@ -1,16 +1,6 @@
 @php($editingModel = $editingId ? $models->getCollection()->firstWhere('id', $editingId) : null)
 
 <div class="c1-catalog-workspace-tab">
-    @if ($feedback !== [])
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-                <strong>{{ ($feedback['type'] ?? 'success') === 'error' ? 'Lưu ý:' : 'Thành công:' }}</strong>
-                <span>{{ $feedback['message'] ?? '' }}</span>
-            </div>
-            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Close" style="font-size: 11px;"></button>
-        </div>
-    @endif
-
     <!-- Quick Add Model Card -->
     <div class="c1-catalog-card" id="c1-model-form-section">
         <div class="c1-catalog-card-header">

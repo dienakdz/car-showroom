@@ -8,11 +8,14 @@ use App\Models\Make;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
 class Manager extends AdminPageComponent
 {
+    private const PER_PAGE_OPTIONS = [10, 25, 50];
+
     use WithPagination;
 
     protected string $paginationTheme = 'bootstrap';
@@ -32,8 +35,7 @@ class Manager extends AdminPageComponent
 
     public array $editForm = [];
 
-    public array $feedback = [];
-
+    #[Locked]
     public ?int $editingId = null;
 
     public function mount(): void
@@ -58,17 +60,16 @@ class Manager extends AdminPageComponent
 
     public function updatedPerPage(): void
     {
+        if (! in_array($this->perPage, self::PER_PAGE_OPTIONS, true)) {
+            $this->perPage = self::PER_PAGE_OPTIONS[0];
+        }
+
         $this->resetPage('modelsPage');
     }
 
     public function updatedSort(): void
     {
         $this->resetPage('modelsPage');
-    }
-
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
     }
 
     public function syncEditModalClosed(): void
@@ -79,7 +80,6 @@ class Manager extends AdminPageComponent
 
     public function create(): void
     {
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->createForm = $this->normalizeForm($this->createForm);
         $makeId = (int) ($this->createForm['make_id'] ?? 0);
@@ -99,7 +99,7 @@ class Manager extends AdminPageComponent
 
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da tao model moi.');
+        $this->toast('success', 'Da tao model moi.');
         $this->resetPage('modelsPage');
     }
 
@@ -108,7 +108,6 @@ class Manager extends AdminPageComponent
         $model = CarModel::query()->findOrFail($modelId);
 
         $this->resetErrorBag();
-        $this->feedback = [];
         $this->editingId = $model->id;
         $this->editForm = [
             'make_id' => (string) $model->make_id,
@@ -135,7 +134,6 @@ class Manager extends AdminPageComponent
 
         $model = CarModel::query()->findOrFail($this->editingId);
 
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->editForm = $this->normalizeForm($this->editForm);
         $makeId = (int) ($this->editForm['make_id'] ?? 0);
@@ -157,7 +155,7 @@ class Manager extends AdminPageComponent
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->setFeedback('success', 'Da cap nhat model.');
+        $this->toast('success', 'Da cap nhat model.');
         $this->closeEditModal();
     }
 
@@ -166,7 +164,7 @@ class Manager extends AdminPageComponent
         $model = CarModel::query()->withCount('trims')->findOrFail($modelId);
 
         if ($model->trims_count > 0) {
-            $this->setFeedback('error', 'Khong the xoa model da co trim lien ket.');
+            $this->toast('error', 'Khong the xoa model da co trim lien ket.');
 
             return;
         }
@@ -179,7 +177,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da xoa model.');
+        $this->toast('success', 'Da xoa model.');
     }
 
     public function render(): View
@@ -255,9 +253,8 @@ class Manager extends AdminPageComponent
         ];
     }
 
-    private function setFeedback(string $type, string $message): void
+    private function toast(string $type, string $message): void
     {
-        $this->feedback = [];
         $this->dispatch('catalog-toast', type: $type, message: $message);
     }
 
@@ -279,8 +276,6 @@ class Manager extends AdminPageComponent
         return match ($this->sort) {
             'name_asc' => ['name', 'asc'],
             'name_desc' => ['name', 'desc'],
-            'slug_asc' => ['slug', 'asc'],
-            'slug_desc' => ['slug', 'desc'],
             'trims_desc' => ['trims_count', 'desc'],
             'trims_asc' => ['trims_count', 'asc'],
             'updated_asc' => ['updated_at', 'asc'],
