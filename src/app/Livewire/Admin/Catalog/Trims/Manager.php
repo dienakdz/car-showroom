@@ -8,11 +8,14 @@ use App\Models\Trim;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
 
 class Manager extends AdminPageComponent
 {
+    private const PER_PAGE_OPTIONS = [10, 25, 50];
+
     use WithPagination;
 
     protected string $paginationTheme = 'bootstrap';
@@ -32,8 +35,7 @@ class Manager extends AdminPageComponent
 
     public array $editForm = [];
 
-    public array $feedback = [];
-
+    #[Locked]
     public ?int $editingId = null;
 
     public function mount(): void
@@ -58,6 +60,10 @@ class Manager extends AdminPageComponent
 
     public function updatedPerPage(): void
     {
+        if (! in_array($this->perPage, self::PER_PAGE_OPTIONS, true)) {
+            $this->perPage = self::PER_PAGE_OPTIONS[0];
+        }
+
         $this->resetPage('trimsPage');
     }
 
@@ -66,14 +72,8 @@ class Manager extends AdminPageComponent
         $this->resetPage('trimsPage');
     }
 
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
-    }
-
     public function create(): void
     {
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->createForm = $this->normalizeForm($this->createForm);
         $modelId = (int) ($this->createForm['model_id'] ?? 0);
@@ -93,14 +93,11 @@ class Manager extends AdminPageComponent
             'createForm.description' => ['nullable', 'string'],
         ], attributes: $this->validationAttributes('createForm'));
 
-        $payload = $validated['createForm'];
-        $payload['description'] = $this->nullableString($payload['description'] ?? null);
-
-        Trim::query()->create($payload);
+        Trim::query()->create($validated['createForm']);
 
         $this->resetCreateForm();
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da tao trim moi.');
+        $this->toast('success', 'Da tao trim moi.');
         $this->resetPage('trimsPage');
     }
 
@@ -109,7 +106,6 @@ class Manager extends AdminPageComponent
         $trim = Trim::query()->findOrFail($trimId);
 
         $this->resetErrorBag();
-        $this->feedback = [];
         $this->editingId = $trim->id;
         $this->editForm = [
             'model_id' => (string) $trim->model_id,
@@ -136,7 +132,6 @@ class Manager extends AdminPageComponent
 
         $trim = Trim::query()->findOrFail($this->editingId);
 
-        $this->feedback = [];
         $this->resetErrorBag();
         $this->editForm = $this->normalizeForm($this->editForm);
         $modelId = (int) ($this->editForm['model_id'] ?? 0);
@@ -158,14 +153,11 @@ class Manager extends AdminPageComponent
             'editForm.description' => ['nullable', 'string'],
         ], attributes: $this->validationAttributes('editForm'));
 
-        $payload = $validated['editForm'];
-        $payload['description'] = $this->nullableString($payload['description'] ?? null);
-
-        $trim->update($payload);
+        $trim->update($validated['editForm']);
 
         $this->dispatch('catalog-updated');
         $this->resetEditState();
-        $this->setFeedback('success', 'Da cap nhat trim.');
+        $this->toast('success', 'Da cap nhat trim.');
     }
 
     public function delete(int $trimId): void
@@ -173,7 +165,7 @@ class Manager extends AdminPageComponent
         $trim = Trim::query()->withCount(['carUnits', 'reviews'])->findOrFail($trimId);
 
         if ($trim->car_units_count > 0 || $trim->reviews_count > 0) {
-            $this->setFeedback('error', 'Khong the xoa trim da co inventory hoac review lien ket.');
+            $this->toast('error', 'Khong the xoa trim da co inventory hoac review lien ket.');
 
             return;
         }
@@ -185,7 +177,7 @@ class Manager extends AdminPageComponent
         }
 
         $this->dispatch('catalog-updated');
-        $this->setFeedback('success', 'Da xoa trim.');
+        $this->toast('success', 'Da xoa trim.');
     }
 
     public function render(): View
@@ -199,7 +191,7 @@ class Manager extends AdminPageComponent
                 ->get(),
             'trims' => Trim::query()
                 ->with('model.make')
-                ->withCount(['carUnits', 'reviews'])
+                ->withCount('carUnits')
                 ->when($this->modelFilter !== '', fn ($query) => $query->where('model_id', (int) $this->modelFilter))
                 ->when($this->search !== '', function ($query): void {
                     $query->where(function ($innerQuery): void {
@@ -248,7 +240,7 @@ class Manager extends AdminPageComponent
 
     /**
      * @param  array<string, mixed>  $form
-     * @return array<string, string>
+     * @return array<string, string|null>
      */
     private function normalizeForm(array $form): array
     {
@@ -258,10 +250,10 @@ class Manager extends AdminPageComponent
             'model_id' => (string) ($form['model_id'] ?? ''),
             'name' => $name,
             'slug' => Str::slug((string) (($form['slug'] ?? '') !== '' ? $form['slug'] : $name)),
-            'year_from' => (string) ($form['year_from'] ?? ''),
-            'year_to' => (string) ($form['year_to'] ?? ''),
-            'msrp' => (string) ($form['msrp'] ?? ''),
-            'description' => trim((string) ($form['description'] ?? '')),
+            'year_from' => $this->nullableString($form['year_from'] ?? null),
+            'year_to' => $this->nullableString($form['year_to'] ?? null),
+            'msrp' => $this->nullableString($form['msrp'] ?? null),
+            'description' => $this->nullableString($form['description'] ?? null),
         ];
     }
 
@@ -292,12 +284,9 @@ class Manager extends AdminPageComponent
         return $string === '' ? null : $string;
     }
 
-    private function setFeedback(string $type, string $message): void
+    private function toast(string $type, string $message): void
     {
-        $this->feedback = [
-            'type' => $type,
-            'message' => $message,
-        ];
+        $this->dispatch('catalog-toast', type: $type, message: $message);
     }
 
     /**

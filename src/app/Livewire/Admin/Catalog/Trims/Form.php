@@ -238,12 +238,23 @@ class Form extends AdminPageComponent
             'model_id' => (string) ($form['model_id'] ?? ''),
             'name' => $name,
             'slug' => Str::slug((string) (($form['slug'] ?? '') !== '' ? $form['slug'] : $name)),
-            'year_from' => (string) ($form['year_from'] ?? ''),
-            'year_to' => (string) ($form['year_to'] ?? ''),
-            'msrp' => (string) ($form['msrp'] ?? ''),
-            'description' => trim((string) ($form['description'] ?? '')),
+            'year_from' => $this->nullableString($form['year_from'] ?? null),
+            'year_to' => $this->nullableString($form['year_to'] ?? null),
+            'msrp' => $this->nullableString($form['msrp'] ?? null),
+            'description' => $this->nullableString($form['description'] ?? null),
             'feature_ids' => $featureIds,
             'attributes' => is_array($form['attributes'] ?? null) ? $form['attributes'] : [],
         ];
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $string = trim((string) $value);
+
+        return $string === '' ? null : $string;
     }
 }
