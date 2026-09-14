@@ -1,11 +1,4 @@
 <div>
-    @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <span><i class="fa {{ ($feedback['type'] ?? 'success') === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle' }} me-2"></i>{{ $feedback['message'] }}</span>
-            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
-        </div>
-    @endif
-
     <div class="c1-dash-wrapper">
         {{-- Page Header --}}
         <div class="c1-page-header">
@@ -151,8 +144,9 @@
                     <tbody>
                         @forelse ($carUnits as $carUnit)
                             @php
-                                $coverMedia = $carUnit->media->firstWhere('is_cover', true) ?? $carUnit->media->first();
-                                $hasRealImage = $coverMedia && !empty($coverMedia->path_or_url) && file_exists(public_path($coverMedia->path_or_url));
+                                $imageMedia = $carUnit->media->where('type', 'image');
+                                $coverMedia = $imageMedia->firstWhere('is_cover', true) ?? $imageMedia->first();
+                                $coverMediaUrl = $coverMedia?->displayUrl();
                                 $conditionLabel = match ($carUnit->condition) {
                                     'new' => 'Mới 100%',
                                     'used' => 'Đã qua sử dụng',
@@ -163,8 +157,8 @@
                             <tr wire:key="car-unit-row-{{ $carUnit->id }}">
                                 <td>
                                     <div class="c1-car-thumb" style="width: 56px; height: 42px; border-radius: 6px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
-                                        @if ($hasRealImage)
-                                            <img src="{{ asset($coverMedia->path_or_url) }}" alt="{{ $carUnit->stock_code }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @if ($coverMediaUrl !== null)
+                                            <img src="{{ $coverMediaUrl }}" alt="{{ $carUnit->stock_code }}" style="width: 100%; height: 100%; object-fit: cover;">
                                         @else
                                             <i class="fa fa-car" aria-hidden="true" style="color: #94a3b8; font-size: 18px;"></i>
                                         @endif
@@ -222,12 +216,12 @@
                                 </td>
                                 <td class="text-right">
                                     <div style="display: inline-flex; align-items: center; gap: 6px;">
-                                        <a href="{{ route('admin.inventory.edit', $carUnit) }}" wire:navigate.hover class="c1-btn c1-btn-sm c1-btn-ghost" title="Chỉnh sửa chi tiết xe">
-                                            <i class="fa fa-pencil"></i>
-                                            <span>Sửa</span>
+                                        <a href="{{ route('admin.inventory.edit', $carUnit) }}" wire:navigate.hover class="c1-btn c1-btn-sm c1-btn-ghost" title="{{ $carUnit->status === 'sold' ? 'Xem chi tiết xe' : 'Chỉnh sửa chi tiết xe' }}">
+                                            <i class="fa {{ $carUnit->status === 'sold' ? 'fa-eye' : 'fa-pencil' }}"></i>
+                                            <span>{{ $carUnit->status === 'sold' ? 'Xem' : 'Sửa' }}</span>
                                         </a>
 
-                                        @if ($carUnit->status !== 'available' && $carUnit->status !== 'sold')
+                                        @if (in_array($carUnit->status, ['draft', 'archived'], true))
                                             <button
                                                 type="button"
                                                 wire:click="publish({{ $carUnit->id }})"
@@ -239,7 +233,7 @@
                                             </button>
                                         @endif
 
-                                        @if ($carUnit->status !== 'archived')
+                                        @if (in_array($carUnit->status, ['available', 'draft'], true))
                                             <button
                                                 type="button"
                                                 wire:click="archive({{ $carUnit->id }})"

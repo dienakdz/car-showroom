@@ -12,7 +12,10 @@ use App\Models\FuelType;
 use App\Models\Transmission;
 use App\Models\Trim;
 use App\Services\Admin\InventoryWorkflowService;
+use App\Support\Admin\AdminContextResolver;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -28,13 +31,11 @@ class Form extends AdminPageComponent
     /** @var array<string, mixed> */
     public array $form = [];
 
-    /** @var array<int, array{id: ?int, type: string, path_or_url: string, caption: ?string, sort_order: int, is_cover: bool}> */
+    /** @var array<int, array{id: ?int, path_or_url: string, caption: ?string, is_cover: bool}> */
     public array $media = [];
 
     /** @var array<int, mixed> */
     public array $uploads = [];
-
-    public string $newMediaUrl = '';
 
     public function mount(?CarUnit $carUnit = null): void
     {
@@ -45,17 +46,17 @@ class Form extends AdminPageComponent
     public function updatedUploads(): void
     {
         $this->validate([
-            'uploads.*' => ['image', 'max:10240'],
+            'uploads.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+        ], attributes: [
+            'uploads.*' => 'hình ảnh tải lên',
         ]);
 
         foreach ($this->uploads as $file) {
             $path = $file->store('inventory-media', 'public');
             $this->media[] = [
                 'id' => null,
-                'type' => 'image',
                 'path_or_url' => '/storage/' . $path,
                 'caption' => $file->getClientOriginalName(),
-                'sort_order' => count($this->media),
                 'is_cover' => count($this->media) === 0,
             ];
         }
@@ -63,27 +64,12 @@ class Form extends AdminPageComponent
         $this->uploads = [];
     }
 
-    public function addMediaUrl(): void
+    public function setCover(int $index): void
     {
-        $url = trim($this->newMediaUrl);
-        if ($url === '') {
+        if (! isset($this->media[$index])) {
             return;
         }
 
-        $this->media[] = [
-            'id' => null,
-            'type' => 'image',
-            'path_or_url' => $url,
-            'caption' => 'Ảnh nhập từ URL',
-            'sort_order' => count($this->media),
-            'is_cover' => count($this->media) === 0,
-        ];
-
-        $this->newMediaUrl = '';
-    }
-
-    public function setCover(int $index): void
-    {
         foreach ($this->media as $i => $row) {
             $this->media[$i]['is_cover'] = ($i === $index);
         }
@@ -95,12 +81,9 @@ class Form extends AdminPageComponent
             return;
         }
 
-        $wasCover = $this->media[$index]['is_cover'];
+        $this->deletePendingUpload($this->media[$index]);
+        $wasCover = (bool) ($this->media[$index]['is_cover'] ?? false);
         array_splice($this->media, $index, 1);
-
-        foreach ($this->media as $i => $row) {
-            $this->media[$i]['sort_order'] = $i;
-        }
 
         if ($wasCover && count($this->media) > 0) {
             $this->media[0]['is_cover'] = true;
@@ -116,8 +99,6 @@ class Form extends AdminPageComponent
         $temp = $this->media[$index];
         $this->media[$index] = $this->media[$index - 1];
         $this->media[$index - 1] = $temp;
-
-        $this->reorderMedia();
     }
 
     public function moveMediaDown(int $index): void
@@ -129,8 +110,6 @@ class Form extends AdminPageComponent
         $temp = $this->media[$index];
         $this->media[$index] = $this->media[$index + 1];
         $this->media[$index + 1] = $temp;
-
-        $this->reorderMedia();
     }
 
     public function setCondition(string $condition): void
@@ -142,10 +121,11 @@ class Form extends AdminPageComponent
 
     public function saveWithStatus(string $status, InventoryWorkflowService $service): void
     {
-        if (in_array($status, ['draft', 'available', 'on_hold', 'sold', 'archived'], true)) {
-            $this->form['status'] = $status;
+        if (! in_array($status, ['draft', 'available'], true)) {
+            return;
         }
 
+        $this->form['status'] = $status;
         $this->save($service);
     }
 
@@ -160,26 +140,13 @@ class Form extends AdminPageComponent
         );
 
         $carUnit = $this->carUnitId !== null
-            ? CarUnit::query()->with('sale')->findOrFail($this->carUnitId)
+            ? CarUnit::query()->findOrFail($this->carUnitId)
             : null;
-
-        $status = (string) $this->form['status'];
-        if ($status === 'sold' && ($carUnit === null || ! $carUnit->sale()->exists())) {
-            $this->addError('form.status', 'Trạng thái Đã bán (sold) phải được tạo từ module Quản lý bán hàng (Sales).');
-
-            return;
-        }
-
-        if ($status === 'on_hold' && ($carUnit === null || $carUnit->status !== 'on_hold')) {
-            $this->addError('form.status', 'Hãy dùng workflow giữ cọc để cập nhật trạng thái giữ xe.');
-
-            return;
-        }
 
         $user = $this->authorizeAdminAccess($this->requiredPermission());
 
         $payload = array_merge($validated['form'], [
-            'media' => $this->media,
+            'media' => $validated['media'],
         ]);
 
         $saved = $service->save($payload, $user, $carUnit);
@@ -247,12 +214,17 @@ class Form extends AdminPageComponent
             'form.fuel_type_id' => ['nullable', 'integer', 'exists:fuel_types,id'],
             'form.transmission_id' => ['nullable', 'integer', 'exists:transmissions,id'],
             'form.drivetrain_id' => ['nullable', 'integer', 'exists:drivetrains,id'],
-            'form.exterior_color_id' => ['nullable', 'integer', 'exists:colors,id'],
-            'form.interior_color_id' => ['nullable', 'integer', 'exists:colors,id'],
+            'form.exterior_color_id' => ['nullable', 'integer', Rule::exists('colors', 'id')->where('type', 'exterior')],
+            'form.interior_color_id' => ['nullable', 'integer', Rule::exists('colors', 'id')->where('type', 'interior')],
             'form.price' => ['nullable', 'integer', 'min:0'],
             'form.currency' => ['required', 'string', 'size:3'],
             'form.status' => ['required', Rule::in(['draft', 'available', 'on_hold', 'sold', 'archived'])],
             'form.notes_internal' => ['nullable', 'string'],
+            'media' => ['array', 'max:30'],
+            'media.*.id' => ['nullable', 'integer', 'distinct'],
+            'media.*.path_or_url' => ['required', 'string', 'max:2048'],
+            'media.*.caption' => ['nullable', 'string', 'max:255'],
+            'media.*.is_cover' => ['required', 'boolean'],
         ];
     }
 
@@ -278,6 +250,9 @@ class Form extends AdminPageComponent
             'form.currency' => 'đơn vị tiền tệ',
             'form.status' => 'trạng thái xe',
             'form.notes_internal' => 'ghi chú nội bộ',
+            'media' => 'danh sách hình ảnh',
+            'media.*.path_or_url' => 'đường dẫn hình ảnh',
+            'media.*.caption' => 'mô tả hình ảnh',
         ];
     }
 
@@ -305,15 +280,14 @@ class Form extends AdminPageComponent
 
             $this->media = CarUnitMedia::query()
                 ->where('car_unit_id', $carUnit->id)
+                ->where('type', 'image')
                 ->orderBy('sort_order')
                 ->get()
                 ->map(static function (CarUnitMedia $m): array {
                     return [
                         'id' => (int) $m->id,
-                        'type' => (string) $m->type,
                         'path_or_url' => (string) $m->path_or_url,
                         'caption' => (string) ($m->caption ?? ''),
-                        'sort_order' => (int) $m->sort_order,
                         'is_cover' => (bool) $m->is_cover,
                     ];
                 })
@@ -326,7 +300,7 @@ class Form extends AdminPageComponent
             'trim_id' => null,
             'condition' => 'new',
             'vin' => '',
-            'stock_code' => 'STK-' . date('Y') . '-' . rand(100, 999),
+            'stock_code' => 'STK-' . date('Y') . '-' . Str::upper(Str::random(6)),
             'year' => (int) date('Y'),
             'mileage' => null,
             'body_type_id' => null,
@@ -336,8 +310,8 @@ class Form extends AdminPageComponent
             'exterior_color_id' => null,
             'interior_color_id' => null,
             'price' => null,
-            'currency' => 'VND',
-            'status' => 'available',
+            'currency' => $this->defaultCurrency(),
+            'status' => 'draft',
             'notes_internal' => '',
         ];
 
@@ -355,7 +329,7 @@ class Form extends AdminPageComponent
             'condition' => trim((string) ($data['condition'] ?? 'new')),
             'vin' => ! empty($data['vin']) ? strtoupper(trim((string) $data['vin'])) : null,
             'stock_code' => strtoupper(trim((string) ($data['stock_code'] ?? ''))),
-            'year' => ! empty($data['year']) ? (int) $data['year'] : (int) date('Y'),
+            'year' => isset($data['year']) && $data['year'] !== '' ? (int) $data['year'] : null,
             'mileage' => isset($data['mileage']) && $data['mileage'] !== '' ? (int) $data['mileage'] : null,
             'body_type_id' => ! empty($data['body_type_id']) ? (int) $data['body_type_id'] : null,
             'fuel_type_id' => ! empty($data['fuel_type_id']) ? (int) $data['fuel_type_id'] : null,
@@ -364,17 +338,36 @@ class Form extends AdminPageComponent
             'exterior_color_id' => ! empty($data['exterior_color_id']) ? (int) $data['exterior_color_id'] : null,
             'interior_color_id' => ! empty($data['interior_color_id']) ? (int) $data['interior_color_id'] : null,
             'price' => isset($data['price']) && $data['price'] !== '' ? (int) $data['price'] : null,
-            'currency' => 'VND',
+            'currency' => strtoupper(trim((string) ($data['currency'] ?? $this->defaultCurrency()))),
             'status' => trim((string) ($data['status'] ?? 'available')),
             'notes_internal' => ! empty($data['notes_internal']) ? trim((string) $data['notes_internal']) : null,
         ];
     }
 
-    private function reorderMedia(): void
+    /**
+     * @param  array{id?: ?int, path_or_url?: string}  $media
+     */
+    private function deletePendingUpload(array $media): void
     {
-        foreach ($this->media as $i => $row) {
-            $this->media[$i]['sort_order'] = $i;
+        if (($media['id'] ?? null) !== null) {
+            return;
         }
+
+        $path = (string) ($media['path_or_url'] ?? '');
+        $storagePrefix = '/storage/inventory-media/';
+
+        if (! str_starts_with($path, $storagePrefix)) {
+            return;
+        }
+
+        Storage::disk('public')->delete(ltrim(Str::after($path, '/storage/'), '/'));
+    }
+
+    private function defaultCurrency(): string
+    {
+        $settings = app(AdminContextResolver::class)->settings();
+
+        return strtoupper((string) data_get($settings, 'site.default_currency.value', 'VND'));
     }
 
     /**

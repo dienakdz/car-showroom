@@ -207,14 +207,13 @@ class InventoryController extends ClientBaseController
 
         $media = CarUnitMedia::query()
             ->where('car_unit_id', $car->id)
+            ->where('type', 'image')
             ->orderByDesc('is_cover')
             ->orderBy('sort_order')
             ->get()
-            ->map(function (CarUnitMedia $item): object {
-                $item->url = $this->resolveMediaPath($item->path_or_url);
-
-                return $item;
-            });
+            ->map(fn (CarUnitMedia $item): object => (object) [
+                'url' => $this->resolveMediaPath($item->path_or_url),
+            ]);
 
         if ($media->isEmpty()) {
             $media = collect([(object) ['url' => $this->resolveMediaPath(null)]]);

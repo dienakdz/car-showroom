@@ -25,4 +25,15 @@ class CarUnitMedia extends EloquentModel
     {
         return $this->belongsTo(CarUnit::class, 'car_unit_id');
     }
+
+    public function displayUrl(): ?string
+    {
+        $path = ltrim(trim((string) $this->path_or_url), '/');
+
+        if ($path === '') {
+            return null;
+        }
+
+        return file_exists(public_path($path)) ? asset($path) : null;
+    }
 }

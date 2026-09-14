@@ -1,38 +1,39 @@
 <div>
-    {{-- Error Banner --}}
-    @if ($errors->any())
-        <div class="c1-alert c1-alert-danger mb-4" style="padding: 14px 18px; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 6px;">
-                <i class="fa fa-exclamation-triangle me-1"></i> Vui lòng kiểm tra lại các trường thông tin:
-            </div>
-            <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    @php
+        $isOnHold = $carUnit->status === 'on_hold';
+        $isSold = $carUnit->status === 'sold';
+        $isWorkflowLocked = $isOnHold || $isSold;
+    @endphp
 
     {{-- Page Header --}}
     <div class="c1-page-header mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <div>
             <h1 class="c1-page-title">{{ $carUnitId !== null ? 'Cập nhật xe [' . ($form['stock_code'] ?? '') . ']' : 'Thêm xe mới vào kho' }}</h1>
             <div class="c1-page-subtitle" style="color: var(--c1-text-muted); font-size: 13px; margin-top: 4px;">
-                {{ $carUnitId !== null ? 'Chỉnh sửa thông số, hình ảnh và trạng thái kho xe.' : 'Khai báo thông tin định danh, thông số kỹ thuật, định giá và hình ảnh xe.' }}
+                @if ($isSold)
+                    Xe đã bán: thông tin Inventory được khóa và chỉ dùng để xem.
+                @elseif ($isOnHold)
+                    Xe đang giữ cọc: chỉ có thể cập nhật hình ảnh và ghi chú nội bộ.
+                @else
+                    {{ $carUnitId !== null ? 'Chỉnh sửa thông số, hình ảnh và trạng thái kho xe.' : 'Khai báo thông tin định danh, thông số kỹ thuật, định giá và hình ảnh xe.' }}
+                @endif
             </div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
             <a href="{{ route('admin.inventory.index') }}" wire:navigate.hover class="c1-btn c1-btn-secondary">
                 <i class="fa fa-arrow-left me-1"></i> Về kho xe
             </a>
-            <button
-                type="button"
-                wire:click="saveWithStatus('available')"
-                wire:loading.attr="disabled"
-                class="c1-btn c1-btn-primary"
-            >
-                <i class="fa fa-check me-1"></i> {{ $carUnitId !== null ? 'Cập nhật xe' : 'Lưu & Đăng bán' }}
-            </button>
+            @if ($isSold)
+                <span class="c1-pill c1-pill-gray"><i class="fa fa-lock me-1"></i> Chỉ xem</span>
+            @elseif ($isOnHold)
+                <button type="button" wire:click="save" wire:loading.attr="disabled" class="c1-btn c1-btn-primary">
+                    <i class="fa fa-check me-1"></i> Lưu ảnh & ghi chú
+                </button>
+            @else
+                <button type="button" wire:click="saveWithStatus('available')" wire:loading.attr="disabled" class="c1-btn c1-btn-primary">
+                    <i class="fa fa-check me-1"></i> {{ $carUnitId !== null ? 'Cập nhật xe' : 'Lưu & Đăng bán' }}
+                </button>
+            @endif
         </div>
     </div>
 
@@ -54,7 +55,7 @@
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">
                             Chọn phiên bản xe (Trim) <span class="text-danger">*</span>
                         </label>
-                        <select wire:model.live="form.trim_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model.live="form.trim_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chọn Hãng / Dòng xe / Phiên bản --</option>
                             @foreach ($trims as $trim)
                                 <option value="{{ $trim->id }}">
@@ -75,6 +76,7 @@
                                 wire:click="setCondition('new')"
                                 class="btn {{ ($form['condition'] ?? 'new') === 'new' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary' }}"
                                 style="border-radius: 8px 0 0 8px; padding: 8px 16px; font-size: 13px;"
+                                @disabled($isWorkflowLocked)
                             >
                                 <i class="fa fa-certificate me-1"></i> Xe mới 100%
                             </button>
@@ -83,6 +85,7 @@
                                 wire:click="setCondition('used')"
                                 class="btn {{ ($form['condition'] ?? '') === 'used' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary' }}"
                                 style="padding: 8px 16px; font-size: 13px;"
+                                @disabled($isWorkflowLocked)
                             >
                                 <i class="fa fa-history me-1"></i> Đã qua sử dụng
                             </button>
@@ -91,10 +94,12 @@
                                 wire:click="setCondition('cpo')"
                                 class="btn {{ ($form['condition'] ?? '') === 'cpo' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary' }}"
                                 style="border-radius: 0 8px 8px 0; padding: 8px 16px; font-size: 13px;"
+                                @disabled($isWorkflowLocked)
                             >
                                 <i class="fa fa-shield me-1"></i> Chính hãng CPO
                             </button>
                         </div>
+                        @error('form.condition') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -107,6 +112,7 @@
                             class="form-control"
                             style="border-radius: 8px; height: 42px;"
                             placeholder="VD: STK-2026-001"
+                            @disabled($isWorkflowLocked)
                         >
                         @error('form.stock_code') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
@@ -121,6 +127,7 @@
                             class="form-control"
                             style="border-radius: 8px; height: 42px;"
                             placeholder="VD: 1HGBH41JXMN109186"
+                            @disabled($isWorkflowLocked)
                         >
                         @error('form.vin') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
@@ -136,6 +143,7 @@
                             wire:model="form.year"
                             class="form-control"
                             style="border-radius: 8px; height: 42px;"
+                            @disabled($isWorkflowLocked)
                         >
                         @error('form.year') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
@@ -151,6 +159,7 @@
                             class="form-control"
                             style="border-radius: 8px; height: 42px;"
                             placeholder="{{ ($form['condition'] ?? '') === 'new' ? 'Xe mới: 0 km' : 'VD: 15000' }}"
+                            @disabled($isWorkflowLocked)
                         >
                         @error('form.mileage') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
@@ -168,112 +177,110 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Kiểu dáng thân xe</label>
-                        <select wire:model="form.body_type_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.body_type_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($bodyTypes as $bt)
                                 <option value="{{ $bt->id }}">{{ $bt->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.body_type_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Loại nhiên liệu</label>
-                        <select wire:model="form.fuel_type_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.fuel_type_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($fuelTypes as $ft)
                                 <option value="{{ $ft->id }}">{{ $ft->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.fuel_type_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Hộp số</label>
-                        <select wire:model="form.transmission_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.transmission_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($transmissions as $tr)
                                 <option value="{{ $tr->id }}">{{ $tr->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.transmission_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Hệ dẫn động</label>
-                        <select wire:model="form.drivetrain_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.drivetrain_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($drivetrains as $dt)
                                 <option value="{{ $dt->id }}">{{ $dt->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.drivetrain_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Màu ngoại thất</label>
-                        <select wire:model="form.exterior_color_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.exterior_color_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($exteriorColors as $ec)
                                 <option value="{{ $ec->id }}">{{ $ec->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.exterior_color_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" style="font-weight: 600; font-size: 13px;">Màu nội thất</label>
-                        <select wire:model="form.interior_color_id" class="form-control" style="border-radius: 8px; height: 42px;">
+                        <select wire:model="form.interior_color_id" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                             <option value="">-- Chưa chọn --</option>
                             @foreach ($interiorColors as $ic)
                                 <option value="{{ $ic->id }}">{{ $ic->name }}</option>
                             @endforeach
                         </select>
+                        @error('form.interior_color_id') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>
 
-            {{-- Thẻ 3: Hình ảnh xe (Media Gallery) --}}
+            {{-- Thẻ 3: Thư viện hình ảnh xe --}}
             <div class="c1-panel mb-4" style="padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
                     <div>
                         <h4 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">
-                            <i class="fa fa-picture-o text-primary me-2"></i> 4. Hình ảnh xe & Media Gallery ({{ count($media) }} mục)
+                            <i class="fa fa-picture-o text-primary me-2"></i> 4. Thư viện hình ảnh xe ({{ count($media) }} ảnh)
                         </h4>
                         <span class="c1-cell-sub">Tải lên hình ảnh ngoại thất, nội thất và chi tiết xe.</span>
                     </div>
                 </div>
 
                 {{-- Upload Box --}}
-                <div style="border: 2px dashed #cbd5e1; border-radius: 10px; padding: 24px; text-align: center; background: #f8fafc; margin-bottom: 20px;">
-                    <i class="fa fa-cloud-upload fa-3x text-muted mb-2"></i>
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả hoặc chọn ảnh từ máy tính</div>
-                    <div class="text-muted" style="font-size: 12px; margin-bottom: 12px;">Hỗ trợ JPG, PNG, WEBP (tối đa 10MB mỗi ảnh)</div>
-                    <label class="btn btn-primary" style="font-size: 13px; cursor: pointer; border-radius: 6px;">
-                        <i class="fa fa-plus me-1"></i> Chọn tệp ảnh tải lên
-                        <input type="file" wire:model="uploads" multiple accept="image/*" style="display: none;">
-                    </label>
+                <label style="position: relative; display: block; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 36px 24px; text-align: center; background: #f8fafc; margin-bottom: 20px; cursor: {{ $isSold ? 'not-allowed' : 'pointer' }}; overflow: hidden;">
+                    <input
+                        type="file"
+                        wire:model="uploads"
+                        multiple
+                        accept="image/jpeg,image/png,image/webp"
+                        style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: inherit; z-index: 2;"
+                        @disabled($isSold)
+                    >
+
+                    <div style="pointer-events: none;">
+                        <i class="fa fa-cloud-upload fa-3x text-muted mb-2"></i>
+                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Kéo thả hoặc chọn ảnh từ máy tính</div>
+                        <div class="text-muted" style="font-size: 12px; margin-bottom: 12px;">Hỗ trợ JPG, PNG, WEBP (tối đa 10MB mỗi ảnh)</div>
+                        <span class="btn btn-primary" style="font-size: 13px; border-radius: 6px;">
+                            <i class="fa fa-plus me-1"></i> Chọn tệp ảnh tải lên
+                        </span>
+                    </div>
 
                     <div wire:loading wire:target="uploads" class="mt-2 text-primary" style="font-size: 13px;">
                         <i class="fa fa-spinner fa-spin me-1"></i> Đang tải ảnh lên...
                     </div>
-                </div>
+                    @error('uploads.*') <div class="text-danger mt-2" style="font-size: 12px;">{{ $message }}</div> @enderror
+                </label>
 
-                {{-- Add Image by URL --}}
-                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-                    <input
-                        type="url"
-                        wire:model="newMediaUrl"
-                        placeholder="Hoặc nhập đường dẫn ảnh trực tiếp (https://...)"
-                        class="form-control"
-                        style="height: 38px; border-radius: 6px; font-size: 13px;"
-                    >
-                    <button
-                        type="button"
-                        wire:click="addMediaUrl"
-                        class="btn btn-outline-secondary"
-                        style="height: 38px; font-size: 13px; white-space: nowrap; border-radius: 6px;"
-                    >
-                        <i class="fa fa-link me-1"></i> Thêm link
-                    </button>
-                </div>
-
-                {{-- Gallery Grid --}}
+                {{-- Image Grid --}}
                 <div class="row g-3">
                     @forelse ($media as $index => $item)
                         <div class="col-sm-6 col-md-4" wire:key="media-item-{{ $index }}">
@@ -293,7 +300,7 @@
 
                                 <div style="padding: 10px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; border-top: 1px solid #f1f5f9;">
                                     <div style="display: flex; gap: 4px;">
-                                        @if (!($item['is_cover'] ?? false))
+                                        @if (!$isSold && !($item['is_cover'] ?? false))
                                             <button
                                                 type="button"
                                                 wire:click="setCover({{ $index }})"
@@ -310,7 +317,7 @@
                                             class="btn btn-xs btn-outline-secondary"
                                             title="Chuyển lên trước"
                                             style="font-size: 11px; padding: 2px 6px;"
-                                            @disabled($index === 0)
+                                            @disabled($isSold || $index === 0)
                                         >
                                             <i class="fa fa-arrow-left"></i>
                                         </button>
@@ -320,7 +327,7 @@
                                             class="btn btn-xs btn-outline-secondary"
                                             title="Chuyển xuống sau"
                                             style="font-size: 11px; padding: 2px 6px;"
-                                            @disabled($index === count($media) - 1)
+                                            @disabled($isSold || $index === count($media) - 1)
                                         >
                                             <i class="fa fa-arrow-right"></i>
                                         </button>
@@ -332,6 +339,7 @@
                                         class="btn btn-xs btn-outline-danger"
                                         title="Xóa ảnh này"
                                         style="font-size: 11px; padding: 2px 6px;"
+                                        @disabled($isSold)
                                     >
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -359,7 +367,9 @@
                     class="form-control"
                     style="border-radius: 8px; font-size: 13px;"
                     placeholder="Ghi chú về nguồn gốc xe, tình trạng bảo dưỡng, lịch sử cọc..."
+                    @disabled($isSold)
                 ></textarea>
+                @error('form.notes_internal') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
             </div>
         </div>
 
@@ -394,7 +404,7 @@
                             Năm {{ $form['year'] ?? date('Y') }} • Mã: {{ $form['stock_code'] ?? 'STK-...' }}
                         </div>
                         <div style="font-size: 16px; font-weight: 800; color: #0f172a;">
-                            {{ !empty($form['price']) ? number_format((float) $form['price'], 0, ',', '.') . ' VNĐ' : 'Liên hệ' }}
+                            {{ !empty($form['price']) ? number_format((float) $form['price'], 0, ',', '.') . ' ' . ($form['currency'] ?? 'VND') : 'Liên hệ' }}
                         </div>
                     </div>
                 </div>
@@ -407,7 +417,7 @@
                 </h5>
 
                 <div class="mb-3">
-                    <label class="form-label" style="font-weight: 600; font-size: 13px;">Giá niêm yết (VNĐ)</label>
+                    <label class="form-label" style="font-weight: 600; font-size: 13px;">Giá niêm yết ({{ $form['currency'] ?? 'VND' }})</label>
                     <input
                         type="number"
                         min="0"
@@ -416,10 +426,11 @@
                         placeholder="VD: 750000000"
                         class="form-control"
                         style="border-radius: 8px; height: 42px; font-weight: 600; font-size: 15px;"
+                        @disabled($isWorkflowLocked)
                     >
                     @if (!empty($form['price']))
                         <div class="text-muted" style="font-size: 12px; margin-top: 4px;">
-                            Bằng chữ: <strong>{{ number_format((float) $form['price'], 0, ',', '.') }} VNĐ</strong>
+                            Bằng chữ: <strong>{{ number_format((float) $form['price'], 0, ',', '.') }} {{ $form['currency'] ?? 'VND' }}</strong>
                         </div>
                     @endif
                     @error('form.price') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
@@ -434,12 +445,18 @@
 
                 <div class="mb-3">
                     <label class="form-label" style="font-weight: 600; font-size: 13px;">Trạng thái hiện tại</label>
-                    <select wire:model="form.status" class="form-control" style="border-radius: 8px; height: 42px;">
-                        <option value="available">Sẵn sàng bán (Available)</option>
-                        <option value="draft">Bản nháp (Draft)</option>
-                        <option value="on_hold">Đang giữ cọc (On Hold)</option>
-                        <option value="sold">Đã giao xe (Sold)</option>
-                        <option value="archived">Lưu kho (Archived)</option>
+                    <select wire:model="form.status" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
+                        @if ($carUnit->status === 'on_hold')
+                            <option value="on_hold">Đang giữ cọc (On Hold)</option>
+                        @elseif ($carUnit->status === 'sold')
+                            <option value="sold">Đã giao xe (Sold)</option>
+                        @else
+                            <option value="available">Sẵn sàng bán (Available)</option>
+                            <option value="draft">Bản nháp (Draft)</option>
+                            @if ($carUnitId !== null)
+                                <option value="archived">Lưu kho (Archived)</option>
+                            @endif
+                        @endif
                     </select>
                     @error('form.status') <span class="text-danger" style="font-size: 12px;">{{ $message }}</span> @enderror
                 </div>
@@ -466,26 +483,33 @@
                 </h5>
 
                 <div class="d-grid gap-2">
-                    <button
-                        type="button"
-                        wire:click="save"
-                        wire:loading.attr="disabled"
-                        class="c1-btn c1-btn-primary w-100"
-                        style="height: 44px; font-weight: 600;"
-                    >
-                        <span wire:loading.remove><i class="fa fa-save me-1"></i> {{ $carUnitId !== null ? 'Cập nhật xe' : 'Lưu thông tin xe' }}</span>
-                        <span wire:loading><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
-                    </button>
+                    @if (!$isSold)
+                        <button
+                            type="button"
+                            wire:click="save"
+                            wire:loading.attr="disabled"
+                            class="c1-btn c1-btn-primary w-100"
+                            style="height: 44px; font-weight: 600;"
+                        >
+                            <span wire:loading.remove>
+                                <i class="fa fa-save me-1"></i>
+                                {{ $isOnHold ? 'Lưu ảnh & ghi chú' : ($carUnitId !== null ? 'Cập nhật xe' : 'Lưu thông tin xe') }}
+                            </span>
+                            <span wire:loading><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
+                        </button>
+                    @endif
 
-                    <button
-                        type="button"
-                        wire:click="saveWithStatus('draft')"
-                        wire:loading.attr="disabled"
-                        class="c1-btn c1-btn-secondary w-100"
-                        style="height: 40px;"
-                    >
-                        <i class="fa fa-file-o me-1"></i> Lưu bản nháp (Draft)
-                    </button>
+                    @if (!$isWorkflowLocked)
+                        <button
+                            type="button"
+                            wire:click="saveWithStatus('draft')"
+                            wire:loading.attr="disabled"
+                            class="c1-btn c1-btn-secondary w-100"
+                            style="height: 40px;"
+                        >
+                            <i class="fa fa-file-text me-1"></i> Lưu bản nháp (Draft)
+                        </button>
+                    @endif
 
                     <a href="{{ route('admin.inventory.index') }}" wire:navigate class="c1-btn c1-btn-ghost w-100 text-center" style="height: 38px;">
                         Hủy bỏ

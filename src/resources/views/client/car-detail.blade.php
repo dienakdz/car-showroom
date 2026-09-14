@@ -147,17 +147,11 @@
 
 @section('content')
 @php
-    $imageMedia = $media->filter(function (object $item): bool {
-        return ($item->type ?? 'image') === 'image';
-    })->values();
+    $imageMedia = $media->values();
 
     if ($imageMedia->isEmpty()) {
         $imageMedia = collect([(object) ['url' => $car->image_url]]);
     }
-
-    $videoMedia = $media->filter(function (object $item): bool {
-        return ($item->type ?? null) === 'video';
-    })->values();
 
     $description = trim((string) ($car->trim_description ?? ''));
     $descriptionLead = $description !== '' ? \Illuminate\Support\Str::limit($description, 220, '...') : 'Showroom dang cap nhat mo ta chi tiet cho phien ban nay.';
@@ -249,9 +243,6 @@
                             </div>
                             <div class="content-box">
                                 <ul class="video-list">
-                                    @if ($videoMedia->isNotEmpty())
-                                        <li><a href="{{ $videoMedia->first()->url }}" data-fancybox="gallery2"><img src="{{ asset('boxcar/images/resource/video1-1.svg') }}" alt="video">Video</a></li>
-                                    @endif
                                     <li><a href="#dealer-booking"><img src="{{ asset('boxcar/images/resource/video1-2.svg') }}" alt="contact">Dat lich xem xe</a></li>
                                     <li><a href="{{ $imageMedia->first()->url }}" data-fancybox="gallery"><img src="{{ asset('boxcar/images/resource/video1-4.svg') }}" alt="photos">Tat ca hinh anh</a></li>
                                 </ul>

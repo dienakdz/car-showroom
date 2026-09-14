@@ -184,7 +184,6 @@ class InventorySeeder extends Seeder
             ['stock_code' => 'NEW-CIVIC-001', 'type' => 'image', 'path_or_url' => '/seed-media/civic-rs-1.jpg', 'caption' => 'Góc chụp đầu xe', 'sort_order' => 1, 'is_cover' => true],
             ['stock_code' => 'NEW-CIVIC-001', 'type' => 'image', 'path_or_url' => '/seed-media/civic-rs-2.jpg', 'caption' => 'Khoang táp-lô', 'sort_order' => 2, 'is_cover' => false],
             ['stock_code' => 'USED-CROSS-001', 'type' => 'image', 'path_or_url' => '/seed-media/cross-hybrid-1.jpg', 'caption' => 'Ngoại thất thân xe', 'sort_order' => 1, 'is_cover' => true],
-            ['stock_code' => 'USED-CROSS-001', 'type' => 'video', 'path_or_url' => 'https://example.com/videos/cross-walkaround.mp4', 'caption' => 'Video walkaround', 'sort_order' => 2, 'is_cover' => false],
             ['stock_code' => 'USED-RANGER-001', 'type' => 'image', 'path_or_url' => '/seed-media/ranger-1.jpg', 'caption' => 'Thiết lập off-road', 'sort_order' => 1, 'is_cover' => true],
             ['stock_code' => 'CPO-CITY-001', 'type' => 'image', 'path_or_url' => '/seed-media/city-rs-1.jpg', 'caption' => 'Đầu xe City RS', 'sort_order' => 1, 'is_cover' => true],
         ];

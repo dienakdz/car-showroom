@@ -16,6 +16,10 @@ class Index extends AdminPageComponent
 {
     use WithPagination;
 
+    private const CONDITIONS = ['new', 'used', 'cpo'];
+
+    private const STATUSES = ['available', 'on_hold', 'draft', 'sold', 'archived'];
+
     protected string $paginationTheme = 'bootstrap';
 
     #[Url(as: 'q', except: '')]
@@ -30,17 +34,6 @@ class Index extends AdminPageComponent
     #[Url(as: 'trim_id', except: 0)]
     public int $trimId = 0;
 
-    /** @var array{type?: string, message?: string} */
-    public array $feedback = [];
-
-    public function mount(): void
-    {
-        $feedback = session()->pull('inventory_feedback');
-        if (is_array($feedback)) {
-            $this->feedback = $feedback;
-        }
-    }
-
     public function updatedSearch(): void
     {
         $this->resetPage('inventoryPage');
@@ -48,11 +41,19 @@ class Index extends AdminPageComponent
 
     public function updatedStatus(): void
     {
+        if ($this->status !== '' && ! in_array($this->status, self::STATUSES, true)) {
+            $this->status = '';
+        }
+
         $this->resetPage('inventoryPage');
     }
 
     public function updatedCondition(): void
     {
+        if ($this->condition !== '' && ! in_array($this->condition, self::CONDITIONS, true)) {
+            $this->condition = '';
+        }
+
         $this->resetPage('inventoryPage');
     }
 
@@ -63,7 +64,7 @@ class Index extends AdminPageComponent
 
     public function filterByStatus(string $status): void
     {
-        $this->status = in_array($status, ['available', 'on_hold', 'draft', 'sold', 'archived'], true) ? $status : '';
+        $this->status = in_array($status, self::STATUSES, true) ? $status : '';
         $this->resetPage('inventoryPage');
     }
 
@@ -73,49 +74,29 @@ class Index extends AdminPageComponent
         $this->resetPage('inventoryPage');
     }
 
-    public function dismissFeedback(): void
-    {
-        $this->feedback = [];
-    }
-
     public function publish(int $carUnitId, InventoryWorkflowService $service): void
     {
-        $this->authorizeAdminAccess($this->requiredPermission());
         $carUnit = CarUnit::query()->findOrFail($carUnitId);
 
         $service->publish($carUnit);
 
-        $this->feedback = [
-            'type' => 'success',
-            'message' => "Đã publish xe [{$carUnit->stock_code}] lên sàn inventory.",
-        ];
+        $this->toast('success', "Đã publish xe [{$carUnit->stock_code}] lên sàn inventory.");
     }
 
     public function archive(int $carUnitId, InventoryWorkflowService $service): void
     {
-        $this->authorizeAdminAccess($this->requiredPermission());
         $carUnit = CarUnit::query()->findOrFail($carUnitId);
 
         $service->archive($carUnit);
 
-        $this->feedback = [
-            'type' => 'success',
-            'message' => "Đã lưu trữ (archive) xe [{$carUnit->stock_code}].",
-        ];
+        $this->toast('success', "Đã lưu trữ (archive) xe [{$carUnit->stock_code}].");
     }
 
     public function render(): View
     {
         return view('livewire.admin.inventory.index', [
             'carUnits' => $this->filteredQuery()->paginate(12, ['*'], 'inventoryPage'),
-            'statusCounts' => [
-                'all' => CarUnit::query()->count(),
-                'available' => CarUnit::query()->where('status', 'available')->count(),
-                'on_hold' => CarUnit::query()->where('status', 'on_hold')->count(),
-                'draft' => CarUnit::query()->where('status', 'draft')->count(),
-                'sold' => CarUnit::query()->where('status', 'sold')->count(),
-                'archived' => CarUnit::query()->where('status', 'archived')->count(),
-            ],
+            'statusCounts' => $this->statusCounts(),
             'trims' => $this->availableTrims(),
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
             'adminPageTitle' => 'Quản lý kho xe',
@@ -171,5 +152,25 @@ class Index extends AdminPageComponent
             ->with('model.make')
             ->orderBy('name')
             ->get();
+    }
+
+    /**
+     * @return array{all: int, available: int, on_hold: int, draft: int, sold: int, archived: int}
+     */
+    private function statusCounts(): array
+    {
+        $counts = CarUnit::query()
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        return [
+            'all' => (int) $counts->sum(),
+            'available' => (int) $counts->get('available', 0),
+            'on_hold' => (int) $counts->get('on_hold', 0),
+            'draft' => (int) $counts->get('draft', 0),
+            'sold' => (int) $counts->get('sold', 0),
+            'archived' => (int) $counts->get('archived', 0),
+        ];
     }
 }

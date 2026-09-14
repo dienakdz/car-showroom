@@ -9,36 +9,51 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class InventoryWorkflowService
 {
+    private const EDITABLE_FIELDS = [
+        'trim_id',
+        'condition',
+        'vin',
+        'stock_code',
+        'year',
+        'mileage',
+        'body_type_id',
+        'fuel_type_id',
+        'transmission_id',
+        'drivetrain_id',
+        'exterior_color_id',
+        'interior_color_id',
+        'price',
+        'currency',
+        'status',
+        'notes_internal',
+    ];
+
+    private const HOLD_EDITABLE_FIELDS = [
+        'notes_internal',
+    ];
+
     public function save(array $validated, User $actor, ?CarUnit $carUnit = null): CarUnit
     {
         return DB::transaction(function () use ($validated, $actor, $carUnit): CarUnit {
-            $carUnit ??= new CarUnit;
+            $carUnit = $carUnit?->exists
+                ? CarUnit::query()->lockForUpdate()->findOrFail($carUnit->id)
+                : new CarUnit;
+
+            $this->ensureStatusTransitionIsAllowed($carUnit, (string) $validated['status']);
 
             $wasExisting = $carUnit->exists;
             $originalPrice = $carUnit->exists ? $carUnit->price : null;
 
-            $carUnit->fill(Arr::only($validated, [
-                'trim_id',
-                'condition',
-                'vin',
-                'stock_code',
-                'year',
-                'mileage',
-                'body_type_id',
-                'fuel_type_id',
-                'transmission_id',
-                'drivetrain_id',
-                'exterior_color_id',
-                'interior_color_id',
-                'price',
-                'currency',
-                'status',
-                'notes_internal',
-            ]));
+            $editableFields = $carUnit->status === 'on_hold'
+                ? self::HOLD_EDITABLE_FIELDS
+                : self::EDITABLE_FIELDS;
+
+            $carUnit->fill(Arr::only($validated, $editableFields));
 
             if ($carUnit->status === 'available' && $carUnit->published_at === null) {
                 $carUnit->published_at = now();
@@ -67,37 +82,53 @@ class InventoryWorkflowService
 
     public function publish(CarUnit $carUnit): void
     {
-        if ($carUnit->status === 'sold') {
-            throw ValidationException::withMessages([
-                'carUnit' => 'Khong the publish mot xe da sold.',
-            ]);
-        }
+        DB::transaction(function () use ($carUnit): void {
+            $carUnit = CarUnit::query()->lockForUpdate()->findOrFail($carUnit->id);
 
-        $carUnit->forceFill([
-            'status' => 'available',
-            'published_at' => $carUnit->published_at ?? now(),
-            'hold_until' => null,
-        ])->save();
+            if (in_array($carUnit->status, ['sold', 'on_hold'], true) || $carUnit->sale()->exists()) {
+                throw ValidationException::withMessages([
+                    'carUnit' => 'Không thể publish xe đang giữ cọc hoặc đã bán.',
+                ]);
+            }
+
+            $carUnit->forceFill([
+                'status' => 'available',
+                'published_at' => $carUnit->published_at ?? now(),
+                'hold_until' => null,
+            ])->save();
+        });
     }
 
     public function archive(CarUnit $carUnit): void
     {
-        $carUnit->forceFill([
-            'status' => 'archived',
-            'hold_until' => null,
-        ])->save();
+        DB::transaction(function () use ($carUnit): void {
+            $carUnit = CarUnit::query()->lockForUpdate()->findOrFail($carUnit->id);
+
+            if (in_array($carUnit->status, ['sold', 'on_hold'], true) || $carUnit->sale()->exists()) {
+                throw ValidationException::withMessages([
+                    'carUnit' => 'Không thể archive xe đang giữ cọc hoặc đã bán.',
+                ]);
+            }
+
+            $carUnit->forceFill([
+                'status' => 'archived',
+                'hold_until' => null,
+            ])->save();
+        });
     }
 
     protected function syncMedia(CarUnit $carUnit, Collection $mediaRows): void
     {
         $normalizedRows = $mediaRows
             ->map(function (array $row, int $index): array {
+                $caption = trim((string) ($row['caption'] ?? ''));
+
                 return [
                     'id' => $row['id'] ?? null,
-                    'type' => $row['type'],
+                    'type' => 'image',
                     'path_or_url' => trim((string) $row['path_or_url']),
-                    'caption' => $row['caption'] !== '' ? $row['caption'] : null,
-                    'sort_order' => (int) ($row['sort_order'] ?? $index),
+                    'caption' => $caption !== '' ? $caption : null,
+                    'sort_order' => $index,
                     'is_cover' => (bool) ($row['is_cover'] ?? false),
                 ];
             })
@@ -105,9 +136,7 @@ class InventoryWorkflowService
             ->values();
 
         if ($normalizedRows->isNotEmpty() && ! $normalizedRows->contains(fn (array $row): bool => $row['is_cover'])) {
-            $firstIndex = $normalizedRows->search(fn (array $row): bool => $row['type'] === 'image');
-            $targetIndex = $firstIndex !== false ? $firstIndex : 0;
-            $normalizedRows[$targetIndex]['is_cover'] = true;
+            $normalizedRows[0]['is_cover'] = true;
         }
 
         $existingMedia = $carUnit->media()->get()->keyBy('id');
@@ -127,6 +156,10 @@ class InventoryWorkflowService
             $keptIds[] = $media->id;
         }
 
+        $removedPaths = $existingMedia
+            ->except($keptIds)
+            ->pluck('path_or_url');
+
         if ($keptIds !== []) {
             $carUnit->media()
                 ->whereNotIn('id', $keptIds)
@@ -141,11 +174,70 @@ class InventoryWorkflowService
                 ->value('id');
 
             if ($coverId === null) {
-                $coverId = $carUnit->media()->orderBy('sort_order')->value('id');
+                $coverId = $carUnit->media()
+                    ->orderBy('sort_order')
+                    ->value('id');
             }
 
             $carUnit->media()->update(['is_cover' => false]);
-            $carUnit->media()->whereKey($coverId)->update(['is_cover' => true]);
+
+            if ($coverId !== null) {
+                $carUnit->media()->whereKey($coverId)->update(['is_cover' => true]);
+            }
+        }
+
+        DB::afterCommit(fn () => $this->deleteManagedMediaFiles($removedPaths));
+    }
+
+    private function deleteManagedMediaFiles(Collection $paths): void
+    {
+        $paths->each(static function (mixed $path): void {
+            $path = trim((string) $path);
+
+            if (! str_starts_with($path, '/storage/inventory-media/')) {
+                return;
+            }
+
+            Storage::disk('public')->delete(ltrim(substr($path, strlen('/storage/')), '/'));
+        });
+    }
+
+    private function ensureStatusTransitionIsAllowed(CarUnit $carUnit, string $nextStatus): void
+    {
+        if (! $carUnit->exists) {
+            if (! in_array($nextStatus, ['draft', 'available'], true)) {
+                throw ValidationException::withMessages([
+                    'form.status' => 'Xe mới chỉ có thể bắt đầu ở trạng thái bản nháp hoặc sẵn sàng bán.',
+                ]);
+            }
+
+            return;
+        }
+
+        $hasSale = $carUnit->sale()->exists();
+
+        if ($carUnit->status === 'sold' || $hasSale) {
+            throw ValidationException::withMessages([
+                'form.status' => 'Xe đã bán chỉ có thể xem và không thể cập nhật trong Inventory.',
+            ]);
+        }
+
+        if ($nextStatus === 'sold') {
+            throw ValidationException::withMessages([
+                'form.status' => 'Trạng thái Đã bán phải được tạo từ module Quản lý bán hàng.',
+            ]);
+        }
+
+        if ($carUnit->status === 'on_hold' && $nextStatus !== 'on_hold') {
+            throw ValidationException::withMessages([
+                'form.status' => 'Xe đang giữ cọc chỉ có thể đổi trạng thái qua workflow giữ cọc.',
+            ]);
+        }
+
+        if ($nextStatus === 'on_hold' && $carUnit->status !== 'on_hold') {
+            throw ValidationException::withMessages([
+                'form.status' => 'Hãy dùng workflow giữ cọc để chuyển xe sang trạng thái này.',
+            ]);
         }
     }
 }
