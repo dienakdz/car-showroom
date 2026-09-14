@@ -146,7 +146,6 @@
                             @php
                                 $imageMedia = $carUnit->media->where('type', 'image');
                                 $coverMedia = $imageMedia->firstWhere('is_cover', true) ?? $imageMedia->first();
-                                $coverMediaUrl = $coverMedia?->displayUrl();
                                 $conditionLabel = match ($carUnit->condition) {
                                     'new' => 'Mới 100%',
                                     'used' => 'Đã qua sử dụng',
@@ -157,8 +156,8 @@
                             <tr wire:key="car-unit-row-{{ $carUnit->id }}">
                                 <td>
                                     <div class="c1-car-thumb" style="width: 56px; height: 42px; border-radius: 6px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
-                                        @if ($coverMediaUrl !== null)
-                                            <img src="{{ $coverMediaUrl }}" alt="{{ $carUnit->stock_code }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @if ($coverMedia && filled($coverMedia->path_or_url))
+                                            <img src="{{ asset($coverMedia->path_or_url) }}" alt="{{ $carUnit->stock_code }}" style="width: 100%; height: 100%; object-fit: cover;">
                                         @else
                                             <i class="fa fa-car" aria-hidden="true" style="color: #94a3b8; font-size: 18px;"></i>
                                         @endif
