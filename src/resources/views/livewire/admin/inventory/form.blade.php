@@ -250,7 +250,7 @@
                         <h4 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">
                             <i class="fa fa-picture-o text-primary me-2"></i> 4. Thư viện hình ảnh xe ({{ count($media) }} ảnh)
                         </h4>
-                        <span class="c1-cell-sub">Tải lên hình ảnh ngoại thất, nội thất và chi tiết xe.</span>
+                        <span class="c1-cell-sub">Ảnh được giữ tạm để xem trước và chỉ lưu chính thức khi bạn lưu xe.</span>
                     </div>
                 </div>
 
@@ -283,11 +283,19 @@
                 {{-- Image Grid --}}
                 <div class="row g-3">
                     @forelse ($media as $index => $item)
-                        <div class="col-sm-6 col-md-4" wire:key="media-item-{{ $index }}">
+                        @php
+                            $uploadKey = (string) ($item['upload_key'] ?? '');
+                            $pendingUpload = $uploadKey !== '' ? ($pendingUploads[$uploadKey] ?? null) : null;
+                            $mediaKey = $item['id'] ?? ($uploadKey !== '' ? $uploadKey : $index);
+                            $previewUrl = $pendingUpload instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
+                                ? $pendingUpload->temporaryUrl()
+                                : asset($item['path_or_url']);
+                        @endphp
+                        <div class="col-sm-6 col-md-4" wire:key="media-item-{{ $mediaKey }}">
                             <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; position: relative;">
                                 <div style="height: 140px; background: #f1f5f9; position: relative;">
                                     <img
-                                        src="{{ asset($item['path_or_url']) }}"
+                                        src="{{ $previewUrl }}"
                                         alt="{{ $item['caption'] ?? 'Ảnh xe' }}"
                                         style="width: 100%; height: 100%; object-fit: cover;"
                                     >
@@ -387,8 +395,15 @@
 
                 <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: #f8fafc;">
                     <div style="height: 150px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                        @if ($coverItem && !empty($coverItem['path_or_url']))
-                            <img src="{{ asset($coverItem['path_or_url']) }}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                        @if ($coverItem)
+                            @php
+                                $coverUploadKey = (string) ($coverItem['upload_key'] ?? '');
+                                $coverPendingUpload = $coverUploadKey !== '' ? ($pendingUploads[$coverUploadKey] ?? null) : null;
+                                $coverPreviewUrl = $coverPendingUpload instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
+                                    ? $coverPendingUpload->temporaryUrl()
+                                    : asset($coverItem['path_or_url']);
+                            @endphp
+                            <img src="{{ $coverPreviewUrl }}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             <i class="fa fa-car fa-3x text-muted" style="opacity: 0.4;"></i>
                         @endif

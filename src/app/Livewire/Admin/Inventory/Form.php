@@ -17,9 +17,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Throwable;
 
 class Form extends AdminPageComponent
 {
@@ -31,11 +34,14 @@ class Form extends AdminPageComponent
     /** @var array<string, mixed> */
     public array $form = [];
 
-    /** @var array<int, array{id: ?int, path_or_url: string, caption: ?string, is_cover: bool}> */
+    /** @var array<int, array{id: ?int, path_or_url: string, caption: ?string, is_cover: bool, upload_key?: string}> */
     public array $media = [];
 
-    /** @var array<int, mixed> */
+    /** @var array<int, TemporaryUploadedFile> */
     public array $uploads = [];
+
+    /** @var array<string, TemporaryUploadedFile> */
+    public array $pendingUploads = [];
 
     public function mount(?CarUnit $carUnit = null): void
     {
@@ -52,12 +58,14 @@ class Form extends AdminPageComponent
         ]);
 
         foreach ($this->uploads as $file) {
-            $path = $file->store('inventory-media', 'public');
+            $uploadKey = $file->getFilename();
+            $this->pendingUploads[$uploadKey] = $file;
             $this->media[] = [
                 'id' => null,
-                'path_or_url' => '/storage/' . $path,
-                'caption' => $file->getClientOriginalName(),
+                'path_or_url' => '',
+                'caption' => Str::limit($file->getClientOriginalName(), 255, ''),
                 'is_cover' => count($this->media) === 0,
+                'upload_key' => $uploadKey,
             ];
         }
 
@@ -81,7 +89,7 @@ class Form extends AdminPageComponent
             return;
         }
 
-        $this->deletePendingUpload($this->media[$index]);
+        $this->removePendingUpload($this->media[$index]);
         $wasCover = (bool) ($this->media[$index]['is_cover'] ?? false);
         array_splice($this->media, $index, 1);
 
@@ -145,11 +153,25 @@ class Form extends AdminPageComponent
 
         $user = $this->authorizeAdminAccess($this->requiredPermission());
 
-        $payload = array_merge($validated['form'], [
-            'media' => $validated['media'],
-        ]);
+        $storedPaths = [];
 
-        $saved = $service->save($payload, $user, $carUnit);
+        try {
+            $media = $this->storePendingUploads($validated['media'], $storedPaths);
+
+            $payload = array_merge($validated['form'], [
+                'media' => $media,
+            ]);
+
+            $saved = $service->save($payload, $user, $carUnit);
+        } catch (Throwable $exception) {
+            if ($storedPaths !== []) {
+                Storage::disk('public')->delete($storedPaths);
+            }
+
+            throw $exception;
+        }
+
+        $this->clearPendingUploads();
 
         if ($this->carUnitId === null) {
             $this->flashToast('success', "Đã tạo xe mới [{$saved->stock_code}] trong kho thành công.");
@@ -222,9 +244,12 @@ class Form extends AdminPageComponent
             'form.notes_internal' => ['nullable', 'string'],
             'media' => ['array', 'max:30'],
             'media.*.id' => ['nullable', 'integer', 'distinct'],
-            'media.*.path_or_url' => ['required', 'string', 'max:2048'],
+            'media.*.path_or_url' => ['nullable', 'string', 'max:2048'],
             'media.*.caption' => ['nullable', 'string', 'max:255'],
             'media.*.is_cover' => ['required', 'boolean'],
+            'media.*.upload_key' => ['nullable', 'string'],
+            'pendingUploads' => ['array'],
+            'pendingUploads.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
         ];
     }
 
@@ -253,6 +278,7 @@ class Form extends AdminPageComponent
             'media' => 'danh sách hình ảnh',
             'media.*.path_or_url' => 'đường dẫn hình ảnh',
             'media.*.caption' => 'mô tả hình ảnh',
+            'pendingUploads.*' => 'hình ảnh chờ lưu',
         ];
     }
 
@@ -316,6 +342,7 @@ class Form extends AdminPageComponent
         ];
 
         $this->media = [];
+        $this->pendingUploads = [];
     }
 
     /**
@@ -345,22 +372,77 @@ class Form extends AdminPageComponent
     }
 
     /**
-     * @param  array{id?: ?int, path_or_url?: string}  $media
+     * @param  array{id?: ?int, upload_key?: string}  $media
      */
-    private function deletePendingUpload(array $media): void
+    private function removePendingUpload(array $media): void
     {
-        if (($media['id'] ?? null) !== null) {
+        $uploadKey = trim((string) ($media['upload_key'] ?? ''));
+
+        if ($uploadKey === '') {
             return;
         }
 
-        $path = (string) ($media['path_or_url'] ?? '');
-        $storagePrefix = '/storage/inventory-media/';
+        $upload = $this->pendingUploads[$uploadKey] ?? null;
 
-        if (! str_starts_with($path, $storagePrefix)) {
-            return;
+        if ($upload instanceof TemporaryUploadedFile) {
+            $upload->delete();
         }
 
-        Storage::disk('public')->delete(ltrim(Str::after($path, '/storage/'), '/'));
+        unset($this->pendingUploads[$uploadKey]);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $mediaRows
+     * @param  array<int, string>  $storedPaths
+     * @return array<int, array<string, mixed>>
+     */
+    private function storePendingUploads(array $mediaRows, array &$storedPaths): array
+    {
+        foreach ($mediaRows as $index => $row) {
+            $uploadKey = trim((string) ($row['upload_key'] ?? ''));
+
+            if ($uploadKey !== '') {
+                $upload = $this->pendingUploads[$uploadKey] ?? null;
+
+                if (! $upload instanceof TemporaryUploadedFile) {
+                    throw ValidationException::withMessages([
+                        "media.{$index}.path_or_url" => 'Không tìm thấy hình ảnh tạm để lưu. Vui lòng tải ảnh lên lại.',
+                    ]);
+                }
+
+                $path = $upload->store('inventory-media', 'public');
+
+                if (! is_string($path)) {
+                    throw ValidationException::withMessages([
+                        "media.{$index}.path_or_url" => 'Không thể lưu hình ảnh. Vui lòng thử lại.',
+                    ]);
+                }
+
+                $storedPaths[] = $path;
+                $row['path_or_url'] = '/storage/' . $path;
+            }
+
+            if (trim((string) ($row['path_or_url'] ?? '')) === '') {
+                throw ValidationException::withMessages([
+                    "media.{$index}.path_or_url" => 'Đường dẫn hình ảnh không hợp lệ.',
+                ]);
+            }
+
+            unset($row['upload_key']);
+            $mediaRows[$index] = $row;
+        }
+
+        return array_values($mediaRows);
+    }
+
+    private function clearPendingUploads(): void
+    {
+        foreach ($this->pendingUploads as $upload) {
+            $upload->delete();
+        }
+
+        $this->pendingUploads = [];
+        $this->uploads = [];
     }
 
     private function defaultCurrency(): string

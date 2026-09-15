@@ -33,6 +33,7 @@ abstract class ClientBaseController extends Controller
         $coverMediaSubQuery = CarUnitMedia::query()
             ->select('path_or_url')
             ->whereColumn('car_unit_media.car_unit_id', 'car_units.id')
+            ->where('type', 'image')
             ->orderByDesc('is_cover')
             ->orderBy('sort_order')
             ->limit(1);

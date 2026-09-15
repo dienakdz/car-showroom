@@ -139,7 +139,10 @@ class InventoryWorkflowService
             $normalizedRows[0]['is_cover'] = true;
         }
 
-        $existingMedia = $carUnit->media()->get()->keyBy('id');
+        $existingMedia = $carUnit->media()
+            ->where('type', 'image')
+            ->get()
+            ->keyBy('id');
         $keptIds = [];
 
         foreach ($normalizedRows as $row) {
@@ -162,27 +165,33 @@ class InventoryWorkflowService
 
         if ($keptIds !== []) {
             $carUnit->media()
+                ->where('type', 'image')
                 ->whereNotIn('id', $keptIds)
                 ->delete();
         } else {
-            $carUnit->media()->delete();
+            $carUnit->media()->where('type', 'image')->delete();
         }
 
-        if ($carUnit->media()->exists()) {
+        if ($carUnit->media()->where('type', 'image')->exists()) {
             $coverId = $carUnit->media()
+                ->where('type', 'image')
                 ->where('is_cover', true)
                 ->value('id');
 
             if ($coverId === null) {
                 $coverId = $carUnit->media()
+                    ->where('type', 'image')
                     ->orderBy('sort_order')
                     ->value('id');
             }
 
-            $carUnit->media()->update(['is_cover' => false]);
+            $carUnit->media()->where('type', 'image')->update(['is_cover' => false]);
 
             if ($coverId !== null) {
-                $carUnit->media()->whereKey($coverId)->update(['is_cover' => true]);
+                $carUnit->media()
+                    ->where('type', 'image')
+                    ->whereKey($coverId)
+                    ->update(['is_cover' => true]);
             }
         }
 
