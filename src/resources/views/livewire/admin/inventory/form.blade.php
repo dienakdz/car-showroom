@@ -30,8 +30,9 @@
                     <i class="fa fa-check me-1"></i> Lưu ảnh & ghi chú
                 </button>
             @else
-                <button type="button" wire:click="saveWithStatus('available')" wire:loading.attr="disabled" class="c1-btn c1-btn-primary">
-                    <i class="fa fa-check me-1"></i> {{ $carUnitId !== null ? 'Cập nhật xe' : 'Lưu & Đăng bán' }}
+                <button type="button" wire:click="save" wire:loading.attr="disabled" class="c1-btn c1-btn-primary">
+                    <span wire:loading.remove><i class="fa fa-save me-1"></i> {{ $carUnitId !== null ? 'Lưu thay đổi' : 'Lưu thông tin xe' }}</span>
+                    <span wire:loading><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
                 </button>
             @endif
         </div>
@@ -460,7 +461,7 @@
 
                 <div class="mb-3">
                     <label class="form-label" style="font-weight: 600; font-size: 13px;">Trạng thái hiện tại</label>
-                    <select wire:model="form.status" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
+                    <select wire:model.live="form.status" class="form-control" style="border-radius: 8px; height: 42px;" @disabled($isWorkflowLocked)>
                         @if ($carUnit->status === 'on_hold')
                             <option value="on_hold">Đang giữ cọc (On Hold)</option>
                         @elseif ($carUnit->status === 'sold')
@@ -498,7 +499,11 @@
                 </h5>
 
                 <div class="d-grid gap-2">
-                    @if (!$isSold)
+                    @if ($isSold)
+                        <div class="text-muted text-center small py-2">
+                            <i class="fa fa-lock me-1"></i> Xe đã chốt giao dịch bán. Thông tin chỉ dùng để xem.
+                        </div>
+                    @else
                         <button
                             type="button"
                             wire:click="save"
@@ -508,21 +513,9 @@
                         >
                             <span wire:loading.remove>
                                 <i class="fa fa-save me-1"></i>
-                                {{ $isOnHold ? 'Lưu ảnh & ghi chú' : ($carUnitId !== null ? 'Cập nhật xe' : 'Lưu thông tin xe') }}
+                                {{ $isOnHold ? 'Lưu ảnh & ghi chú' : ($carUnitId !== null ? 'Lưu thay đổi' : 'Lưu thông tin xe') }}
                             </span>
                             <span wire:loading><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
-                        </button>
-                    @endif
-
-                    @if (!$isWorkflowLocked)
-                        <button
-                            type="button"
-                            wire:click="saveWithStatus('draft')"
-                            wire:loading.attr="disabled"
-                            class="c1-btn c1-btn-secondary w-100"
-                            style="height: 40px;"
-                        >
-                            <i class="fa fa-file-text me-1"></i> Lưu bản nháp (Draft)
                         </button>
                     @endif
 

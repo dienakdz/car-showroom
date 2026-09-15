@@ -127,16 +127,6 @@ class Form extends AdminPageComponent
         }
     }
 
-    public function saveWithStatus(string $status, InventoryWorkflowService $service): void
-    {
-        if (! in_array($status, ['draft', 'available'], true)) {
-            return;
-        }
-
-        $this->form['status'] = $status;
-        $this->save($service);
-    }
-
     public function save(InventoryWorkflowService $service): void
     {
         $this->resetErrorBag();
@@ -351,6 +341,10 @@ class Form extends AdminPageComponent
      */
     private function normalizeForm(array $data): array
     {
+        $defaultStatus = $this->carUnitId !== null
+            ? (string) ($this->form['status'] ?? 'draft')
+            : 'draft';
+
         return [
             'trim_id' => ! empty($data['trim_id']) ? (int) $data['trim_id'] : null,
             'condition' => trim((string) ($data['condition'] ?? 'new')),
@@ -366,7 +360,7 @@ class Form extends AdminPageComponent
             'interior_color_id' => ! empty($data['interior_color_id']) ? (int) $data['interior_color_id'] : null,
             'price' => isset($data['price']) && $data['price'] !== '' ? (int) $data['price'] : null,
             'currency' => strtoupper(trim((string) ($data['currency'] ?? $this->defaultCurrency()))),
-            'status' => trim((string) ($data['status'] ?? 'available')),
+            'status' => ! empty($data['status']) ? trim((string) $data['status']) : $defaultStatus,
             'notes_internal' => ! empty($data['notes_internal']) ? trim((string) $data['notes_internal']) : null,
         ];
     }
