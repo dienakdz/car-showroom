@@ -263,7 +263,7 @@
                 @endif
             </div>
             <div>
-                {{ $trims->links() }}
+                {{ $trims->links('admin.partials.pagination') }}
             </div>
         </div>
     </div>

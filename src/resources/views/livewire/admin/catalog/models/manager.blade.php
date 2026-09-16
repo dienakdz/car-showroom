@@ -158,7 +158,7 @@
                 @endif
             </div>
             <div>
-                {{ $models->links() }}
+                {{ $models->links('admin.partials.pagination') }}
             </div>
         </div>
     </div>

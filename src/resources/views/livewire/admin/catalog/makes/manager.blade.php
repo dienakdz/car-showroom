@@ -173,7 +173,7 @@
                 @endif
             </div>
             <div>
-                {{ $makes->links() }}
+                {{ $makes->links('admin.partials.pagination') }}
             </div>
         </div>
     </div>
