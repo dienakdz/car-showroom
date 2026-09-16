@@ -1,190 +1,379 @@
-@php($contextTrim = $lead->carUnit?->trim ?? $lead->trim)
+@php
+    $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
+    $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
+    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
+    $rawPath = $contextMedia?->path_or_url;
+    $thumbUrl = null;
+    if (filled($rawPath)) {
+        $thumbUrl = (str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://'))
+            ? $rawPath
+            : asset(ltrim($rawPath, '/'));
+    }
 
-<div>
-    <div class="c1-page-header mb-4">
-        <div>
-            <h1 class="c1-page-title">Chi tiết lead #{{ $lead->id }}</h1>
-            <p class="c1-page-subtitle">Cập nhật pipeline, ghi chú follow-up và nhân viên phụ trách.</p>
-        </div>
-        <div class="c1-header-actions">
-            <a href="{{ route('admin.appointments.create', ['lead_id' => $lead->id]) }}" class="c1-btn c1-btn-primary">Tạo appointment</a>
-            <a href="{{ route('admin.leads.index') }}" wire:navigate class="c1-action-btn">Về danh sách lead</a>
-        </div>
-    </div>
+    $sourceLabels = [
+        'unit_detail' => 'Chi tiết xe trên Web',
+        'trim_page' => 'Trang thông số phiên bản',
+        'finance' => 'Hỗ trợ tính toán trả góp',
+        'trade_in' => 'Thu cũ đổi mới',
+        'contact' => 'Form liên hệ showroom',
+    ];
 
+    $pipelineStages = [
+        'new' => ['order' => 1, 'title' => 'Mới tiếp nhận', 'desc' => 'Chưa liên hệ'],
+        'contacted' => ['order' => 2, 'title' => 'Đang tư vấn / Lái thử', 'desc' => 'Tư vấn dòng xe'],
+        'booked' => ['order' => 3, 'title' => 'Thương thảo hợp đồng', 'desc' => 'Chuẩn bị đặt cọc'],
+        'closed' => ['order' => 4, 'title' => 'Chốt giao dịch', 'desc' => 'Giao dịch thành công'],
+    ];
+
+    $stageOrder = match ($lead->status) {
+        'new' => 1,
+        'contacted', 'qualified' => 2,
+        'booked' => 3,
+        'closed' => 4,
+        default => 0,
+    };
+@endphp
+
+<div class="c1-dash-wrapper">
+    {{-- Alerts / Feedback --}}
     @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <span>{{ $feedback['message'] }}</span>
+        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa {{ ($feedback['type'] ?? 'success') === 'error' ? 'fa-exclamation-circle text-danger' : 'fa-check-circle text-success' }}" style="font-size: 16px;"></i>
+                <span style="font-size: 13.5px; font-weight: 500;">{{ $feedback['message'] }}</span>
+            </div>
             <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
         </div>
     @endif
 
-    <div class="chat-widget admin-chat-shell">
-        <div class="widget-content">
-            <div class="row">
-                <div class="contacts_column col-xl-4 col-lg-5 col-md-12 col-sm-12 chat" id="chat_contacts">
-                    <div class="card contacts_card admin-contacts-card">
-                        <div class="card-header">
-                            <div class="admin-contact-summary">
-                                <div class="admin-avatar-pill">{{ strtoupper(substr($lead->name, 0, 1)) }}</div>
-                                <div>
-                                    <h5>{{ $lead->name }}</h5>
-                                    <p>{{ $lead->phone }}{{ $lead->email ? ' / ' . $lead->email : '' }}</p>
+    {{-- Page Header --}}
+    <div class="c1-page-header mb-4">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <h1 class="c1-page-title mb-0">Lead #{{ $lead->id }} — {{ $lead->name }}</h1>
+                @if ($lead->status === 'new')
+                    <span class="c1-pill c1-pill-blue">Mới tiếp nhận</span>
+                @elseif (in_array($lead->status, ['contacted', 'qualified'], true))
+                    <span class="c1-pill c1-pill-indigo">Đang tư vấn</span>
+                @elseif ($lead->status === 'booked')
+                    <span class="c1-pill c1-pill-amber">Thương thảo / Lịch hẹn</span>
+                @elseif ($lead->status === 'closed')
+                    <span class="c1-pill c1-pill-green">Đã chốt xe</span>
+                @else
+                    <span class="c1-pill c1-pill-gray">Đã hủy</span>
+                @endif
+            </div>
+            <div style="color: var(--c1-text-muted); font-size: 13px;">
+                Nguồn: <strong>{{ $sourceLabels[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</strong> •
+                Tiếp nhận lúc: <strong>{{ $lead->created_at?->format('d/m/Y H:i') }}</strong> ({{ $lead->created_at?->diffForHumans() }})
+            </div>
+        </div>
+        <div class="c1-header-actions" style="display: flex; align-items: center; gap: 10px;">
+            <a href="{{ route('admin.appointments.create', ['lead_id' => $lead->id]) }}" class="c1-btn c1-btn-primary">
+                <i class="fa fa-calendar-plus-o"></i>
+                <span>Tạo lịch hẹn lái thử</span>
+            </a>
+            <a href="{{ route('admin.leads.index') }}" wire:navigate class="c1-action-btn">
+                <i class="fa fa-arrow-left"></i>
+                <span>Về danh sách</span>
+            </a>
+        </div>
+    </div>
+
+    {{-- Pipeline Stepper Bar --}}
+    <div class="c1-pipeline-stepper mb-4">
+        @foreach ($pipelineStages as $statusKey => $stage)
+            @php
+                $isCurrent = ($statusKey === 'contacted' && in_array($lead->status, ['contacted', 'qualified'], true)) || ($lead->status === $statusKey);
+                $isPassed = $stageOrder > $stage['order'];
+            @endphp
+            <button
+                type="button"
+                wire:click="changeLeadStatus('{{ $statusKey }}')"
+                wire:loading.attr="disabled"
+                class="c1-stepper-step {{ $isCurrent ? 'active' : '' }} {{ $isPassed ? 'completed' : '' }}"
+                title="Bấm để chuyển lead sang giai đoạn: {{ $stage['title'] }}"
+            >
+                <span class="c1-stepper-index">
+                    @if ($isPassed)
+                        <i class="fa fa-check"></i>
+                    @else
+                        {{ $stage['order'] }}
+                    @endif
+                </span>
+                <div>
+                    <div style="font-size: 13px; line-height: 1.2;">{{ $stage['title'] }}</div>
+                    <div style="font-size: 11px; opacity: 0.8; margin-top: 2px;">{{ $stage['desc'] }}</div>
+                </div>
+            </button>
+        @endforeach
+
+        {{-- Nút Đánh dấu Hủy --}}
+        <button
+            type="button"
+            wire:click="changeLeadStatus('lost')"
+            wire:loading.attr="disabled"
+            class="c1-stepper-step {{ $lead->status === 'lost' ? 'lost active' : '' }}"
+            style="flex: 0 0 auto; min-width: 110px;"
+            title="Bấm để đánh dấu lead này đã hủy / không thành công"
+        >
+            <span class="c1-stepper-index" style="background: {{ $lead->status === 'lost' ? '#ef4444' : '#fee2e2' }}; color: {{ $lead->status === 'lost' ? '#fff' : '#b91c1c' }};">
+                <i class="fa fa-times"></i>
+            </span>
+            <div>
+                <div style="font-size: 13px; line-height: 1.2;">Đã hủy</div>
+                <div style="font-size: 11px; opacity: 0.8; margin-top: 2px;">Không mua</div>
+            </div>
+        </button>
+    </div>
+
+    {{-- Main 2-Column CRM Dossier Layout --}}
+    <div class="row">
+        {{-- LEFT COLUMN: Lead Information & Vehicle Context --}}
+        <div class="col-xl-7 col-lg-7 col-md-12 mb-4">
+            {{-- Card 1: Thông tin khách hàng & Phân công --}}
+            <div class="c1-panel mb-4" style="padding: 22px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--c1-border-card);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb;">
+                            <i class="fa fa-user"></i>
+                        </span>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--c1-text-heading);">Thông tin khách hàng</h4>
+                    </div>
+                    <span class="c1-vehicle-tag">{{ $sourceLabels[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</span>
+                </div>
+
+                <form wire:submit="save">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Họ và tên khách hàng <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('form.name') is-invalid @enderror" wire:model="form.name" placeholder="Nguyễn Văn A">
+                            @error('form.name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('form.phone') is-invalid @enderror" wire:model="form.phone" placeholder="0901234567">
+                            @error('form.phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Địa chỉ Email</label>
+                            <input type="email" class="form-control @error('form.email') is-invalid @enderror" wire:model="form.email" placeholder="khachhang@example.com">
+                            @error('form.email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Chuyên viên tư vấn phụ trách</label>
+                            <select class="form-select @error('form.assigned_to') is-invalid @enderror" wire:model="form.assigned_to">
+                                <option value="">-- Chưa phân công --</option>
+                                @foreach ($staffUsers as $staff)
+                                    <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
+                                @endforeach
+                            </select>
+                            @error('form.assigned_to') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Trạng thái phễu (Status)</label>
+                            <select class="form-select @error('form.status') is-invalid @enderror" wire:model="form.status">
+                                @foreach ($statusOptions as $statusOption)
+                                    <option value="{{ $statusOption }}">{{ strtoupper($statusOption) }}</option>
+                                @endforeach
+                            </select>
+                            @error('form.status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-muted);">Nguồn tiếp nhận (Source)</label>
+                            <input type="text" class="form-control" value="{{ $sourceLabels[$lead->source] ?? $lead->source }}" disabled style="background: #f8fafc;">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Yêu cầu / Lời nhắn ban đầu của khách</label>
+                            <textarea class="form-control @error('form.message') is-invalid @enderror" rows="3" wire:model="form.message" placeholder="Ví dụ: Khách quan tâm màu trắng, muốn lái thử vào thứ 7 tuần này..."></textarea>
+                            @error('form.message') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button type="submit" class="c1-btn c1-btn-primary" wire:loading.attr="disabled" wire:target="save">
+                            <span wire:loading.remove wire:target="save"><i class="fa fa-save me-1"></i> Lưu thông tin lead</span>
+                            <span wire:loading wire:target="save"><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Card 2: Mẫu xe khách quan tâm trong kho --}}
+            <div class="c1-panel mb-4" style="padding: 22px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--c1-border-card);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #f0fdf4; color: #16a34a;">
+                            <i class="fa fa-car"></i>
+                        </span>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--c1-text-heading);">Mẫu xe khách đang quan tâm</h4>
+                    </div>
+                    @if ($lead->carUnit)
+                        <span class="c1-pill c1-pill-green">Xe thực tế trong kho</span>
+                    @elseif ($lead->trim)
+                        <span class="c1-pill c1-pill-blue">Dòng xe catalog</span>
+                    @endif
+                </div>
+
+                @if ($lead->carUnit || $lead->trim)
+                    <div class="c1-vehicle-dossier-card">
+                        <div class="c1-vehicle-dossier-thumb">
+                            @if ($thumbUrl)
+                                <img src="{{ $thumbUrl }}" alt="{{ $contextName }}">
+                            @else
+                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #94a3b8; font-size: 20px;">
+                                    <i class="fa fa-car"></i>
                                 </div>
-                            </div>
-                            <div class="admin-meta-list mt-3">
-                                <div><strong>Source:</strong> {{ $lead->source }}</div>
-                                <div><strong>Created:</strong> {{ $lead->created_at?->format('d/m/Y H:i') }}</div>
-                                <div><strong>Status:</strong> <span class="admin-badge admin-badge-{{ $lead->status }}">{{ strtoupper($lead->status) }}</span></div>
-                                <div><strong>Assigned:</strong> {{ $lead->assignedTo?->name ?? 'Chưa phân công' }}</div>
-                                <div><strong>Context:</strong> {{ trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' ')) ?: 'Liên hệ chung' }}</div>
+                            @endif
+                        </div>
+                        <div class="c1-vehicle-dossier-info">
+                            <h5 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: var(--c1-text-heading);">
+                                {{ $contextName }}
+                            </h5>
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
                                 @if ($lead->carUnit)
-                                    <div><strong>Stock:</strong> {{ $lead->carUnit->stock_code }}</div>
+                                    <span style="font-size: 12px; color: var(--c1-text-muted);">Mã kho: <strong>#{{ $lead->carUnit->stock_code }}</strong></span>
+                                    @if ($lead->carUnit->selling_price)
+                                        <span style="font-size: 13px; font-weight: 700; color: #16a34a;">{{ number_format((float) $lead->carUnit->selling_price) }} đ</span>
+                                    @endif
+                                @elseif ($lead->trim && $lead->trim->price)
+                                    <span style="font-size: 13px; font-weight: 700; color: #16a34a;">Từ {{ number_format((float) $lead->trim->price) }} đ</span>
+                                @endif
+                            </div>
+                            <div>
+                                @if ($lead->carUnit)
+                                    <a href="{{ route('admin.inventory.edit', $lead->carUnit) }}" wire:navigate class="c1-action-btn c1-action-btn-primary" style="height: 28px; font-size: 12px;">
+                                        <i class="fa fa-external-link"></i>
+                                        <span>Xem chi tiết xe trong kho</span>
+                                    </a>
+                                @elseif ($lead->trim)
+                                    <a href="{{ route('admin.catalog.trims.edit', $lead->trim) }}" wire:navigate class="c1-action-btn c1-action-btn-primary" style="height: 28px; font-size: 12px;">
+                                        <i class="fa fa-external-link"></i>
+                                        <span>Xem phiên bản catalog</span>
+                                    </a>
                                 @endif
                             </div>
                         </div>
-                        <div class="card-body contacts_body">
-                            <ul class="contacts">
-                                @forelse ($lead->appointments->sortByDesc('scheduled_at') as $appointment)
-                                    @php($appointmentTrim = $appointment->carUnit?->trim ?? $appointment->trim)
-                                    <li class="{{ $loop->first ? 'active' : '' }}" wire:key="lead-appointment-{{ $appointment->id }}">
-                                        <a href="{{ route('admin.appointments.edit', $appointment) }}">
-                                            <div class="d-flex bd-highlight">
-                                                <div class="img_cont">
-                                                    <span class="admin-avatar-pill admin-avatar-pill-sm">{{ strtoupper(substr($appointment->status, 0, 1)) }}</span>
-                                                </div>
-                                                <div class="user_info">
-                                                    <span>{{ $appointment->scheduled_at?->format('d/m/Y H:i') }}</span>
-                                                    <p>{{ trim(collect([$appointmentTrim?->model?->make?->name, $appointmentTrim?->model?->name, $appointmentTrim?->name])->filter()->implode(' ')) ?: 'Không có context xe' }}</p>
-                                                </div>
-                                                <span class="info">{{ strtoupper($appointment->status) }}</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                @empty
-                                    <li class="active">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont"><span class="admin-avatar-pill admin-avatar-pill-sm">N</span></div>
-                                            <div class="user_info"><span>Chưa có appointment</span><p>Tạo lịch hẹn từ lead này khi đã qualify.</p></div>
-                                        </div>
-                                    </li>
-                                @endforelse
-                            </ul>
-                        </div>
                     </div>
+                @else
+                    <div style="padding: 20px; text-align: center; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; color: var(--c1-text-muted); font-size: 13px;">
+                        <i class="fa fa-info-circle me-1"></i> Khách hàng để lại thông tin liên hệ chung, chưa chọn mẫu xe cụ thể.
+                    </div>
+                @endif
+            </div>
+
+            {{-- Card 3: Lịch hẹn lái thử liên kết --}}
+            <div class="c1-panel" style="padding: 22px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--c1-border-card);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: #d97706;">
+                            <i class="fa fa-calendar-check-o"></i>
+                        </span>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--c1-text-heading);">
+                            Lịch hẹn lái thử & tư vấn ({{ $lead->appointments->count() }})
+                        </h4>
+                    </div>
+                    <a href="{{ route('admin.appointments.create', ['lead_id' => $lead->id]) }}" class="c1-action-btn c1-action-btn-primary" style="height: 28px; font-size: 12px;">
+                        <i class="fa fa-plus"></i>
+                        <span>Thêm lịch hẹn</span>
+                    </a>
                 </div>
 
-                <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12 chat">
-                    <div class="card message-card admin-message-card">
-                        <div class="card-header msg_head">
-                            <div class="d-flex bd-highlight">
-                                <div class="img_cont"><span class="admin-avatar-pill">{{ strtoupper(substr($lead->name, 0, 1)) }}</span></div>
-                                <div class="user_info">
-                                    <span>{{ $lead->name }}</span>
-                                    <p>{{ $lead->source }} / {{ $lead->assignedTo?->name ?? 'Chưa phân công' }}</p>
-                                </div>
+                @forelse ($lead->appointments->sortByDesc('scheduled_at') as $appointment)
+                    @php($apptTrim = $appointment->carUnit?->trim ?? $appointment->trim)
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                <strong style="font-size: 13.5px; color: var(--c1-text-heading);">
+                                    <i class="fa fa-clock-o text-muted me-1"></i> {{ $appointment->scheduled_at?->format('d/m/Y H:i') }}
+                                </strong>
+                                @switch($appointment->status)
+                                    @case('confirmed')
+                                        <span class="c1-pill c1-pill-green">Đã xác nhận</span>
+                                        @break
+                                    @case('completed')
+                                        <span class="c1-pill c1-pill-blue">Hoàn tất</span>
+                                        @break
+                                    @case('cancelled')
+                                        <span class="c1-pill c1-pill-gray">Đã hủy</span>
+                                        @break
+                                    @default
+                                        <span class="c1-pill c1-pill-amber">{{ strtoupper($appointment->status) }}</span>
+                                @endswitch
                             </div>
-                            <div class="btn-box"><span class="admin-badge admin-badge-{{ $lead->status }}">{{ strtoupper($lead->status) }}</span></div>
-                        </div>
-
-                        <div class="card-body msg_card_body">
-                            <form wire:submit="save" class="row admin-message-form">
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Tên lead</label>
-                                        <input type="text" wire:model.blur="form.name" required>
-                                        @error('form.name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Phone</label>
-                                        <input type="text" wire:model.blur="form.phone" required>
-                                        @error('form.phone') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Email</label>
-                                        <input type="email" wire:model.blur="form.email">
-                                        @error('form.email') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Assigned to</label>
-                                        <select wire:model.blur="form.assigned_to">
-                                            <option value="">Chưa phân công</option>
-                                            @foreach ($staffUsers as $staff)
-                                                <option value="{{ $staff->id }}">{{ $staff->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('form.assigned_to') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Status</label>
-                                        <select wire:model.blur="form.status" required>
-                                            @foreach ($statusOptions as $statusOption)
-                                                <option value="{{ $statusOption }}">{{ strtoupper($statusOption) }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('form.status') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Source</label>
-                                        <input type="text" value="{{ $lead->source }}" disabled>
-                                    </div>
-                                </div>
-                                <div class="form-column col-lg-12">
-                                    <div class="form_boxes">
-                                        <label>Message</label>
-                                        <textarea rows="5" wire:model.blur="form.message"></textarea>
-                                        @error('form.message') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="form-submit admin-form-submit-inline">
-                                    <button type="submit" class="theme-btn btn-style-one" wire:loading.attr="disabled" wire:target="save">
-                                        <span wire:loading.remove wire:target="save">Lưu lead</span>
-                                        <span wire:loading wire:target="save">Đang lưu...</span>
-                                        <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="Arrow" wire:loading.remove wire:target="save">
-                                    </button>
-                                </div>
-                            </form>
-
-                            <div class="admin-message-thread">
-                                @forelse ($lead->notes->sortByDesc('created_at') as $leadNote)
-                                    <div class="d-flex justify-content-start mb-3" wire:key="lead-note-{{ $leadNote->id }}">
-                                        <div class="img_cont_msg">
-                                            <span class="admin-avatar-pill admin-avatar-pill-sm">{{ strtoupper(substr($leadNote->createdBy?->name ?? 'S', 0, 1)) }}</span>
-                                            <div class="name">{{ $leadNote->createdBy?->name ?? 'Staff' }} <span class="msg_time">{{ $leadNote->created_at?->format('d/m/Y H:i') }}</span></div>
-                                        </div>
-                                        <div class="msg_cotainer admin-note-bubble">{{ $leadNote->note }}</div>
-                                    </div>
-                                @empty
-                                    <div class="admin-empty-state">Chưa có note nào cho lead này.</div>
-                                @endforelse
+                            <div style="font-size: 12px; color: var(--c1-text-muted);">
+                                Xe: {{ trim(collect([$apptTrim?->model?->make?->name, $apptTrim?->model?->name, $apptTrim?->name])->filter()->implode(' ')) ?: 'Chưa chọn xe' }}
+                                • Phụ trách: <strong>{{ $appointment->handledBy?->name ?? 'Chưa chỉ định' }}</strong>
                             </div>
                         </div>
-
-                        <div class="card-footer">
-                            <form wire:submit="addNote" class="form-group mb-0">
-                                <textarea class="form-control type_msg" wire:model="note" placeholder="Thêm note follow-up, call result, next step..." required></textarea>
-                                @error('note') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
-                                <button type="submit" class="theme-btn btn-style-one submit-btn" wire:loading.attr="disabled" wire:target="addNote">
-                                    <span class="text-dk" wire:loading.remove wire:target="addNote">Thêm note</span>
-                                    <span class="text-mb" wire:loading.remove wire:target="addNote">Lưu</span>
-                                    <span wire:loading wire:target="addNote">Đang lưu...</span>
-                                    <svg wire:loading.remove wire:target="addNote" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M13.6109 0H5.05533C4.84037 0 4.66643 0.173943 4.66643 0.388901C4.66643 0.603859 4.84037 0.777802 5.05533 0.777802H12.6721L0.113697 13.3362C-0.0382246 13.4881 -0.0382246 13.7342 0.113697 13.8861C0.18964 13.962 0.289171 14 0.388666 14C0.488161 14 0.587656 13.962 0.663635 13.8861L13.222 1.3277V8.94447C13.222 9.15943 13.3959 9.33337 13.6109 9.33337C13.8259 9.33337 13.9998 9.15943 13.9998 8.94447V0.388901C13.9998 0.173943 13.8258 0 13.6109 0Z" fill="white"></path>
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
+                        <a href="{{ route('admin.appointments.edit', $appointment) }}" class="c1-action-btn" title="Chỉnh sửa lịch hẹn">
+                            <i class="fa fa-pencil"></i>
+                        </a>
                     </div>
+                @empty
+                    <div style="padding: 20px; text-align: center; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; color: var(--c1-text-muted); font-size: 13px;">
+                        Chưa có lịch hẹn nào cho lead này.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- RIGHT COLUMN: Follow-up Activity & Notes Timeline --}}
+        <div class="col-xl-5 col-lg-5 col-md-12">
+            <div class="c1-panel" style="padding: 22px 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--c1-border-card);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #ede9fe; color: #7c3aed;">
+                            <i class="fa fa-history"></i>
+                        </span>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--c1-text-heading);">Nhật ký chăm sóc (Activity Log)</h4>
+                    </div>
+                    <span class="c1-pill c1-pill-indigo">{{ $lead->notes->count() }} ghi chú</span>
+                </div>
+
+                {{-- Form thêm ghi chú mới --}}
+                <form wire:submit="addNote" class="mb-4">
+                    <div class="mb-2">
+                        <textarea
+                            class="form-control @error('note') is-invalid @enderror"
+                            rows="3"
+                            wire:model="note"
+                            placeholder="Nhập ghi chú cuộc gọi, kết quả tư vấn, nhu cầu phát sinh..."
+                            required
+                        ></textarea>
+                        @error('note') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="submit" class="c1-btn c1-btn-primary c1-btn-sm" wire:loading.attr="disabled" wire:target="addNote">
+                            <span wire:loading.remove wire:target="addNote"><i class="fa fa-plus me-1"></i> Thêm ghi chú</span>
+                            <span wire:loading wire:target="addNote"><i class="fa fa-spinner fa-spin me-1"></i> Đang lưu...</span>
+                        </button>
+                    </div>
+                </form>
+
+                {{-- Activity Timeline --}}
+                <div class="c1-timeline mt-3">
+                    @forelse ($lead->notes->sortByDesc('created_at') as $leadNote)
+                        <div class="c1-timeline-item" wire:key="lead-note-{{ $leadNote->id }}">
+                            <div class="c1-timeline-dot"></div>
+                            <div class="c1-timeline-box">
+                                <div class="c1-timeline-header">
+                                    <div class="c1-timeline-author">
+                                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 10px; font-weight: 700;">
+                                            {{ strtoupper(substr($leadNote->createdBy?->name ?? 'S', 0, 1)) }}
+                                        </span>
+                                        <span>{{ $leadNote->createdBy?->name ?? 'Chuyên viên' }}</span>
+                                    </div>
+                                    <span class="c1-timeline-time">{{ $leadNote->created_at?->diffForHumans() }} ({{ $leadNote->created_at?->format('d/m H:i') }})</span>
+                                </div>
+                                <div class="c1-timeline-body">{{ $leadNote->note }}</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div style="padding: 24px 12px; text-align: center; color: var(--c1-text-muted); font-size: 13px;">
+                            Chưa có ghi chú nào. Hãy ghi lại kết quả cuộc gọi hoặc trao đổi đầu tiên với khách hàng.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>

@@ -71,6 +71,11 @@ class CarUnit extends EloquentModel
         return $this->hasMany(CarUnitMedia::class, 'car_unit_id');
     }
 
+    public function primaryMedia(): HasOne
+    {
+        return $this->hasOne(CarUnitMedia::class, 'car_unit_id')->orderByDesc('is_cover')->orderBy('sort_order');
+    }
+
     public function holds(): HasMany
     {
         return $this->hasMany(CarUnitHold::class, 'car_unit_id');

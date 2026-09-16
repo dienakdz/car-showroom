@@ -4,8 +4,8 @@ namespace App\Livewire\Admin\Leads;
 
 use App\Livewire\Admin\AdminPageComponent;
 use App\Models\Lead;
-use App\Models\LeadNote;
 use App\Models\User;
+use App\Services\Admin\LeadWorkflowService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\Rule;
@@ -38,50 +38,71 @@ class Show extends AdminPageComponent
         $this->feedback = [];
     }
 
-    public function save(): void
+    public function save(LeadWorkflowService $service): void
     {
         $this->feedback = [];
         $this->resetErrorBag();
-        $this->form = $this->normalizeForm($this->form);
 
         $validated = $this->validate(
             $this->leadRules(),
             attributes: $this->validationAttributes(),
         );
 
+        $user = $this->authorizeAdminAccess('leads.manage');
         $lead = Lead::query()->findOrFail($this->leadId);
-        $lead->update($validated['form']);
-        $this->fillForm($lead->refresh());
+
+        $updatedLead = $service->updateLead($lead, $validated['form'], $user);
+        $this->fillForm($updatedLead);
 
         $this->feedback = [
             'type' => 'success',
-            'message' => 'Da cap nhat lead.',
+            'message' => 'Đã cập nhật thông tin khách hàng & lead thành công.',
         ];
     }
 
-    public function addNote(): void
+    public function changeLeadStatus(string $status, LeadWorkflowService $service): void
+    {
+        $this->feedback = [];
+        $user = $this->authorizeAdminAccess('leads.manage');
+        $lead = Lead::query()->findOrFail($this->leadId);
+
+        try {
+            $updatedLead = $service->changeStatus($lead, $status, $user);
+            $this->fillForm($updatedLead);
+
+            $this->feedback = [
+                'type' => 'success',
+                'message' => 'Đã chuyển giai đoạn lead thành công.',
+            ];
+        } catch (\InvalidArgumentException $e) {
+            $this->feedback = [
+                'type' => 'error',
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function addNote(LeadWorkflowService $service): void
     {
         $this->feedback = [];
         $this->resetValidation('note');
         $this->note = trim($this->note);
+
         $validated = $this->validateOnly('note', [
-            'note' => ['required', 'string'],
+            'note' => ['required', 'string', 'min:2'],
         ], attributes: [
-            'note' => 'noi dung ghi chu',
+            'note' => 'nội dung ghi chú',
         ]);
 
         $user = $this->authorizeAdminAccess('leads.manage');
+        $lead = Lead::query()->findOrFail($this->leadId);
 
-        LeadNote::query()->create([
-            'lead_id' => $this->leadId,
-            'created_by' => $user->id,
-            'note' => trim((string) $validated['note']),
-        ]);
+        $service->addNote($lead, (string) $validated['note'], $user);
 
         $this->note = '';
         $this->feedback = [
             'type' => 'success',
-            'message' => 'Da them note cho lead.',
+            'message' => 'Đã thêm ghi chú chăm sóc khách hàng.',
         ];
     }
 
@@ -91,7 +112,9 @@ class Show extends AdminPageComponent
             ->with([
                 'assignedTo:id,name',
                 'carUnit.trim.model.make',
+                'carUnit.primaryMedia',
                 'trim.model.make',
+                'trim.carUnits.primaryMedia',
                 'notes.createdBy:id,name',
                 'appointments.handledBy:id,name',
                 'appointments.carUnit.trim.model.make',
@@ -104,8 +127,8 @@ class Show extends AdminPageComponent
             'staffUsers' => $this->assignableUsers(),
             'statusOptions' => self::STATUSES,
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
-            'adminPageTitle' => 'Chi tiet lead #' . $lead->id,
-            'adminPageDescription' => 'Cap nhat pipeline, note log va assignment cho lead.',
+            'adminPageTitle' => 'Hồ sơ Lead #' . $lead->id . ' - ' . $lead->name,
+            'adminPageDescription' => 'Chi tiết phễu chuyển đổi, nhu cầu xe và lịch sử tương tác với khách hàng.',
         ]));
     }
 
@@ -124,7 +147,7 @@ class Show extends AdminPageComponent
             'form.phone' => ['required', 'string', 'max:20'],
             'form.email' => ['nullable', 'email', 'max:255'],
             'form.message' => ['nullable', 'string'],
-            'form.assigned_to' => ['nullable', 'integer', Rule::in($this->assignableUsers()->modelKeys())],
+            'form.assigned_to' => ['nullable', 'integer', Rule::exists('users', 'id')],
             'form.status' => ['required', Rule::in(self::STATUSES)],
         ];
     }
@@ -135,12 +158,12 @@ class Show extends AdminPageComponent
     private function validationAttributes(): array
     {
         return [
-            'form.name' => 'ten lead',
-            'form.phone' => 'so dien thoai',
+            'form.name' => 'tên khách hàng',
+            'form.phone' => 'số điện thoại',
             'form.email' => 'email',
-            'form.message' => 'noi dung yeu cau',
-            'form.assigned_to' => 'nhan vien phu trach',
-            'form.status' => 'trang thai',
+            'form.message' => 'yêu cầu của khách hàng',
+            'form.assigned_to' => 'chuyên viên tư vấn',
+            'form.status' => 'trạng thái phễu',
         ];
     }
 
@@ -157,33 +180,6 @@ class Show extends AdminPageComponent
     }
 
     /**
-     * @param  array<string, mixed>  $form
-     * @return array<string, mixed>
-     */
-    private function normalizeForm(array $form): array
-    {
-        return [
-            'name' => trim((string) ($form['name'] ?? '')),
-            'phone' => trim((string) ($form['phone'] ?? '')),
-            'email' => $this->nullableString($form['email'] ?? null),
-            'assigned_to' => (int) ($form['assigned_to'] ?? 0) > 0 ? (int) $form['assigned_to'] : null,
-            'status' => (string) ($form['status'] ?? ''),
-            'message' => $this->nullableString($form['message'] ?? null),
-        ];
-    }
-
-    private function nullableString(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $string = trim((string) $value);
-
-        return $string === '' ? null : $string;
-    }
-
-    /**
      * @return Collection<int, User>
      */
     private function assignableUsers(): Collection
@@ -191,6 +187,6 @@ class Show extends AdminPageComponent
         return User::query()
             ->whereHas('roles', fn (Builder $query): Builder => $query->whereIn('roles.name', ['admin', 'staff']))
             ->orderBy('name')
-            ->get();
+            ->get(['id', 'name', 'email']);
     }
 }

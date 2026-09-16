@@ -3304,3 +3304,248 @@ body.c1-body {
     cursor: not-allowed;
     opacity: 0.65;
 }
+
+/* ==========================================================================
+   CRM Leads Module Styling (Kanban, Stepper, Dossier, Timeline)
+   ========================================================================== */
+
+/* Active state for KPI filter cards */
+.c1-kpi-card.active {
+    border-color: var(--c1-primary, #2563eb);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    background-color: #f8faff;
+}
+
+/* View switcher (Kanban / Table) */
+.c1-view-switcher {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--c1-border-card, #e2e8f0);
+    border-radius: var(--c1-radius-btn, 8px);
+    padding: 3px;
+    gap: 2px;
+}
+
+.c1-view-switcher-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--c1-text-body, #64748b);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.c1-view-switcher-btn:hover {
+    color: var(--c1-text-heading, #0f172a);
+    background: #f1f5f9;
+}
+
+.c1-view-switcher-btn.active {
+    color: #ffffff;
+    background: var(--c1-primary, #2563eb);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+}
+
+/* Pipeline Stage Stepper */
+.c1-pipeline-stepper {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--c1-border-card, #e2e8f0);
+    border-radius: var(--c1-radius-card, 10px);
+    padding: 8px 12px;
+    gap: 8px;
+    overflow-x: auto;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.c1-stepper-step {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+}
+
+.c1-stepper-step:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+.c1-stepper-step.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.15);
+}
+
+.c1-stepper-step.completed {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #15803d;
+}
+
+.c1-stepper-step.lost {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.c1-stepper-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 11.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.c1-stepper-step.active .c1-stepper-index {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.c1-stepper-step.completed .c1-stepper-index {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.c1-stepper-step.lost .c1-stepper-index {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+/* Activity Timeline */
+.c1-timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.c1-timeline::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 7px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.c1-timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.c1-timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.c1-timeline-dot {
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid var(--c1-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.c1-timeline-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: all 0.15s ease;
+}
+
+.c1-timeline-box:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.c1-timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.c1-timeline-author {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c1-text-heading, #0f172a);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.c1-timeline-time {
+    font-size: 11.5px;
+    color: var(--c1-text-muted, #94a3b8);
+}
+
+.c1-timeline-body {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--c1-text-body, #334155);
+    white-space: pre-line;
+}
+
+/* Vehicle Dossier Card */
+.c1-vehicle-dossier-card {
+    display: flex;
+    gap: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px;
+    align-items: center;
+}
+
+.c1-vehicle-dossier-thumb {
+    width: 120px;
+    height: 75px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #e2e8f0;
+    flex-shrink: 0;
+}
+
+.c1-vehicle-dossier-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.c1-vehicle-dossier-info {
+    flex: 1;
+    min-width: 0;
+}

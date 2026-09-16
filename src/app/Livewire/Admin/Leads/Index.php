@@ -21,8 +21,6 @@ class Index extends AdminPageComponent
 
     private const VIEW_MODES = ['kanban', 'table'];
 
-    protected string $paginationTheme = 'bootstrap';
-
     #[Url(as: 'q', except: '')]
     public string $search = '';
 
@@ -38,11 +36,6 @@ class Index extends AdminPageComponent
     #[Url(as: 'view', except: 'kanban', history: true)]
     public string $viewMode = 'kanban';
 
-    public function mount(): void
-    {
-        $this->normalizeFilters();
-    }
-
     public function updatedSearch(): void
     {
         $this->resetPage('leadsPage');
@@ -50,32 +43,42 @@ class Index extends AdminPageComponent
 
     public function updatedStatus(): void
     {
-        $this->normalizeFilters();
+        if ($this->status !== '' && ! in_array($this->status, [...self::STATUSES, 'consulting'], true)) {
+            $this->status = '';
+        }
         $this->resetPage('leadsPage');
     }
 
     public function updatedSource(): void
     {
-        $this->normalizeFilters();
+        if ($this->source !== '' && ! in_array($this->source, self::SOURCES, true)) {
+            $this->source = '';
+        }
         $this->resetPage('leadsPage');
     }
 
     public function updatedAssignedTo(): void
     {
-        $this->normalizeFilters();
+        if ((int) $this->assignedTo <= 0) {
+            $this->assignedTo = '';
+        }
         $this->resetPage('leadsPage');
     }
 
     public function setViewMode(string $viewMode): void
     {
-        $this->viewMode = $viewMode;
-        $this->normalizeFilters();
+        $this->viewMode = in_array($viewMode, self::VIEW_MODES, true) ? $viewMode : 'kanban';
         $this->resetPage('leadsPage');
     }
 
     public function filterByStatus(string $status): void
     {
-        $this->status = in_array($status, self::STATUSES, true) ? $status : '';
+        if ($this->status === $status) {
+            $this->status = '';
+        } else {
+            $allowed = [...self::STATUSES, 'consulting'];
+            $this->status = in_array($status, $allowed, true) ? $status : '';
+        }
         $this->resetPage('leadsPage');
     }
 
@@ -94,34 +97,61 @@ class Index extends AdminPageComponent
         $kanbanLeads = null;
 
         if ($this->viewMode === 'kanban') {
-            $allLeads = $this->filteredQuery()
-                ->limit(40)
-                ->get();
-
-            $kanbanLeads = [
-                'new' => $allLeads->where('status', 'new'),
-                'consulting' => $allLeads->whereIn('status', ['contacted', 'qualified']),
-                'negotiating' => $allLeads->where('status', 'booked'),
-                'closed' => $allLeads->where('status', 'closed'),
+            $kanbanStages = [
+                'new' => ['new'],
+                'consulting' => ['contacted', 'qualified'],
+                'negotiating' => ['booked'],
+                'closed' => ['closed'],
             ];
+
+            $baseQuery = $this->filteredQuery(includeStatus: false);
+
+            $kanbanLeads = [];
+            foreach ($kanbanStages as $stageKey => $statuses) {
+                $stageQuery = (clone $baseQuery)->whereIn('status', $statuses);
+
+                if ($this->status !== '') {
+                    if ($this->status === 'consulting') {
+                        if ($stageKey !== 'consulting') {
+                            $stageQuery->whereRaw('1 = 0');
+                        }
+                    } elseif (! in_array($this->status, $statuses, true)) {
+                        $stageQuery->whereRaw('1 = 0');
+                    } else {
+                        $stageQuery->where('status', $this->status);
+                    }
+                }
+
+                $kanbanLeads[$stageKey] = $stageQuery->limit(20)->get();
+            }
         }
+
+        /** @var array<string, int> $rawCounts */
+        $rawCounts = Lead::query()
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->all();
+
+        $stageCounts = [
+            'all' => (int) array_sum($rawCounts),
+            'new' => (int) ($rawCounts['new'] ?? 0),
+            'consulting' => (int) (($rawCounts['contacted'] ?? 0) + ($rawCounts['qualified'] ?? 0)),
+            'negotiating' => (int) ($rawCounts['booked'] ?? 0),
+            'closed' => (int) ($rawCounts['closed'] ?? 0),
+            'lost' => (int) ($rawCounts['lost'] ?? 0),
+        ];
 
         return view('livewire.admin.leads.index', [
             'leads' => $leads,
             'kanbanLeads' => $kanbanLeads,
-            'stageCounts' => [
-                'all' => Lead::query()->count(),
-                'new' => Lead::query()->where('status', 'new')->count(),
-                'consulting' => Lead::query()->whereIn('status', ['contacted', 'qualified'])->count(),
-                'negotiating' => Lead::query()->where('status', 'booked')->count(),
-                'closed' => Lead::query()->where('status', 'closed')->count(),
-            ],
+            'stageCounts' => $stageCounts,
             'staffUsers' => $this->assignableUsers(),
             'statusOptions' => self::STATUSES,
             'sourceOptions' => self::SOURCES,
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
-            'adminPageTitle' => 'Khach hang & Leads (CRM)',
-            'adminPageDescription' => 'Quan ly pheu khach hang tiem nang, lich hen va dieu phoi chuyen vien tu van.',
+            'adminPageTitle' => 'Khách hàng & Leads (CRM)',
+            'adminPageDescription' => 'Quản lý phễu khách hàng tiềm năng, lịch hẹn và điều phối chuyên viên tư vấn.',
         ]));
     }
 
@@ -133,7 +163,7 @@ class Index extends AdminPageComponent
     /**
      * @return Builder<Lead>
      */
-    private function filteredQuery(): Builder
+    private function filteredQuery(bool $includeStatus = true): Builder
     {
         $search = trim($this->search);
 
@@ -141,10 +171,18 @@ class Index extends AdminPageComponent
             ->with([
                 'assignedTo:id,name',
                 'carUnit.trim.model.make',
+                'carUnit.primaryMedia',
                 'trim.model.make',
+                'trim.carUnits.primaryMedia',
             ])
             ->withCount(['notes', 'appointments'])
-            ->when($this->status !== '', fn (Builder $query): Builder => $query->where('status', $this->status))
+            ->when($includeStatus && $this->status !== '', function (Builder $query): void {
+                if ($this->status === 'consulting') {
+                    $query->whereIn('status', ['contacted', 'qualified']);
+                } else {
+                    $query->where('status', $this->status);
+                }
+            })
             ->when($this->source !== '', fn (Builder $query): Builder => $query->where('source', $this->source))
             ->when((int) $this->assignedTo > 0, fn (Builder $query): Builder => $query->where('assigned_to', (int) $this->assignedTo))
             ->when($search !== '', function (Builder $query) use ($search): void {
@@ -158,27 +196,6 @@ class Index extends AdminPageComponent
             ->latest();
     }
 
-    private function normalizeFilters(): void
-    {
-        $this->search = trim($this->search);
-
-        if ($this->status !== '' && ! in_array($this->status, self::STATUSES, true)) {
-            $this->status = '';
-        }
-
-        if ($this->source !== '' && ! in_array($this->source, self::SOURCES, true)) {
-            $this->source = '';
-        }
-
-        if ((int) $this->assignedTo <= 0) {
-            $this->assignedTo = '';
-        }
-
-        if (! in_array($this->viewMode, self::VIEW_MODES, true)) {
-            $this->viewMode = self::VIEW_MODES[0];
-        }
-    }
-
     /**
      * @return Collection<int, User>
      */
@@ -187,6 +204,6 @@ class Index extends AdminPageComponent
         return User::query()
             ->whereHas('roles', fn (Builder $query): Builder => $query->whereIn('roles.name', ['admin', 'staff']))
             ->orderBy('name')
-            ->get();
+            ->get(['id', 'name', 'email']);
     }
 }
