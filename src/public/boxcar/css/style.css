@@ -9392,10 +9392,14 @@ Section Title
 .car-block-four .inner-box .image-box .image {
   border-radius: 15px 15px 0px 0px;
   width: 100%;
+  overflow: hidden;
 }
 
 .car-block-four .inner-box .image-box .image img {
   width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
 }
 
 .car-block-four .inner-box .image-box span {
@@ -29537,6 +29541,19 @@ li.nav-sub.mm-listitem .mm-listitem__btn {
 
 .wrap-gallery-box {
   position: relative;
+}
+
+.wrap-gallery-box .image-box .image {
+  overflow: hidden;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.wrap-gallery-box .image-box .image img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
 }
 
 .wrap-gallery-box .content-box {

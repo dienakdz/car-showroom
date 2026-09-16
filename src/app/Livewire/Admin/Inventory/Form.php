@@ -11,6 +11,7 @@ use App\Models\Drivetrain;
 use App\Models\FuelType;
 use App\Models\Transmission;
 use App\Models\Trim;
+use App\Services\Admin\CarMediaService;
 use App\Services\Admin\InventoryWorkflowService;
 use App\Support\Admin\AdminContextResolver;
 use Illuminate\Database\Eloquent\Collection;
@@ -404,7 +405,7 @@ class Form extends AdminPageComponent
                     ]);
                 }
 
-                $path = $upload->store('inventory-media', 'public');
+                $path = app(CarMediaService::class)->processAndStore($upload, 'inventory-media', 'public');
 
                 if (! is_string($path)) {
                     throw ValidationException::withMessages([
