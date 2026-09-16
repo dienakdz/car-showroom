@@ -48,7 +48,6 @@ abstract class ClientBaseController extends Controller
             ->leftJoin('drivetrains', 'drivetrains.id', '=', 'car_units.drivetrain_id')
             ->leftJoin('colors as exterior_colors', 'exterior_colors.id', '=', 'car_units.exterior_color_id')
             ->leftJoin('colors as interior_colors', 'interior_colors.id', '=', 'car_units.interior_color_id')
-            ->selectSub($coverMediaSubQuery, 'cover_media')
             ->select([
                 'car_units.id',
                 'car_units.stock_code',
@@ -80,7 +79,8 @@ abstract class ClientBaseController extends Controller
                 'drivetrains.slug as drivetrain_slug',
                 'exterior_colors.name as exterior_color_name',
                 'interior_colors.name as interior_color_name',
-            ]);
+            ])
+            ->selectSub($coverMediaSubQuery, 'cover_media');
     }
 
     protected function publicVisibleCarQuery(): EloquentBuilder
