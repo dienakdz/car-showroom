@@ -2202,9 +2202,9 @@ body.c1-body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
     height: 32px;
-    padding: 0 11px;
+    padding: 0 12px;
     border-radius: var(--c1-radius-btn, 6px);
     font-size: 12.5px;
     font-weight: 500;
@@ -2214,7 +2214,7 @@ body.c1-body {
     border: 1px solid var(--c1-border-card, #e2e8f0);
     color: var(--c1-text-body, #475569);
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     box-sizing: border-box;
     user-select: none;
@@ -2225,6 +2225,7 @@ body.c1-body {
     width: 14px;
     height: 14px;
     display: block;
+    transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .c1-action-btn:hover {
@@ -2232,48 +2233,134 @@ body.c1-body {
     border-color: #cbd5e1;
     color: var(--c1-text-heading, #0f172a);
     text-decoration: none;
-}
-
-.c1-action-btn-edit {
-    background: #fffbeb;
-    border-color: #fde68a;
-    color: #d97706;
-}
-
-.c1-action-btn-edit:hover {
-    background: #fef3c7;
-    border-color: #fcd34d;
-    color: #b45309;
     transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(217, 119, 6, 0.15);
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
 }
 
-.c1-action-btn-primary {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+/* Nút Sửa: Nền trắng sạch viền gọn, chữ đậm, hover sang xanh Navy sắc nét */
+.c1-action-btn-edit {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.c1-action-btn-edit svg {
     color: #2563eb;
 }
 
-.c1-action-btn-primary:hover {
-    background: #dbeafe;
-    border-color: #93c5fd;
-    color: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.15);
+.c1-action-btn-edit:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 }
 
+.c1-action-btn-edit:hover svg {
+    color: #ffffff;
+}
+
+/* Nút Xem / Chi tiết: Nền trắng, hover xanh indigo */
+.c1-action-btn-primary {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.c1-action-btn-primary svg {
+    color: #4f46e5;
+}
+
+.c1-action-btn-primary:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.c1-action-btn-primary:hover svg {
+    color: #ffffff;
+}
+
+/* Nút Đăng bán (Publish): Nền xanh lá cực nhẹ, viền ngọc, hover sang xanh lá đậm */
+.c1-action-btn-success {
+    background: #ffffff;
+    border-color: #bbf7d0;
+    color: #15803d;
+    font-weight: 600;
+}
+
+.c1-action-btn-success svg {
+    color: #16a34a;
+}
+
+.c1-action-btn-success:hover {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+}
+
+.c1-action-btn-success:hover svg {
+    color: #ffffff;
+}
+
+/* Nút Lưu kho (Archive): Nền trắng trung tính, icon cam, hover sang cam hổ phách */
+.c1-action-btn-warning {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.c1-action-btn-warning svg {
+    color: #d97706;
+}
+
+.c1-action-btn-warning:hover {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #b45309;
+    box-shadow: 0 2px 5px rgba(217, 119, 6, 0.15);
+}
+
+.c1-action-btn-warning:hover svg {
+    color: #b45309;
+}
+
+.c1-action-btn-secondary {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+}
+
+.c1-action-btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+/* Nút Xóa (Danger): Trạng thái nghỉ là xám trung tính, CHỈ ĐỎ RỰC KHI RÊ CHUỘT VÀO! */
 .c1-action-btn-danger {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #ef4444;
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+
+.c1-action-btn-danger svg {
+    color: #94a3b8;
 }
 
 .c1-action-btn-danger:hover {
-    background: #fee2e2;
-    border-color: #fca5a5;
-    color: #dc2626;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.18);
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.28);
+}
+
+.c1-action-btn-danger:hover svg {
+    color: #ffffff;
 }
 
 .c1-action-btn-icon {
@@ -3156,4 +3243,58 @@ body.c1-body {
 .c1-dot-red {
     background-color: #ef4444;
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Admin Pagination */
+.pagination-sec {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-sec .pagination {
+    margin-bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pagination-sec .page-item .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c1-text-body, #475569);
+    background-color: #ffffff;
+    border: 1px solid var(--c1-border-card, #e2e8f0);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.pagination-sec .page-item:not(.active):not(.disabled) .page-link:hover {
+    color: var(--c1-primary, #2563eb);
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.pagination-sec .page-item.active .page-link {
+    color: #ffffff;
+    background-color: var(--c1-primary, #2563eb);
+    border-color: var(--c1-primary, #2563eb);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+}
+
+.pagination-sec .page-item.disabled .page-link {
+    color: #94a3b8;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.65;
 }

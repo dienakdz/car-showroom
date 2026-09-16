@@ -117,6 +117,27 @@ class InventoryWorkflowService
         });
     }
 
+    public function delete(CarUnit $carUnit): void
+    {
+        DB::transaction(function () use ($carUnit): void {
+            $carUnit = CarUnit::query()->lockForUpdate()->findOrFail($carUnit->id);
+
+            if ($carUnit->status === 'sold' || $carUnit->sale()->exists()) {
+                throw ValidationException::withMessages([
+                    'carUnit' => 'Không thể xóa xe đã bán.',
+                ]);
+            }
+
+            if ($carUnit->status === 'on_hold') {
+                throw ValidationException::withMessages([
+                    'carUnit' => 'Không thể xóa xe đang giữ cọc.',
+                ]);
+            }
+
+            $carUnit->delete();
+        });
+    }
+
     protected function syncMedia(CarUnit $carUnit, Collection $mediaRows): void
     {
         $normalizedRows = $mediaRows

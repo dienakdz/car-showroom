@@ -92,6 +92,27 @@ class Index extends AdminPageComponent
         $this->toast('success', "Đã lưu trữ (archive) xe [{$carUnit->stock_code}].");
     }
 
+    public function delete(int $carUnitId, InventoryWorkflowService $service): void
+    {
+        $carUnit = CarUnit::query()->findOrFail($carUnitId);
+
+        if ($carUnit->status === 'sold' || $carUnit->sale()->exists()) {
+            $this->toast('error', "Không thể xóa xe đã bán [{$carUnit->stock_code}].");
+
+            return;
+        }
+
+        if ($carUnit->status === 'on_hold') {
+            $this->toast('error', "Không thể xóa xe đang giữ cọc [{$carUnit->stock_code}].");
+
+            return;
+        }
+
+        $service->delete($carUnit);
+
+        $this->toast('success', "Đã xóa xe [{$carUnit->stock_code}] thành công.");
+    }
+
     public function render(): View
     {
         return view('livewire.admin.inventory.index', [

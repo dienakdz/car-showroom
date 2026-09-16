@@ -20,8 +20,9 @@
             </div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <a href="{{ route('admin.inventory.index') }}" wire:navigate.hover class="c1-btn c1-btn-secondary">
-                <i class="fa fa-arrow-left me-1"></i> Về kho xe
+            <a href="{{ route('admin.inventory.index') }}" wire:navigate.hover class="c1-action-btn">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                <span>Về kho xe</span>
             </a>
             @if ($isSold)
                 <span class="c1-pill c1-pill-gray"><i class="fa fa-lock me-1"></i> Chỉ xem</span>
@@ -308,49 +309,50 @@
                                 </div>
 
                                 <div style="padding: 10px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; border-top: 1px solid #f1f5f9;">
-                                    <div style="display: flex; gap: 4px;">
+                                    <div class="c1-actions-cell" style="gap: 4px;">
                                         @if (!$isSold && !($item['is_cover'] ?? false))
                                             <button
                                                 type="button"
                                                 wire:click="setCover({{ $index }})"
-                                                class="btn btn-xs btn-outline-primary"
+                                                class="c1-action-btn c1-action-btn-primary"
                                                 title="Đặt làm ảnh bìa chính"
-                                                style="font-size: 11px; padding: 2px 6px;"
+                                                style="height: 28px; padding: 0 8px; font-size: 11.5px;"
                                             >
-                                                Đặt bìa
+                                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                                                <span>Đặt bìa</span>
                                             </button>
                                         @endif
                                         <button
                                             type="button"
                                             wire:click="moveMediaUp({{ $index }})"
-                                            class="btn btn-xs btn-outline-secondary"
+                                            class="c1-action-btn c1-action-btn-icon"
                                             title="Chuyển lên trước"
-                                            style="font-size: 11px; padding: 2px 6px;"
+                                            style="width: 28px; height: 28px;"
                                             @disabled($isSold || $index === 0)
                                         >
-                                            <i class="fa fa-arrow-left"></i>
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
                                         </button>
                                         <button
                                             type="button"
                                             wire:click="moveMediaDown({{ $index }})"
-                                            class="btn btn-xs btn-outline-secondary"
+                                            class="c1-action-btn c1-action-btn-icon"
                                             title="Chuyển xuống sau"
-                                            style="font-size: 11px; padding: 2px 6px;"
+                                            style="width: 28px; height: 28px;"
                                             @disabled($isSold || $index === count($media) - 1)
                                         >
-                                            <i class="fa fa-arrow-right"></i>
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                                         </button>
                                     </div>
 
                                     <button
                                         type="button"
                                         wire:click="removeMedia({{ $index }})"
-                                        class="btn btn-xs btn-outline-danger"
+                                        class="c1-action-btn c1-action-btn-icon c1-action-btn-danger"
                                         title="Xóa ảnh này"
-                                        style="font-size: 11px; padding: 2px 6px;"
+                                        style="width: 28px; height: 28px;"
                                         @disabled($isSold)
                                     >
-                                        <i class="fa fa-trash"></i>
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
                                     </button>
                                 </div>
                             </div>
@@ -519,7 +521,7 @@
                         </button>
                     @endif
 
-                    <a href="{{ route('admin.inventory.index') }}" wire:navigate class="c1-btn c1-btn-ghost w-100 text-center" style="height: 38px;">
+                    <a href="{{ route('admin.inventory.index') }}" wire:navigate class="c1-action-btn w-100 text-center justify-content-center" style="height: 38px;">
                         Hủy bỏ
                     </a>
                 </div>
