@@ -210,11 +210,18 @@
                                             <div class="c1-cell-primary" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;" title="{{ $contextName ?: 'Chưa chọn xe cụ thể' }}">
                                                 {{ $contextName ?: 'Chưa chọn xe cụ thể' }}
                                             </div>
-                                            @if ($appointment->carUnit)
-                                                <span class="c1-vehicle-tag" style="font-size: 10px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-top: 2px;">
-                                                    #{{ $appointment->carUnit->stock_code }}
-                                                </span>
-                                            @endif
+                                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap;">
+                                                @if ($appointment->carUnit)
+                                                    <span class="c1-vehicle-tag" style="font-size: 10px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;">
+                                                        #{{ $appointment->carUnit->stock_code }}
+                                                    </span>
+                                                    @if ($appointment->carUnit->price)
+                                                        <span style="font-size: 11px; font-weight: 600; color: #16a34a;">
+                                                            {{ number_format((float) $appointment->carUnit->price, 0, ',', '.') }} đ
+                                                        </span>
+                                                    @endif
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </td>

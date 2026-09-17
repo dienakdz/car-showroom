@@ -1,19 +1,4 @@
 @php
-    $statusLabels = [
-        'new' => 'Mới tiếp nhận',
-        'contacted' => 'Đang tư vấn',
-        'qualified' => 'Khách tiềm năng',
-        'booked' => 'Đặt hẹn / Thương thảo',
-        'closed' => 'Chốt giao dịch',
-        'lost' => 'Đã hủy',
-    ];
-    $sourceLabels = [
-        'unit_detail' => 'Trang chi tiết xe',
-        'trim_page' => 'Trang phiên bản',
-        'finance' => 'Hỗ trợ trả góp',
-        'trade_in' => 'Thu cũ đổi mới',
-        'contact' => 'Form liên hệ',
-    ];
     $kanbanColumns = [
         'new' => ['order' => 1, 'title' => 'Mới tiếp nhận', 'color' => '#2563eb', 'pill' => 'c1-pill-blue', 'context' => 'Quan tâm', 'fallback' => 'Liên hệ chung'],
         'consulting' => ['order' => 2, 'title' => 'Đang tư vấn / Lái thử', 'color' => '#4f46e5', 'pill' => 'c1-pill-indigo', 'context' => 'Xe tư vấn', 'fallback' => 'Tư vấn dòng xe'],
@@ -118,15 +103,15 @@
             <select wire:model.live="status" class="c1-select" aria-label="Lọc trạng thái lead">
                 <option value="">Tất cả trạng thái</option>
                 <option value="consulting">Đang tư vấn / Lái thử (Cả 2 bước)</option>
-                @foreach ($statusOptions as $statusOption)
-                    <option value="{{ $statusOption }}">{{ $statusLabels[$statusOption] }}</option>
+                @foreach ($statusOptions as $stKey => $stLbl)
+                    <option value="{{ $stKey }}">{{ $stLbl }}</option>
                 @endforeach
             </select>
 
             <select wire:model.live="source" class="c1-select" aria-label="Lọc nguồn lead">
                 <option value="">Tất cả nguồn</option>
-                @foreach ($sourceOptions as $sourceOption)
-                    <option value="{{ $sourceOption }}">{{ $sourceLabels[$sourceOption] }}</option>
+                @foreach ($sourceOptions as $srcKey => $srcLbl)
+                    <option value="{{ $srcKey }}">{{ $srcLbl }}</option>
                 @endforeach
             </select>
 
@@ -263,7 +248,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="c1-vehicle-tag">{{ $sourceLabels[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</span></td>
+                                <td><span class="c1-vehicle-tag">{{ $sourceOptions[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</span></td>
                                 <td>
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         @if ($thumbUrl)
@@ -281,13 +266,13 @@
                                     @if ($lead->status === 'new')
                                         <span class="c1-pill c1-pill-blue">Mới tiếp nhận</span>
                                     @elseif (in_array($lead->status, ['contacted', 'qualified'], true))
-                                        <span class="c1-pill c1-pill-indigo">{{ $statusLabels[$lead->status] ?? 'Đang tư vấn' }}</span>
+                                        <span class="c1-pill c1-pill-indigo">{{ $statusOptions[$lead->status] ?? 'Đang tư vấn' }}</span>
                                     @elseif ($lead->status === 'booked')
                                         <span class="c1-pill c1-pill-amber">Đặt hẹn / Đàm phán</span>
                                     @elseif ($lead->status === 'closed')
                                         <span class="c1-pill c1-pill-green">Chốt thành công</span>
                                     @else
-                                        <span class="c1-pill c1-pill-gray">{{ $statusLabels[$lead->status] ?? strtoupper($lead->status) }}</span>
+                                        <span class="c1-pill c1-pill-gray">{{ $statusOptions[$lead->status] ?? strtoupper($lead->status) }}</span>
                                     @endif
                                 </td>
                                 <td>

@@ -12,6 +12,23 @@ class LeadWorkflowService
 {
     public const VALID_STATUSES = ['new', 'contacted', 'qualified', 'booked', 'closed', 'lost'];
 
+    public const STATUS_LABELS = [
+        'new' => 'Mới tiếp nhận',
+        'contacted' => 'Đã liên hệ',
+        'qualified' => 'Khách tiềm năng',
+        'booked' => 'Thương thảo / Lịch hẹn',
+        'closed' => 'Chốt giao dịch',
+        'lost' => 'Hủy / Thất bại',
+    ];
+
+    public const SOURCE_LABELS = [
+        'unit_detail' => 'Chi tiết xe trên Web',
+        'trim_page' => 'Trang thông số phiên bản',
+        'finance' => 'Hỗ trợ tính toán trả góp',
+        'trade_in' => 'Thu cũ đổi mới',
+        'contact' => 'Form liên hệ showroom',
+    ];
+
     public const STAGE_NEW = 'new';
 
     public const STAGE_CONSULTING = ['contacted', 'qualified'];
@@ -41,7 +58,6 @@ class LeadWorkflowService
                 'trim_id',
             ]);
 
-            // Chuẩn hóa dữ liệu đầu vào
             if (isset($payload['name'])) {
                 $payload['name'] = trim((string) $payload['name']);
             }
@@ -66,17 +82,8 @@ class LeadWorkflowService
 
             // Nếu thay đổi trạng thái, tự động ghi log vào LeadNote
             if (isset($payload['status']) && $payload['status'] !== $oldStatus) {
-                $statusLabels = [
-                    'new' => 'Mới tiếp nhận',
-                    'contacted' => 'Đã liên hệ',
-                    'qualified' => 'Tiềm năng',
-                    'booked' => 'Đặt lịch hẹn',
-                    'closed' => 'Chốt giao dịch',
-                    'lost' => 'Hủy / Thất bại',
-                ];
-
-                $from = $statusLabels[$oldStatus];
-                $to = $statusLabels[$payload['status']] ?? (string) $payload['status'];
+                $from = self::STATUS_LABELS[$oldStatus];
+                $to = self::STATUS_LABELS[$payload['status']] ?? (string) $payload['status'];
 
                 LeadNote::query()->create([
                     'lead_id' => $lead->id,
@@ -126,17 +133,8 @@ class LeadWorkflowService
             $oldStatus = $lead->status;
             $lead->update(['status' => $newStatus]);
 
-            $statusLabels = [
-                'new' => 'Mới tiếp nhận',
-                'contacted' => 'Đang tư vấn',
-                'qualified' => 'Khách tiềm năng',
-                'booked' => 'Thương thảo / Lịch hẹn',
-                'closed' => 'Chốt giao dịch',
-                'lost' => 'Đã hủy',
-            ];
-
-            $from = $statusLabels[$oldStatus];
-            $to = $statusLabels[$newStatus];
+            $from = self::STATUS_LABELS[$oldStatus];
+            $to = self::STATUS_LABELS[$newStatus];
 
             $logNote = "Chuyển giai đoạn: [{$from}] ➔ [{$to}].";
             if (filled($note)) {

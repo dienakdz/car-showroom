@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\Appointment;
+use App\Models\CarUnit;
 use App\Models\Lead;
 use App\Models\LeadNote;
 use App\Models\User;
@@ -27,22 +28,21 @@ class AppointmentManagementService
             $isNew = $appointment === null || ! $appointment->exists;
             $appointment ??= new Appointment;
 
+            $unit = ! empty($validated['car_unit_id']) ? CarUnit::query()->find($validated['car_unit_id']) : null;
+            $trimId = $unit?->trim_id;
+
             $lead = null;
             $leadId = $validated['lead_id'] ?? $appointment->lead_id;
 
             if (! empty($validated['customer_mode']) && $validated['customer_mode'] === 'new_lead' && ! empty($validated['customer_name']) && ! empty($validated['customer_phone'])) {
-                $leadSource = ! empty($validated['car_unit_id'])
-                    ? 'unit_detail'
-                    : (! empty($validated['trim_id']) ? 'trim_page' : 'contact');
-
                 $lead = Lead::query()->create([
                     'name' => trim((string) $validated['customer_name']),
                     'phone' => trim((string) $validated['customer_phone']),
                     'email' => ! empty($validated['customer_email']) ? trim((string) $validated['customer_email']) : null,
-                    'source' => $leadSource,
+                    'source' => 'unit_detail',
                     'status' => 'booked',
-                    'car_unit_id' => $validated['car_unit_id'] ?? null,
-                    'trim_id' => $validated['trim_id'] ?? null,
+                    'car_unit_id' => $unit?->id,
+                    'trim_id' => $trimId,
                     'assigned_to' => $validated['handled_by'] ?? $actor->id,
                     'message' => 'Lịch hẹn xem xe / lái thử tại Showroom' . (! empty($validated['note']) ? ': ' . trim((string) $validated['note']) : ''),
                 ]);
@@ -59,13 +59,14 @@ class AppointmentManagementService
             $payload = Arr::only($validated, [
                 'user_id',
                 'car_unit_id',
-                'trim_id',
                 'lead_id',
                 'handled_by',
                 'scheduled_at',
                 'status',
                 'note',
             ]);
+
+            $payload['trim_id'] = $trimId;
 
             if ($lead !== null) {
                 $payload['lead_id'] = $lead->id;

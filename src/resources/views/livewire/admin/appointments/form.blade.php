@@ -252,84 +252,87 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="field-car-unit-id" class="form-label" style="font-size: 13px; font-weight: 600;">Xe cụ thể trong kho (Car Unit)</label>
+                        <label for="field-car-unit-id" class="form-label" style="font-size: 13px; font-weight: 600;">
+                            Xe cụ thể trong kho (Car Unit) <span class="text-danger">*</span>
+                        </label>
                         <select id="field-car-unit-id" wire:model.live="form.car_unit_id" class="c1-select w-100 @error('form.car_unit_id') is-invalid @enderror">
                             <option value="">-- Chọn xe cụ thể trong kho --</option>
                             @foreach ($carUnits as $carUnit)
                                 <option value="{{ $carUnit->id }}">
-                                    [{{ $carUnit->stock_code }}] {{ $carUnit->trim?->model?->make?->name }} {{ $carUnit->trim?->model?->name }} {{ $carUnit->trim?->name }}
+                                    [{{ $carUnit->stock_code }}] {{ $carUnit->trim?->model?->make?->name }} {{ $carUnit->trim?->model?->name }} {{ $carUnit->trim?->name }} ({{ number_format((float) $carUnit->price, 0, ',', '.') }} đ)
                                 </option>
                             @endforeach
                         </select>
                         @error('form.car_unit_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="field-trim-id" class="form-label" style="font-size: 13px; font-weight: 600;">Hoặc chọn Phiên bản xe (Trim)</label>
-                        <select id="field-trim-id" wire:model="form.trim_id" class="c1-select w-100 @error('form.trim_id') is-invalid @enderror">
-                            <option value="">-- Chọn phiên bản xe quan tâm --</option>
-                            @foreach ($trims as $trim)
-                                <option value="{{ $trim->id }}">{{ $trim->model?->make?->name }} • {{ $trim->model?->name }} • {{ $trim->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('form.trim_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                        <div class="text-muted" style="font-size: 11.5px; margin-top: 4px;">
+                            <i class="fa fa-info-circle me-1"></i>Chọn xe có sẵn trong showroom để chuẩn bị và đón tiếp khách lái thử.
+                        </div>
                     </div>
 
                     {{-- Dynamic Live Preview Card --}}
-                    @php
-                        $previewMedia = $activeCarUnit?->primaryMedia ?? $activeTrim?->carUnits?->first()?->primaryMedia;
-                        $rawPath = $previewMedia?->path_or_url;
-                        $previewUrl = filled($rawPath)
-                            ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
-                            : null;
-                        $previewTitle = trim(collect([$activeTrim?->model?->make?->name, $activeTrim?->model?->name, $activeTrim?->name])->filter()->implode(' '));
-                    @endphp
+                    @if ($activeCarUnit)
+                        @php
+                            $previewMedia = $activeCarUnit->primaryMedia;
+                            $rawPath = $previewMedia?->path_or_url;
+                            $previewUrl = filled($rawPath)
+                                ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
+                                : null;
+                            $carTrim = $activeCarUnit->trim;
+                            $carTitle = trim(collect([$carTrim?->model?->make?->name, $carTrim?->model?->name, $carTrim?->name])->filter()->implode(' '));
+                        @endphp
 
-                    @if ($activeCarUnit !== null || $activeTrim !== null)
                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-top: 14px;">
                             <div style="position: relative; border-radius: 8px; overflow: hidden; background: #0f172a; aspect-ratio: 16/9; border: 1px solid #e2e8f0;">
                                 @if ($previewUrl)
-                                    <img src="{{ $previewUrl }}" alt="{{ $previewTitle }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="{{ $previewUrl }}" alt="{{ $carTitle }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 @else
                                     <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-size: 24px;">
                                         <i class="fa fa-car mb-1"></i>
                                         <span style="font-size: 11px;">Chưa có ảnh xe</span>
                                     </div>
                                 @endif
-                                @if ($activeCarUnit)
-                                    <div style="position: absolute; top: 10px; right: 10px;">
-                                        <span class="c1-pill c1-pill-green" style="box-shadow: 0 2px 6px rgba(0,0,0,0.25); font-weight: 700;">
-                                            #{{ $activeCarUnit->stock_code }}
-                                        </span>
-                                    </div>
-                                @endif
+                                <div style="position: absolute; top: 10px; right: 10px;">
+                                    <span class="c1-pill c1-pill-green" style="box-shadow: 0 2px 6px rgba(0,0,0,0.25); font-weight: 700;">
+                                        #{{ $activeCarUnit->stock_code }}
+                                    </span>
+                                </div>
                             </div>
 
                             <div style="margin-top: 12px;">
                                 <div style="font-weight: 700; font-size: 15px; color: var(--c1-text-heading);">
-                                    {{ $previewTitle ?: 'Mẫu xe tư vấn' }}
+                                    {{ $carTitle }}
                                 </div>
-                                @if ($activeCarUnit)
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: 13px; padding-top: 6px; border-top: 1px dashed #e2e8f0;">
-                                        <span class="text-muted">Giá niêm yết:</span>
-                                        <strong style="color: #2563eb; font-size: 14px;">
-                                            {{ number_format((float) $activeCarUnit->selling_price, 0, ',', '.') }} đ
-                                        </strong>
+
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 13px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
+                                    <span class="text-muted">Giá niêm yết xe kho:</span>
+                                    <strong style="color: #16a34a; font-size: 15px;">
+                                        {{ number_format((float) $activeCarUnit->price, 0, ',', '.') }} đ
+                                    </strong>
+                                </div>
+
+                                @if ($activeCarUnit->vin)
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; font-size: 12px;">
+                                        <span class="text-muted">Số khung (VIN):</span>
+                                        <span class="font-monospace" style="color: #475569;">{{ $activeCarUnit->vin }}</span>
                                     </div>
-                                    @if ($activeCarUnit->vin)
-                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 3px; font-size: 12px;">
-                                            <span class="text-muted">Số khung (VIN):</span>
-                                            <span class="font-monospace" style="color: #475569;">{{ $activeCarUnit->vin }}</span>
-                                        </div>
-                                    @endif
+                                @endif
+
+                                @if ($activeCarUnit->year || $activeCarUnit->mileage)
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; font-size: 12px;">
+                                        <span class="text-muted">Năm SX / ODO:</span>
+                                        <span style="color: #475569;">
+                                            {{ $activeCarUnit->year ? 'Đời ' . $activeCarUnit->year : '' }}
+                                            {{ $activeCarUnit->mileage ? ' • ' . number_format((float) $activeCarUnit->mileage, 0, ',', '.') . ' km' : '' }}
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                         </div>
                     @else
                         <div style="padding: 24px 16px; border: 2px dashed #cbd5e1; border-radius: 8px; text-align: center; color: #94a3b8; margin-top: 14px; background: #f8fafc;">
                             <i class="fa fa-car fa-2x mb-2 d-block" style="opacity: 0.5;"></i>
-                            <div style="font-size: 12.5px; font-weight: 500;">Chưa chọn mẫu xe cụ thể</div>
-                            <div style="font-size: 11.5px; margin-top: 2px;">Vui lòng chọn xe trong kho hoặc phiên bản để xem ảnh và thông số.</div>
+                            <div style="font-size: 12.5px; font-weight: 500;">Chưa chọn xe trong kho</div>
+                            <div style="font-size: 11.5px; margin-top: 2px;">Vui lòng chọn xe cụ thể ở danh sách trên để xem ảnh và thông số.</div>
                         </div>
                     @endif
                 </div>

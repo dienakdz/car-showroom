@@ -14,7 +14,7 @@ use Livewire\Attributes\Locked;
 
 class Show extends AdminPageComponent
 {
-    private const STATUSES = ['new', 'contacted', 'qualified', 'booked', 'closed', 'lost'];
+    private const STATUSES = LeadWorkflowService::VALID_STATUSES;
 
     #[Locked]
     public int $leadId;
@@ -43,7 +43,7 @@ class Show extends AdminPageComponent
         $this->feedback = [];
         $this->resetErrorBag();
 
-        $this->form['assigned_to'] = ! empty($this->form['assigned_to']) ? (int) $this->form['assigned_to'] : null;
+        $this->form['assigned_to'] = (int) $this->form['assigned_to'] ?: null;
 
         $validated = $this->validate(
             $this->leadRules(),
@@ -127,7 +127,8 @@ class Show extends AdminPageComponent
         return view('livewire.admin.leads.show', [
             'lead' => $lead,
             'staffUsers' => $this->assignableUsers(),
-            'statusOptions' => self::STATUSES,
+            'statusOptions' => LeadWorkflowService::STATUS_LABELS,
+            'sourceOptions' => LeadWorkflowService::SOURCE_LABELS,
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
             'adminPageTitle' => 'Hồ sơ Lead #' . $lead->id . ' - ' . $lead->name,
             'adminPageDescription' => 'Chi tiết phễu chuyển đổi, nhu cầu xe và lịch sử tương tác với khách hàng.',
@@ -175,7 +176,7 @@ class Show extends AdminPageComponent
             'name' => (string) $lead->name,
             'phone' => (string) $lead->phone,
             'email' => (string) ($lead->email ?? ''),
-            'assigned_to' => $lead->assigned_to === null ? '' : (string) $lead->assigned_to,
+            'assigned_to' => $lead->assigned_to,
             'status' => (string) $lead->status,
             'message' => (string) ($lead->message ?? ''),
         ];

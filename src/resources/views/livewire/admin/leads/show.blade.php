@@ -10,14 +10,6 @@
             : asset(ltrim($rawPath, '/'));
     }
 
-    $sourceLabels = [
-        'unit_detail' => 'Chi tiết xe trên Web',
-        'trim_page' => 'Trang thông số phiên bản',
-        'finance' => 'Hỗ trợ tính toán trả góp',
-        'trade_in' => 'Thu cũ đổi mới',
-        'contact' => 'Form liên hệ showroom',
-    ];
-
     $pipelineStages = [
         'new' => ['order' => 1, 'title' => 'Mới tiếp nhận', 'desc' => 'Chưa liên hệ'],
         'contacted' => ['order' => 2, 'title' => 'Đang tư vấn / Lái thử', 'desc' => 'Tư vấn dòng xe'],
@@ -64,7 +56,7 @@
                 @endif
             </div>
             <div style="color: var(--c1-text-muted); font-size: 13px;">
-                Nguồn: <strong>{{ $sourceLabels[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</strong> •
+                Nguồn: <strong>{{ $sourceOptions[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</strong> •
                 Tiếp nhận lúc: <strong>{{ $lead->created_at?->format('d/m/Y H:i') }}</strong> ({{ $lead->created_at?->diffForHumans() }})
             </div>
         </div>
@@ -233,11 +225,11 @@
                             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
                                 @if ($lead->carUnit)
                                     <span style="font-size: 12px; color: var(--c1-text-muted);">Mã kho: <strong>#{{ $lead->carUnit->stock_code }}</strong></span>
-                                    @if ($lead->carUnit->selling_price)
-                                        <span style="font-size: 13px; font-weight: 700; color: #16a34a;">{{ number_format((float) $lead->carUnit->selling_price) }} đ</span>
+                                    @if ($lead->carUnit->price)
+                                        <span style="font-size: 13px; font-weight: 700; color: #16a34a;">{{ number_format((float) $lead->carUnit->price, 0, ',', '.') }} đ</span>
                                     @endif
-                                @elseif ($lead->trim && $lead->trim->price)
-                                    <span style="font-size: 13px; font-weight: 700; color: #16a34a;">Từ {{ number_format((float) $lead->trim->price) }} đ</span>
+                                @elseif ($lead->trim && $lead->trim->msrp)
+                                    <span style="font-size: 13px; font-weight: 700; color: #16a34a;">Từ {{ number_format((float) $lead->trim->msrp, 0, ',', '.') }} đ</span>
                                 @endif
                             </div>
                             <div>
@@ -307,7 +299,14 @@
 
                             </div>
                             <div style="font-size: 12px; color: var(--c1-text-muted);">
-                                Xe: {{ trim(collect([$apptTrim?->model?->make?->name, $apptTrim?->model?->name, $apptTrim?->name])->filter()->implode(' ')) ?: 'Chưa chọn xe' }}
+                                Xe: 
+                                @if ($appointment->carUnit)
+                                    <strong>#{{ $appointment->carUnit->stock_code }}</strong> -
+                                @endif
+                                {{ trim(collect([$apptTrim?->model?->make?->name, $apptTrim?->model?->name, $apptTrim?->name])->filter()->implode(' ')) ?: 'Chưa chọn xe' }}
+                                @if ($appointment->carUnit?->price)
+                                    <span style="font-weight: 600; color: #16a34a; margin-left: 4px;">({{ number_format((float) $appointment->carUnit->price, 0, ',', '.') }} đ)</span>
+                                @endif
                                 • Phụ trách: <strong>{{ $appointment->handledBy?->name ?? 'Chưa chỉ định' }}</strong>
                             </div>
                         </div>

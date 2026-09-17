@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Leads;
 use App\Livewire\Admin\AdminPageComponent;
 use App\Models\Lead;
 use App\Models\User;
+use App\Services\Admin\LeadWorkflowService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
@@ -108,18 +109,21 @@ class Index extends AdminPageComponent
 
             $kanbanLeads = [];
             foreach ($kanbanStages as $stageKey => $statuses) {
-                $stageQuery = (clone $baseQuery)->whereIn('status', $statuses);
-
                 if ($this->status !== '') {
-                    if ($this->status === 'consulting') {
-                        if ($stageKey !== 'consulting') {
-                            $stageQuery->whereRaw('1 = 0');
-                        }
-                    } elseif (! in_array($this->status, $statuses, true)) {
-                        $stageQuery->whereRaw('1 = 0');
-                    } else {
-                        $stageQuery->where('status', $this->status);
+                    $matches = $this->status === 'consulting'
+                        ? $stageKey === 'consulting'
+                        : in_array($this->status, $statuses, true);
+
+                    if (! $matches) {
+                        $kanbanLeads[$stageKey] = collect();
+
+                        continue;
                     }
+                }
+
+                $stageQuery = (clone $baseQuery)->whereIn('status', $statuses);
+                if ($this->status !== '' && $this->status !== 'consulting') {
+                    $stageQuery->where('status', $this->status);
                 }
 
                 $kanbanLeads[$stageKey] = $stageQuery->limit(20)->get();
@@ -147,8 +151,8 @@ class Index extends AdminPageComponent
             'kanbanLeads' => $kanbanLeads,
             'stageCounts' => $stageCounts,
             'staffUsers' => $this->assignableUsers(),
-            'statusOptions' => self::STATUSES,
-            'sourceOptions' => self::SOURCES,
+            'statusOptions' => LeadWorkflowService::STATUS_LABELS,
+            'sourceOptions' => LeadWorkflowService::SOURCE_LABELS,
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
             'adminPageTitle' => 'Khách hàng & Leads (CRM)',
             'adminPageDescription' => 'Quản lý phễu khách hàng tiềm năng, lịch hẹn và điều phối chuyên viên tư vấn.',

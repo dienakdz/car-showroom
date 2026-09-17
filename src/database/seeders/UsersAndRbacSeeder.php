@@ -24,9 +24,21 @@ class UsersAndRbacSeeder extends Seeder
                 'password' => $password,
             ],
             [
-                'name' => 'Sales Staff',
+                'name' => 'Nguyễn Văn Quản',
                 'email' => 'staff@showroom.test',
                 'phone' => '0900000002',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Hoàng Văn Nam',
+                'email' => 'hoang.sales@showroom.test',
+                'phone' => '0900000010',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Trần Thùy Linh',
+                'email' => 'linh.sales@showroom.test',
+                'phone' => '0900000011',
                 'password' => $password,
             ],
             [
@@ -39,6 +51,66 @@ class UsersAndRbacSeeder extends Seeder
                 'name' => 'Jane Buyer',
                 'email' => 'jane@example.com',
                 'phone' => '0900000004',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Nguyễn Anh Tuấn',
+                'email' => 'tuan.nguyen@gmail.com',
+                'phone' => '0912345678',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Lê Thu Hương',
+                'email' => 'huong.le@gmail.com',
+                'phone' => '0983222333',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Trần Đình Quang',
+                'email' => 'quang.tran@gmail.com',
+                'phone' => '0904555666',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Phạm Phương Thảo',
+                'email' => 'thao.pham@gmail.com',
+                'phone' => '0978111222',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Hoàng Trung Dũng',
+                'email' => 'dung.hoang@gmail.com',
+                'phone' => '0936777888',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Vũ Tuyết Mai',
+                'email' => 'mai.vu@gmail.com',
+                'phone' => '0965999000',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Đỗ Thành Đạt',
+                'email' => 'dat.do@gmail.com',
+                'phone' => '0942888111',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Bùi Hải Yến',
+                'email' => 'yen.bui@gmail.com',
+                'phone' => '0925333444',
+                'password' => $password,
+            ],
+            [
+                'name' => 'Nguyễn Đăng Khoa',
+                'email' => 'khoa.nguyen@gmail.com',
+                'phone' => '0918666777',
+                'password' => $password,
+            ],
+            [
+                'name' => 'David Miller',
+                'email' => 'david.miller@example.com',
+                'phone' => '0909123456',
                 'password' => $password,
             ],
         ];
@@ -80,41 +152,65 @@ class UsersAndRbacSeeder extends Seeder
             );
         }
 
-        $userIds = DB::table('users')
-            ->whereIn('email', ['admin@showroom.test', 'staff@showroom.test', 'john@example.com', 'jane@example.com'])
-            ->pluck('id', 'email');
+        $userIds = DB::table('users')->pluck('id', 'email');
+        $roleIds = DB::table('roles')->pluck('id', 'name');
 
-        $roleIds = DB::table('roles')
-            ->whereIn('name', ['admin', 'staff', 'customer'])
-            ->pluck('id', 'name');
+        $staffEmails = [
+            'staff@showroom.test',
+            'hoang.sales@showroom.test',
+            'linh.sales@showroom.test',
+        ];
+
+        $customerEmails = [
+            'john@example.com',
+            'jane@example.com',
+            'tuan.nguyen@gmail.com',
+            'huong.le@gmail.com',
+            'quang.tran@gmail.com',
+            'thao.pham@gmail.com',
+            'dung.hoang@gmail.com',
+            'mai.vu@gmail.com',
+            'dat.do@gmail.com',
+            'yen.bui@gmail.com',
+            'khoa.nguyen@gmail.com',
+            'david.miller@example.com',
+        ];
 
         DB::table('user_roles')->delete();
-        DB::table('user_roles')->insert([
-            [
+
+        $userRoles = [];
+        if (isset($userIds['admin@showroom.test'])) {
+            $userRoles[] = [
                 'user_id' => $userIds['admin@showroom.test'],
                 'role_id' => $roleIds['admin'],
                 'created_at' => $now,
                 'updated_at' => $now,
-            ],
-            [
-                'user_id' => $userIds['staff@showroom.test'],
-                'role_id' => $roleIds['staff'],
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'user_id' => $userIds['john@example.com'],
-                'role_id' => $roleIds['customer'],
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'user_id' => $userIds['jane@example.com'],
-                'role_id' => $roleIds['customer'],
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-        ]);
+            ];
+        }
+
+        foreach ($staffEmails as $email) {
+            if (isset($userIds[$email])) {
+                $userRoles[] = [
+                    'user_id' => $userIds[$email],
+                    'role_id' => $roleIds['staff'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+
+        foreach ($customerEmails as $email) {
+            if (isset($userIds[$email])) {
+                $userRoles[] = [
+                    'user_id' => $userIds[$email],
+                    'role_id' => $roleIds['customer'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+
+        DB::table('user_roles')->insert($userRoles);
 
         $permissionIds = DB::table('permissions')
             ->whereIn('name', array_column($permissions, 'name'))
