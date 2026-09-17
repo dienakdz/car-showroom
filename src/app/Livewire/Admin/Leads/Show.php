@@ -43,6 +43,8 @@ class Show extends AdminPageComponent
         $this->feedback = [];
         $this->resetErrorBag();
 
+        $this->form['assigned_to'] = ! empty($this->form['assigned_to']) ? (int) $this->form['assigned_to'] : null;
+
         $validated = $this->validate(
             $this->leadRules(),
             attributes: $this->validationAttributes(),

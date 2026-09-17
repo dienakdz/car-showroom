@@ -42,24 +42,33 @@ class Form extends AdminPageComponent
         }
     }
 
-    public function updatedFormCarUnitId(?int $carUnitId): void
+    public function updatedFormCarUnitId(mixed $carUnitId): void
     {
-        if ($carUnitId !== null && $carUnitId > 0) {
-            $this->syncCarUnitContext($carUnitId);
+        $id = ! empty($carUnitId) ? (int) $carUnitId : null;
+        $this->form['car_unit_id'] = $id;
+
+        if ($id !== null && $id > 0) {
+            $this->syncCarUnitContext($id);
         }
     }
 
-    public function updatedFormLeadId(?int $leadId): void
+    public function updatedFormLeadId(mixed $leadId): void
     {
-        if ($leadId !== null && $leadId > 0) {
-            $this->syncLeadContext($leadId);
+        $id = ! empty($leadId) ? (int) $leadId : null;
+        $this->form['lead_id'] = $id;
+
+        if ($id !== null && $id > 0) {
+            $this->syncLeadContext($id);
         }
     }
 
-    public function updatedFormBuyerUserId(?int $userId): void
+    public function updatedFormBuyerUserId(mixed $userId): void
     {
-        if ($userId !== null && $userId > 0) {
-            $user = User::query()->find($userId);
+        $id = ! empty($userId) ? (int) $userId : null;
+        $this->form['buyer_user_id'] = $id;
+
+        if ($id !== null && $id > 0) {
+            $user = User::query()->find($id);
             if ($user !== null) {
                 $this->form['buyer_name'] = $user->name;
                 $this->form['buyer_email'] = $user->email;

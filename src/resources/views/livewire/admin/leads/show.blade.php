@@ -288,11 +288,15 @@
                                     <i class="fa fa-clock-o text-muted me-1"></i> {{ $appointment->scheduled_at?->format('d/m/Y H:i') }}
                                 </strong>
                                 @switch($appointment->status)
-                                    @case('confirmed')
-                                        <span class="c1-pill c1-pill-green">Đã xác nhận</span>
+                                    @case('pending')
+                                        <span class="c1-pill c1-pill-amber">Chờ xác nhận</span>
                                         @break
+                                    @case('confirmed')
+                                        <span class="c1-pill c1-pill-blue">Đã xác nhận</span>
+                                        @break
+                                    @case('done')
                                     @case('completed')
-                                        <span class="c1-pill c1-pill-blue">Hoàn tất</span>
+                                        <span class="c1-pill c1-pill-green">Đã hoàn tất</span>
                                         @break
                                     @case('cancelled')
                                         <span class="c1-pill c1-pill-gray">Đã hủy</span>
@@ -300,6 +304,7 @@
                                     @default
                                         <span class="c1-pill c1-pill-amber">{{ strtoupper($appointment->status) }}</span>
                                 @endswitch
+
                             </div>
                             <div style="font-size: 12px; color: var(--c1-text-muted);">
                                 Xe: {{ trim(collect([$apptTrim?->model?->make?->name, $apptTrim?->model?->name, $apptTrim?->name])->filter()->implode(' ')) ?: 'Chưa chọn xe' }}
