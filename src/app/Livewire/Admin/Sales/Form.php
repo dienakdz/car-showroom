@@ -33,11 +33,11 @@ class Form extends AdminPageComponent
             'buyer_phone' => '',
         ];
 
-        if ($car_unit_id !== null && $car_unit_id > 0) {
+        if ($car_unit_id > 0) {
             $this->syncCarUnitContext($car_unit_id);
         }
 
-        if ($lead_id !== null && $lead_id > 0) {
+        if ($lead_id > 0) {
             $this->syncLeadContext($lead_id);
         }
     }
@@ -47,7 +47,7 @@ class Form extends AdminPageComponent
         $id = ! empty($carUnitId) ? (int) $carUnitId : null;
         $this->form['car_unit_id'] = $id;
 
-        if ($id !== null && $id > 0) {
+        if ($id) {
             $this->syncCarUnitContext($id);
         }
     }
@@ -57,7 +57,7 @@ class Form extends AdminPageComponent
         $id = ! empty($leadId) ? (int) $leadId : null;
         $this->form['lead_id'] = $id;
 
-        if ($id !== null && $id > 0) {
+        if ($id) {
             $this->syncLeadContext($id);
         }
     }
@@ -67,7 +67,7 @@ class Form extends AdminPageComponent
         $id = ! empty($userId) ? (int) $userId : null;
         $this->form['buyer_user_id'] = $id;
 
-        if ($id !== null && $id > 0) {
+        if ($id) {
             $user = User::query()->find($id);
             if ($user !== null) {
                 $this->form['buyer_name'] = $user->name;
@@ -95,21 +95,24 @@ class Form extends AdminPageComponent
         $this->resetErrorBag();
         $this->form = $this->normalizeForm($this->form);
 
-        $validated = $this->validate(
-            $this->rules(),
-            attributes: $this->validationAttributes(),
-        );
+        try {
+            $validated = $this->validate(
+                $this->rules(),
+                attributes: $this->validationAttributes(),
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if (collect($e->validator->errors()->keys())->contains(fn ($key) => str_starts_with($key, 'form.buyer_'))) {
+                $this->activeTab = 'buyer';
+            }
 
-        if (empty($this->form['buyer_user_id']) && empty($this->form['buyer_email']) && empty($this->form['buyer_phone'])) {
-            $this->activeTab = 'buyer';
-            $this->addError('form.buyer_phone', 'Cần có email hoặc số điện thoại khi tạo khách hàng mới.');
-
-            return;
+            throw $e;
         }
 
         $user = $this->authorizeAdminAccess($this->requiredPermission());
 
         $service->create($validated['form'], $user);
+
+        $this->flashToast('success', 'Đã tạo hợp đồng bán xe và đóng inventory item thành công.');
 
         session()->flash('sale_feedback', [
             'type' => 'success',
@@ -123,8 +126,9 @@ class Form extends AdminPageComponent
     {
         return view('livewire.admin.sales.form', [
             'availableCarUnits' => $this->availableCarUnits(),
-            'buyers' => User::query()->orderBy('name')->limit(100)->get(),
+            'buyers' => User::query()->select(['id', 'name', 'phone', 'email'])->orderBy('name')->limit(100)->get(),
             'leads' => Lead::query()
+                ->select(['id', 'name', 'phone', 'user_id', 'car_unit_id'])
                 ->whereIn('status', ['new', 'contacted', 'qualified', 'negotiating'])
                 ->latest()
                 ->limit(100)
@@ -169,23 +173,12 @@ class Form extends AdminPageComponent
             return;
         }
 
-        if (empty($this->form['buyer_user_id']) && $lead->user_id !== null) {
-            $this->form['buyer_user_id'] = $lead->user_id;
-        }
+        $this->form['buyer_user_id'] = $this->form['buyer_user_id'] ?: $lead->user_id;
+        $this->form['buyer_name'] = $this->form['buyer_name'] ?: ($lead->name ?? '');
+        $this->form['buyer_phone'] = $this->form['buyer_phone'] ?: ($lead->phone ?? '');
+        $this->form['buyer_email'] = $this->form['buyer_email'] ?: ($lead->email ?? '');
 
-        if (empty($this->form['buyer_name']) && filled($lead->name)) {
-            $this->form['buyer_name'] = $lead->name;
-        }
-
-        if (empty($this->form['buyer_phone']) && filled($lead->phone)) {
-            $this->form['buyer_phone'] = $lead->phone;
-        }
-
-        if (empty($this->form['buyer_email']) && filled($lead->email)) {
-            $this->form['buyer_email'] = $lead->email;
-        }
-
-        if (empty($this->form['car_unit_id']) && $lead->car_unit_id !== null) {
+        if (empty($this->form['car_unit_id']) && $lead->car_unit_id) {
             $this->form['car_unit_id'] = $lead->car_unit_id;
             $this->syncCarUnitContext($lead->car_unit_id);
         }
@@ -234,7 +227,7 @@ class Form extends AdminPageComponent
         return [
             'car_unit_id' => ! empty($data['car_unit_id']) ? (int) $data['car_unit_id'] : null,
             'lead_id' => ! empty($data['lead_id']) ? (int) $data['lead_id'] : null,
-            'sold_price' => isset($data['sold_price']) && $data['sold_price'] !== '' ? (int) $data['sold_price'] : null,
+            'sold_price' => filled($data['sold_price'] ?? null) ? (int) $data['sold_price'] : null,
             'sold_at' => ! empty($data['sold_at']) ? trim((string) $data['sold_at']) : null,
             'buyer_user_id' => ! empty($data['buyer_user_id']) ? (int) $data['buyer_user_id'] : null,
             'buyer_name' => ! empty($data['buyer_name']) ? trim((string) $data['buyer_name']) : null,

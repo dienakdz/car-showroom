@@ -47,11 +47,21 @@ class Index extends AdminPageComponent
 
     public function render(): View
     {
+        /** @var object{total_count?: int|string|null, total_revenue?: int|string|null, monthly_count?: int|string|null}|null $metrics */
+        $metrics = Sale::query()
+            ->toBase()
+            ->selectRaw('
+                COUNT(*) as total_count,
+                COALESCE(SUM(sold_price), 0) as total_revenue,
+                COUNT(CASE WHEN sold_at BETWEEN ? AND ? THEN 1 END) as monthly_count
+            ', [now()->startOfMonth(), now()->endOfMonth()])
+            ->first();
+
         return view('livewire.admin.sales.index', [
             'sales' => $this->filteredQuery()->paginate(12, ['*'], 'salesPage'),
-            'totalRevenue' => (int) Sale::query()->sum('sold_price'),
-            'monthlyCount' => Sale::query()->whereBetween('sold_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
-            'totalCount' => Sale::query()->count(),
+            'totalRevenue' => (int) ($metrics->total_revenue ?? 0),
+            'monthlyCount' => (int) ($metrics->monthly_count ?? 0),
+            'totalCount' => (int) ($metrics->total_count ?? 0),
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([
             'adminPageTitle' => 'Quản lý Bán hàng & Hợp đồng',
             'adminPageDescription' => 'Theo dõi chi tiết hợp đồng bán xe, doanh thu và đối soát thanh toán.',
@@ -83,7 +93,7 @@ class Index extends AdminPageComponent
                         $inner->orWhere('id', (int) $cleanId);
                     }
 
-                    $inner->whereHas('buyer', function (Builder $b) use ($search): void {
+                    $inner->orWhereHas('buyer', function (Builder $b) use ($search): void {
                         $b->where('name', 'like', "%{$search}%")
                             ->orWhere('phone', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%");

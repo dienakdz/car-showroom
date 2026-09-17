@@ -110,7 +110,7 @@
                                     class="form-control"
                                     style="border-radius: 8px; height: 44px;"
                                 >
-                                @if (!empty($form['sold_price']))
+                                @if (filled($form['sold_price'] ?? null))
                                     <div class="text-muted" style="font-size: 12px; margin-top: 4px;">
                                         Tương đương: <strong>{{ number_format((float) $form['sold_price'], 0, ',', '.') }} VNĐ</strong>
                                     </div>
@@ -139,14 +139,33 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 16px; text-align: right;">
-                        <button
-                            type="button"
-                            class="c1-btn c1-btn-primary"
-                            wire:click="switchTab('buyer')"
-                        >
-                            Tiếp tục: Thông tin khách hàng <i class="fa fa-arrow-right ms-1"></i>
-                        </button>
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            @if (!empty($form['buyer_user_id']) || (!empty($form['buyer_name']) && (!empty($form['buyer_phone']) || !empty($form['buyer_email']))))
+                                <span class="text-success" style="font-size: 13px;">
+                                    <i class="fa fa-check-circle me-1"></i> Đã có thông tin khách hàng liên kết
+                                </span>
+                            @endif
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            @if (!empty($form['buyer_user_id']) || (!empty($form['buyer_name']) && (!empty($form['buyer_phone']) || !empty($form['buyer_email']))))
+                                <button
+                                    type="submit"
+                                    class="c1-btn c1-btn-primary"
+                                    wire:loading.attr="disabled"
+                                >
+                                    <span wire:loading.remove><i class="fa fa-check-circle me-1"></i> Chốt hợp đồng ngay</span>
+                                    <span wire:loading><i class="fa fa-spinner fa-spin me-1"></i> Đang xử lý...</span>
+                                </button>
+                            @endif
+                            <button
+                                type="button"
+                                class="c1-btn {{ (!empty($form['buyer_user_id']) || !empty($form['buyer_name'])) ? 'c1-btn-secondary' : 'c1-btn-primary' }}"
+                                wire:click="switchTab('buyer')"
+                            >
+                                Tiếp tục: Thông tin khách hàng <i class="fa fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -175,7 +194,7 @@
                         <div class="form-column col-lg-4 mb-3">
                             <div class="form_boxes">
                                 <label style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">
-                                    Họ và tên khách hàng @if(empty($form['buyer_user_id'])) <span class="text-danger">*</span> @endif
+                                    Họ và tên khách hàng @empty($form['buyer_user_id']) <span class="text-danger">*</span> @endempty
                                 </label>
                                 <input
                                     type="text"
@@ -193,7 +212,7 @@
                         <div class="form-column col-lg-4 mb-3">
                             <div class="form_boxes">
                                 <label style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">
-                                    Số điện thoại liên hệ @if(empty($form['buyer_user_id'])) <span class="text-danger">*</span> @endif
+                                    Số điện thoại liên hệ @empty($form['buyer_user_id']) <span class="text-danger">*</span> @endempty
                                 </label>
                                 <input
                                     type="text"
@@ -238,7 +257,7 @@
 
                         <button
                             type="submit"
-                            class="theme-btn btn-style-one"
+                            class="c1-btn c1-btn-primary"
                             wire:loading.attr="disabled"
                         >
                             <span wire:loading.remove><i class="fa fa-check-circle me-1"></i> Xác nhận & Chốt hợp đồng</span>

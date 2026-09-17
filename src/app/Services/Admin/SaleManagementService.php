@@ -22,7 +22,7 @@ class SaleManagementService
 
             if ($carUnit->sale !== null || $carUnit->status === 'sold') {
                 throw ValidationException::withMessages([
-                    'car_unit_id' => 'Xe nay da co sale va khong the chot them lan nua.',
+                    'car_unit_id' => 'Xe này đã có hợp đồng bán và không thể chốt thêm lần nữa.',
                 ]);
             }
 
@@ -64,25 +64,23 @@ class SaleManagementService
 
         $email = $validated['buyer_email'] ?? null;
         $phone = $validated['buyer_phone'] ?? null;
-        $name = trim((string) ($validated['buyer_name'] ?? 'Khach hang showroom'));
+        $name = filled($validated['buyer_name'] ?? null) ? trim((string) $validated['buyer_name']) : 'Khách hàng showroom';
 
-        $buyer = null;
-
-        if ($email !== null) {
-            $buyer = User::query()->where('email', $email)->first();
-        }
-
-        if ($buyer === null && $phone !== null) {
-            $buyer = User::query()->where('phone', $phone)->first();
-        }
+        $buyer = User::query()
+            ->when($email, fn ($q) => $q->where('email', $email))
+            ->when(! $email && $phone, fn ($q) => $q->where('phone', $phone))
+            ->first();
 
         if ($buyer !== null) {
             $buyer->fill(array_filter([
                 'name' => $buyer->name ?: $name,
                 'email' => $buyer->email ?: $email,
                 'phone' => $buyer->phone ?: $phone,
-            ], fn ($value) => $value !== null));
-            $buyer->save();
+            ]));
+
+            if ($buyer->isDirty()) {
+                $buyer->save();
+            }
 
             return $buyer;
         }

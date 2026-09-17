@@ -1,7 +1,8 @@
 <div>
     @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <span><i class="fa {{ ($feedback['type'] ?? 'success') === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle' }} me-2"></i>{{ $feedback['message'] }}</span>
+        @php($isError = ($feedback['type'] ?? 'success') === 'error')
+        <div class="c1-alert {{ $isError ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fa {{ $isError ? 'fa-exclamation-circle' : 'fa-check-circle' }} me-2"></i>{{ $feedback['message'] }}</span>
             <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
         </div>
     @endif
@@ -145,7 +146,7 @@
                                 <td>
                                     <div>
                                         <div class="c1-cell-primary">
-                                            {{ trim(collect([$trim?->model?->make?->name, $trim?->model?->name, $trim?->name])->filter()->implode(' ')) }}
+                                            {{ implode(' ', array_filter([$trim?->model?->make?->name, $trim?->model?->name, $trim?->name])) }}
                                         </div>
                                         <div class="c1-cell-sub">Mã kho: {{ $sale->carUnit?->stock_code ?? 'N/A' }}</div>
                                     </div>
@@ -162,7 +163,7 @@
                                     <span class="c1-pill c1-pill-green">Đã thanh toán đủ</span>
                                 </td>
                                 <td>
-                                    <span class="c1-cell-sub">{{ optional($sale->sold_at)->format('d/m/Y H:i') }}</span>
+                                    <span class="c1-cell-sub">{{ $sale->sold_at?->format('d/m/Y H:i') ?? '—' }}</span>
                                 </td>
                             </tr>
                         @empty

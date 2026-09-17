@@ -24,13 +24,14 @@ class Sale extends EloquentModel
     protected function casts(): array
     {
         return [
+            'sold_price' => 'integer',
             'sold_at' => 'datetime',
         ];
     }
 
     public function carUnit(): BelongsTo
     {
-        return $this->belongsTo(CarUnit::class, 'car_unit_id');
+        return $this->belongsTo(CarUnit::class, 'car_unit_id')->withTrashed();
     }
 
     public function buyer(): BelongsTo
