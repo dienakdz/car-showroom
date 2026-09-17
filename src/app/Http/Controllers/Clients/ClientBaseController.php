@@ -243,7 +243,7 @@ abstract class ClientBaseController extends Controller
         }
 
         if ($path === null || $path === '') {
-            return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/images/resource/shop3-1.jpg');
+            return $this->resolvedMediaPathCache[$cacheKey] = asset('seed-media/placeholder-car.jpg');
         }
 
         if (preg_match('/^https?:\\/\\//i', $path) === 1) {
@@ -264,7 +264,7 @@ abstract class ClientBaseController extends Controller
             return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/' . $cleanPath);
         }
 
-        return $this->resolvedMediaPathCache[$cacheKey] = asset('boxcar/images/resource/shop3-1.jpg');
+        return $this->resolvedMediaPathCache[$cacheKey] = asset('seed-media/placeholder-car.jpg');
     }
 
     protected function normalizeLeadSource(string $source): string
