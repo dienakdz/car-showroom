@@ -15,7 +15,7 @@ class Form extends AdminPageComponent
     /** @var array<string, mixed> */
     public array $form = [];
 
-    public string $activeTab = 'deal';
+    public string $buyerMode = 'existing';
 
     /** @var array{type?: string, message?: string} */
     public array $feedback = [];
@@ -39,6 +39,24 @@ class Form extends AdminPageComponent
 
         if ($lead_id > 0) {
             $this->syncLeadContext($lead_id);
+        }
+    }
+
+    public function setBuyerMode(string $mode): void
+    {
+        if (in_array($mode, ['existing', 'new'], true)) {
+            $this->buyerMode = $mode;
+            if ($mode === 'new') {
+                $this->form['buyer_user_id'] = null;
+            }
+        }
+    }
+
+    public function applyListedPrice(): void
+    {
+        $carUnit = $this->selectedCarUnit();
+        if ($carUnit !== null) {
+            $this->form['sold_price'] = (int) $carUnit->price;
         }
     }
 
@@ -68,6 +86,7 @@ class Form extends AdminPageComponent
         $this->form['buyer_user_id'] = $id;
 
         if ($id) {
+            $this->buyerMode = 'existing';
             $user = User::query()->find($id);
             if ($user !== null) {
                 $this->form['buyer_name'] = $user->name;
@@ -77,16 +96,41 @@ class Form extends AdminPageComponent
         }
     }
 
-    public function switchTab(string $tab): void
-    {
-        if (in_array($tab, ['deal', 'buyer'], true)) {
-            $this->activeTab = $tab;
-        }
-    }
-
     public function dismissFeedback(): void
     {
         $this->feedback = [];
+    }
+
+    public function selectedCarUnit(): ?CarUnit
+    {
+        $id = $this->form['car_unit_id'] ?? null;
+        if (! $id) {
+            return null;
+        }
+
+        return CarUnit::query()
+            ->with(['primaryMedia', 'trim.model.make', 'exteriorColor', 'transmission'])
+            ->find($id);
+    }
+
+    public function selectedLead(): ?Lead
+    {
+        $id = $this->form['lead_id'] ?? null;
+        if (! $id) {
+            return null;
+        }
+
+        return Lead::query()->find($id);
+    }
+
+    public function selectedBuyer(): ?User
+    {
+        $id = $this->form['buyer_user_id'] ?? null;
+        if (! $id) {
+            return null;
+        }
+
+        return User::query()->find($id);
     }
 
     public function save(SaleManagementService $service): void
@@ -95,18 +139,10 @@ class Form extends AdminPageComponent
         $this->resetErrorBag();
         $this->form = $this->normalizeForm($this->form);
 
-        try {
-            $validated = $this->validate(
-                $this->rules(),
-                attributes: $this->validationAttributes(),
-            );
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            if (collect($e->validator->errors()->keys())->contains(fn ($key) => str_starts_with($key, 'form.buyer_'))) {
-                $this->activeTab = 'buyer';
-            }
-
-            throw $e;
-        }
+        $validated = $this->validate(
+            $this->rules(),
+            attributes: $this->validationAttributes(),
+        );
 
         $user = $this->authorizeAdminAccess($this->requiredPermission());
 
@@ -126,6 +162,9 @@ class Form extends AdminPageComponent
     {
         return view('livewire.admin.sales.form', [
             'availableCarUnits' => $this->availableCarUnits(),
+            'selectedCarUnit' => $this->selectedCarUnit(),
+            'selectedBuyer' => $this->selectedBuyer(),
+            'selectedLead' => $this->selectedLead(),
             'buyers' => User::query()->select(['id', 'name', 'phone', 'email'])->orderBy('name')->limit(100)->get(),
             'leads' => Lead::query()
                 ->select(['id', 'name', 'phone', 'user_id', 'car_unit_id'])
@@ -150,7 +189,7 @@ class Form extends AdminPageComponent
     private function availableCarUnits(): Collection
     {
         return CarUnit::query()
-            ->with('trim.model.make')
+            ->with(['primaryMedia', 'trim.model.make', 'exteriorColor', 'transmission'])
             ->whereIn('status', ['available', 'on_hold'])
             ->whereDoesntHave('sale')
             ->orderBy('stock_code')
@@ -173,10 +212,22 @@ class Form extends AdminPageComponent
             return;
         }
 
-        $this->form['buyer_user_id'] = $this->form['buyer_user_id'] ?: $lead->user_id;
-        $this->form['buyer_name'] = $this->form['buyer_name'] ?: ($lead->name ?? '');
-        $this->form['buyer_phone'] = $this->form['buyer_phone'] ?: ($lead->phone ?? '');
-        $this->form['buyer_email'] = $this->form['buyer_email'] ?: ($lead->email ?? '');
+        if ($lead->user_id !== null) {
+            $this->buyerMode = 'existing';
+            $this->form['buyer_user_id'] = $lead->user_id;
+            $user = User::query()->find($lead->user_id);
+            if ($user !== null) {
+                $this->form['buyer_name'] = $user->name;
+                $this->form['buyer_email'] = $user->email;
+                $this->form['buyer_phone'] = $user->phone ?? '';
+            }
+        } else {
+            $this->buyerMode = 'new';
+            $this->form['buyer_user_id'] = null;
+            $this->form['buyer_name'] = $lead->name ?? '';
+            $this->form['buyer_phone'] = $lead->phone ?? '';
+            $this->form['buyer_email'] = $lead->email ?? '';
+        }
 
         if (empty($this->form['car_unit_id']) && $lead->car_unit_id) {
             $this->form['car_unit_id'] = $lead->car_unit_id;
@@ -224,12 +275,16 @@ class Form extends AdminPageComponent
      */
     private function normalizeForm(array $data): array
     {
+        $buyerUserId = $this->buyerMode === 'existing' && ! empty($data['buyer_user_id'])
+            ? (int) $data['buyer_user_id']
+            : null;
+
         return [
             'car_unit_id' => ! empty($data['car_unit_id']) ? (int) $data['car_unit_id'] : null,
             'lead_id' => ! empty($data['lead_id']) ? (int) $data['lead_id'] : null,
             'sold_price' => filled($data['sold_price'] ?? null) ? (int) $data['sold_price'] : null,
             'sold_at' => ! empty($data['sold_at']) ? trim((string) $data['sold_at']) : null,
-            'buyer_user_id' => ! empty($data['buyer_user_id']) ? (int) $data['buyer_user_id'] : null,
+            'buyer_user_id' => $buyerUserId,
             'buyer_name' => ! empty($data['buyer_name']) ? trim((string) $data['buyer_name']) : null,
             'buyer_email' => ! empty($data['buyer_email']) ? strtolower(trim((string) $data['buyer_email'])) : null,
             'buyer_phone' => ! empty($data['buyer_phone']) ? preg_replace('/\D+/', '', (string) $data['buyer_phone']) : null,
