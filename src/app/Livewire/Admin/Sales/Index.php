@@ -115,6 +115,7 @@ class Index extends AdminPageComponent
                         });
                 });
             })
-            ->orderByDesc('sold_at');
+            ->orderByDesc('sold_at')
+            ->orderByDesc('id');
     }
 }

@@ -155,7 +155,7 @@ class Form extends AdminPageComponent
             'message' => 'Đã tạo hợp đồng bán xe và đóng inventory item thành công.',
         ]);
 
-        $this->redirectRoute('admin.sales.index', navigate: true);
+        $this->redirectRoute('admin.sales.index');
     }
 
     public function render(): View
