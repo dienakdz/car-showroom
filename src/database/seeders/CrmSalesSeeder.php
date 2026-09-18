@@ -23,6 +23,7 @@ class CrmSalesSeeder extends Seeder
         $staff1 = $users['staff@showroom.test'] ?? null;
         $staff2 = $users['hoang.sales@showroom.test'] ?? $staff1;
         $staff3 = $users['linh.sales@showroom.test'] ?? $staff1;
+        $admin = $users['admin@showroom.test'] ?? $staff1;
 
         DB::table('appointments')->delete();
         DB::table('lead_notes')->delete();
@@ -834,39 +835,211 @@ class CrmSalesSeeder extends Seeder
         DB::table('appointments')->insert($appointments);
 
         // =========================================================================
-        // 4. SEED SALES (3 COMPLETED VEHICLE TRANSACTIONS)
+        // 4. SEED SALES (20 COMPLETED VEHICLE TRANSACTIONS ACROSS MONTHS)
         // =========================================================================
         $sales = [
+            // --- THÁNG HIỆN TẠI (7 hợp đồng gần nhất) ---
             [
-                'car_unit_id' => $units['USED-RANGER-001'] ?? 1,
-                'buyer_user_id' => $users['jane@example.com'] ?? $users['john@example.com'],
-                'created_by' => $staff1,
-                'sold_price' => 910000000,
-                'sold_at' => $now->copy()->subDays(5),
-                'created_at' => $now->copy()->subDays(5),
-                'updated_at' => $now->copy()->subDays(5),
-            ],
-            [
-                'car_unit_id' => $units['NEW-MACAN-001'] ?? 2,
-                'buyer_user_id' => $users['david.miller@example.com'] ?? $users['john@example.com'],
+                'car_unit_id' => $units['SOLD-C300-001'] ?? null,
+                'buyer_user_id' => $users['dat.do@gmail.com'] ?? $users['john@example.com'],
                 'created_by' => $staff2,
-                'sold_price' => 4850000000,
-                'sold_at' => $now->copy()->subDays(7),
-                'created_at' => $now->copy()->subDays(7),
-                'updated_at' => $now->copy()->subDays(7),
+                'sold_price' => 1980000000,
+                'sold_at' => $now->copy()->subHours(4),
+                'created_at' => $now->copy()->subHours(4),
+                'updated_at' => $now->copy()->subHours(4),
             ],
             [
-                'car_unit_id' => $units['NEW-VIOS-001'] ?? 3,
+                'car_unit_id' => $units['NEW-AUDIA6-001'] ?? null,
+                'buyer_user_id' => $users['dung.hoang@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff3,
+                'sold_price' => 2450000000,
+                'sold_at' => $now->copy()->subDays(2)->setHour(10)->setMinute(30),
+                'created_at' => $now->copy()->subDays(2)->setHour(10)->setMinute(30),
+                'updated_at' => $now->copy()->subDays(2)->setHour(10)->setMinute(30),
+            ],
+            [
+                'car_unit_id' => $units['NEW-VIOS-001'] ?? null,
                 'buyer_user_id' => $users['tuan.nguyen@gmail.com'] ?? $users['john@example.com'],
                 'created_by' => $staff3,
                 'sold_price' => 540000000,
-                'sold_at' => $now->copy()->subDays(3),
-                'created_at' => $now->copy()->subDays(3),
-                'updated_at' => $now->copy()->subDays(3),
+                'sold_at' => $now->copy()->subDays(3)->setHour(14)->setMinute(15),
+                'created_at' => $now->copy()->subDays(3)->setHour(14)->setMinute(15),
+                'updated_at' => $now->copy()->subDays(3)->setHour(14)->setMinute(15),
+            ],
+            [
+                'car_unit_id' => $units['CPO-PEUGEOT-001'] ?? null,
+                'buyer_user_id' => $users['yen.bui@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff3,
+                'sold_price' => 950000000,
+                'sold_at' => $now->copy()->subDays(4)->setHour(11)->setMinute(0),
+                'created_at' => $now->copy()->subDays(4)->setHour(11)->setMinute(0),
+                'updated_at' => $now->copy()->subDays(4)->setHour(11)->setMinute(0),
+            ],
+            [
+                'car_unit_id' => $units['USED-RANGER-001'] ?? null,
+                'buyer_user_id' => $users['jane@example.com'] ?? $users['john@example.com'],
+                'created_by' => $staff1,
+                'sold_price' => 910000000,
+                'sold_at' => $now->copy()->subDays(5)->setHour(16)->setMinute(45),
+                'created_at' => $now->copy()->subDays(5)->setHour(16)->setMinute(45),
+                'updated_at' => $now->copy()->subDays(5)->setHour(16)->setMinute(45),
+            ],
+            [
+                'car_unit_id' => $units['NEW-MACAN-001'] ?? null,
+                'buyer_user_id' => $users['david.miller@example.com'] ?? $users['john@example.com'],
+                'created_by' => $staff2,
+                'sold_price' => 3350000000,
+                'sold_at' => $now->copy()->subDays(7)->setHour(9)->setMinute(20),
+                'created_at' => $now->copy()->subDays(7)->setHour(9)->setMinute(20),
+                'updated_at' => $now->copy()->subDays(7)->setHour(9)->setMinute(20),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-CX5-001'] ?? null,
+                'buyer_user_id' => $users['mai.vu@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff1,
+                'sold_price' => 800000000,
+                'sold_at' => $now->copy()->subDays(10)->setHour(15)->setMinute(30),
+                'created_at' => $now->copy()->subDays(10)->setHour(15)->setMinute(30),
+                'updated_at' => $now->copy()->subDays(10)->setHour(15)->setMinute(30),
+            ],
+
+            // --- THÁNG TRƯỚC (7 hợp đồng) ---
+            [
+                'car_unit_id' => $units['CPO-SELTOS-001'] ?? null,
+                'buyer_user_id' => $users['huong.le@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff2,
+                'sold_price' => 735000000,
+                'sold_at' => $now->copy()->subDays(22)->setHour(10)->setMinute(10),
+                'created_at' => $now->copy()->subDays(22)->setHour(10)->setMinute(10),
+                'updated_at' => $now->copy()->subDays(22)->setHour(10)->setMinute(10),
+            ],
+            [
+                'car_unit_id' => $units['USED-MAZDA3-001'] ?? null,
+                'buyer_user_id' => $users['quang.tran@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff2,
+                'sold_price' => 650000000,
+                'sold_at' => $now->copy()->subDays(26)->setHour(16)->setMinute(0),
+                'created_at' => $now->copy()->subDays(26)->setHour(16)->setMinute(0),
+                'updated_at' => $now->copy()->subDays(26)->setHour(16)->setMinute(0),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-CAMRY-001'] ?? null,
+                'buyer_user_id' => $users['john@example.com'] ?? null,
+                'created_by' => $staff1,
+                'sold_price' => 1110000000,
+                'sold_at' => $now->copy()->subDays(32)->setHour(11)->setMinute(30),
+                'created_at' => $now->copy()->subDays(32)->setHour(11)->setMinute(30),
+                'updated_at' => $now->copy()->subDays(32)->setHour(11)->setMinute(30),
+            ],
+            [
+                'car_unit_id' => $units['USED-GLC300-001'] ?? null,
+                'buyer_user_id' => $users['dung.hoang@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $admin,
+                'sold_price' => 2420000000,
+                'sold_at' => $now->copy()->subDays(35)->setHour(14)->setMinute(0),
+                'created_at' => $now->copy()->subDays(35)->setHour(14)->setMinute(0),
+                'updated_at' => $now->copy()->subDays(35)->setHour(14)->setMinute(0),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-EVEREST-001'] ?? null,
+                'buyer_user_id' => $users['thao.pham@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff3,
+                'sold_price' => 1360000000,
+                'sold_at' => $now->copy()->subDays(40)->setHour(9)->setMinute(45),
+                'created_at' => $now->copy()->subDays(40)->setHour(9)->setMinute(45),
+                'updated_at' => $now->copy()->subDays(40)->setHour(9)->setMinute(45),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-CIVIC-001'] ?? null,
+                'buyer_user_id' => $users['tuan.nguyen@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff1,
+                'sold_price' => 750000000,
+                'sold_at' => $now->copy()->subDays(45)->setHour(15)->setMinute(15),
+                'created_at' => $now->copy()->subDays(45)->setHour(15)->setMinute(15),
+                'updated_at' => $now->copy()->subDays(45)->setHour(15)->setMinute(15),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-TERRITORY-001'] ?? null,
+                'buyer_user_id' => $users['dat.do@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff2,
+                'sold_price' => 800000000,
+                'sold_at' => $now->copy()->subDays(48)->setHour(13)->setMinute(20),
+                'created_at' => $now->copy()->subDays(48)->setHour(13)->setMinute(20),
+                'updated_at' => $now->copy()->subDays(48)->setHour(13)->setMinute(20),
+            ],
+
+            // --- CÁC THÁNG TRƯỚC (6 hợp đồng) ---
+            [
+                'car_unit_id' => $units['SOLD-VIOS-001'] ?? null,
+                'buyer_user_id' => $users['yen.bui@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff3,
+                'sold_price' => 475000000,
+                'sold_at' => $now->copy()->subDays(65)->setHour(10)->setMinute(0),
+                'created_at' => $now->copy()->subDays(65)->setHour(10)->setMinute(0),
+                'updated_at' => $now->copy()->subDays(65)->setHour(10)->setMinute(0),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-SANTAFE-001'] ?? null,
+                'buyer_user_id' => $users['jane@example.com'] ?? $users['john@example.com'],
+                'created_by' => $staff1,
+                'sold_price' => 1230000000,
+                'sold_at' => $now->copy()->subDays(72)->setHour(16)->setMinute(10),
+                'created_at' => $now->copy()->subDays(72)->setHour(16)->setMinute(10),
+                'updated_at' => $now->copy()->subDays(72)->setHour(16)->setMinute(10),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-CRV-001'] ?? null,
+                'buyer_user_id' => $users['huong.le@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff2,
+                'sold_price' => 960000000,
+                'sold_at' => $now->copy()->subDays(85)->setHour(14)->setMinute(30),
+                'created_at' => $now->copy()->subDays(85)->setHour(14)->setMinute(30),
+                'updated_at' => $now->copy()->subDays(85)->setHour(14)->setMinute(30),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-CARNIVAL-001'] ?? null,
+                'buyer_user_id' => $users['dung.hoang@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $admin,
+                'sold_price' => 1280000000,
+                'sold_at' => $now->copy()->subDays(95)->setHour(11)->setMinute(15),
+                'created_at' => $now->copy()->subDays(95)->setHour(11)->setMinute(15),
+                'updated_at' => $now->copy()->subDays(95)->setHour(11)->setMinute(15),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-BMW320-001'] ?? null,
+                'buyer_user_id' => $users['quang.tran@gmail.com'] ?? $users['john@example.com'],
+                'created_by' => $staff3,
+                'sold_price' => 1410000000,
+                'sold_at' => $now->copy()->subDays(110)->setHour(9)->setMinute(50),
+                'created_at' => $now->copy()->subDays(110)->setHour(9)->setMinute(50),
+                'updated_at' => $now->copy()->subDays(110)->setHour(9)->setMinute(50),
+            ],
+            [
+                'car_unit_id' => $units['SOLD-LEXUSRX-001'] ?? null,
+                'buyer_user_id' => $users['john@example.com'] ?? null,
+                'created_by' => $admin,
+                'sold_price' => 3150000000,
+                'sold_at' => $now->copy()->subDays(125)->setHour(15)->setMinute(0),
+                'created_at' => $now->copy()->subDays(125)->setHour(15)->setMinute(0),
+                'updated_at' => $now->copy()->subDays(125)->setHour(15)->setMinute(0),
             ],
         ];
 
-        DB::table('sales')->insert($sales);
+        // Lọc các bản ghi có car_unit_id và buyer_user_id hợp lệ
+        $validSales = array_filter($sales, fn ($s) => ! empty($s['car_unit_id']) && ! empty($s['buyer_user_id']));
+
+        DB::table('sales')->insert($validSales);
+
+        // Đồng bộ trạng thái xe sang 'sold' và gán ngày bán
+        foreach ($validSales as $sale) {
+            DB::table('car_units')
+                ->where('id', $sale['car_unit_id'])
+                ->update([
+                    'status' => 'sold',
+                    'sold_at' => $sale['sold_at'],
+                    'hold_until' => null,
+                ]);
+        }
 
         // =========================================================================
         // 5. SEED TRIM REVIEWS (4 REVIEWS)
