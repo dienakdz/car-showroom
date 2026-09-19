@@ -144,6 +144,7 @@ class UsersAndRbacSeeder extends Seeder
             ['name' => 'sales.manage', 'description' => 'Tạo và cập nhật giao dịch bán xe'],
             ['name' => 'reviews.approve', 'description' => 'Kiểm duyệt đánh giá theo trim'],
             ['name' => 'settings.manage', 'description' => 'Quản lý cài đặt showroom'],
+            ['name' => 'users.manage', 'description' => 'Quản lý tài khoản nhân viên và phân quyền'],
         ];
 
         foreach ($permissions as $permission) {

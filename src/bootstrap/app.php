@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdminAccess;
+use App\Http\Middleware\EnsureCustomerAccess;
 use App\Http\Middleware\EnsurePurchasedTrimForReview;
 use App\Http\Middleware\EnsureUserHasPermission;
 use Illuminate\Foundation\Application;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.access' => EnsureAdminAccess::class,
             'admin.permission' => EnsureUserHasPermission::class,
+            'customer.access' => EnsureCustomerAccess::class,
             'purchased.trim.review' => EnsurePurchasedTrimForReview::class,
         ]);
     })

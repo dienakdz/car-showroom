@@ -18,6 +18,7 @@ class AdminContextResolver
         'sales.manage',
         'reviews.approve',
         'settings.manage',
+        'users.manage',
     ];
 
     private bool $resolved = false;

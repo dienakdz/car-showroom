@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dang-nhap', [AuthController::class, 'show'])->name('login');
 Route::get('/tai-khoan', [AuthController::class, 'account'])
-    ->middleware('auth')
+    ->middleware(['auth', 'customer.access'])
     ->name('account.show');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->name('login.attempt');
 Route::post('/dang-ky', [AuthController::class, 'register'])->name('register');
 Route::post('/tai-khoan/cap-nhat', [AuthController::class, 'updateProfile'])
-    ->middleware('auth')
+    ->middleware(['auth', 'customer.access'])
     ->name('account.profile.update');
 Route::post('/tai-khoan/doi-mat-khau', [AuthController::class, 'updatePassword'])
-    ->middleware('auth')
+    ->middleware(['auth', 'customer.access'])
     ->name('account.password.update');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
 Route::post('/appointments', [AppointmentController::class, 'store'])

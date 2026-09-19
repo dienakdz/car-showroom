@@ -7,27 +7,29 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureAdminAccess
+class EnsureCustomerAccess
 {
     public function handle(Request $request, Closure $next): Response|RedirectResponse
     {
         $user = $request->user();
 
         if ($user === null) {
-            return redirect()->route('admin.login');
+            return redirect()->route('login');
         }
 
-        if (! $user->hasAnyRole(['admin', 'staff'])) {
-            abort(403, 'Ban khong co quyen truy cap khu vuc quan tri.');
+        // Staff and Admin are not allowed in the customer account area
+        if ($user->hasAnyRole(['admin', 'staff'])) {
+            return redirect()->route('admin.dashboard');
         }
 
+        // Deactivated accounts are logged out and blocked
         if (! $user->is_active) {
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('admin.login')
-                ->withErrors(['identifier' => 'Tai khoan cua ban da bi tam khoa. Vui long lien he quan tri vien.']);
+            return redirect()->route('login')
+                ->withErrors(['identifier' => 'Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ bộ phận hỗ trợ.']);
         }
 
         return $next($request);

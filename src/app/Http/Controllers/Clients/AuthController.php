@@ -23,18 +23,27 @@ class AuthController extends ClientBaseController
     public function show(): View|RedirectResponse
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user instanceof User && $user->hasAnyRole(['admin', 'staff'])) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route('account.show');
         }
 
         return $this->viewWithSharedData('client.auth');
     }
 
-    public function account(): View
+    public function account(): View|RedirectResponse
     {
         $user = Auth::user();
 
         if ($user === null) {
             return $this->viewWithSharedData('client.auth');
+        }
+
+        if ($user->hasAnyRole(['admin', 'staff'])) {
+            return redirect()->route('admin.dashboard');
         }
 
         $reviewModels = TrimReview::query()
@@ -89,6 +98,11 @@ class AuthController extends ClientBaseController
     public function login(Request $request): RedirectResponse
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user instanceof User && $user->hasAnyRole(['admin', 'staff'])) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route('account.show');
         }
 
@@ -104,6 +118,38 @@ class AuthController extends ClientBaseController
         if (! Auth::attempt([$field => $value, 'password' => $credentials['password']], $request->boolean('remember'))) {
             return back()
                 ->withErrors(['identifier' => 'Thong tin dang nhap khong dung.'])
+                ->withInput($request->except('password'));
+        }
+
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            Auth::logout();
+
+            return back()
+                ->withErrors(['identifier' => 'Khong the xac thuc nguoi dung.'])
+                ->withInput($request->except('password'));
+        }
+
+        // Admin and Staff accounts cannot log in through client portal
+        if ($user->hasAnyRole(['admin', 'staff'])) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors(['identifier' => 'Tai khoan nhan vien / quan tri khong duoc dang nhap tai cong khach hang. Vui long dang nhap tai Trang quan tri.'])
+                ->withInput($request->except('password'));
+        }
+
+        // Inactive accounts cannot log in
+        if (! $user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors(['identifier' => 'Tai khoan cua ban da bi tam khoa. Vui long lien he bo phan ho tro.'])
                 ->withInput($request->except('password'));
         }
 

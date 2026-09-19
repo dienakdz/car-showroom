@@ -51,6 +51,16 @@ class AuthController extends AdminBaseController
                 ->withInput($request->except('password'));
         }
 
+        if (! (bool) $request->user()->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors(['identifier' => 'Tai khoan quan tri cua ban da bi tam khoa. Vui long lien he quan tri vien.'])
+                ->withInput($request->except('password'));
+        }
+
         $this->pushSuccessToast('Dang nhap khu vuc quan tri thanh cong.');
 
         return redirect()->intended(route('admin.dashboard'));

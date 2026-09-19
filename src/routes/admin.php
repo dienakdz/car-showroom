@@ -17,6 +17,7 @@ use App\Livewire\Admin\Reviews\Index as ReviewsIndex;
 use App\Livewire\Admin\Sales\Form as SaleForm;
 use App\Livewire\Admin\Sales\Index as SalesIndex;
 use App\Livewire\Admin\Settings\Index as SettingsIndex;
+use App\Livewire\Admin\Staff\Index as StaffIndex;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -134,6 +135,13 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->middleware('admin.permission:settings.manage')
             ->group(function (): void {
                 Route::get('/', SettingsIndex::class)->name('index');
+            });
+
+        Route::prefix('staff')
+            ->name('staff.')
+            ->middleware('admin.permission:users.manage')
+            ->group(function (): void {
+                Route::get('/', StaffIndex::class)->name('index');
             });
 
         Route::get('/notifications', NotificationsIndex::class)->name('notifications.index');

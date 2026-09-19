@@ -72,6 +72,14 @@
             'patterns' => ['admin.notifications.*'],
         ],
         [
+            'label' => 'Nhân viên & Phân quyền',
+            'sublabel' => 'Staff & RBAC',
+            'icon' => 'fa fa-id-badge',
+            'route' => 'admin.staff.index',
+            'patterns' => ['admin.staff.*'],
+            'permission' => 'users.manage',
+        ],
+        [
             'label' => 'Cài đặt',
             'sublabel' => 'Settings',
             'icon' => 'fa fa-cog',

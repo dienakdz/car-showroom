@@ -1,7 +1,9 @@
 @php($headerClasses = $headerClasses ?? 'boxcar-header header-style-v1 style-two inner-header')
 @php($showSearch = $showSearch ?? false)
-@php($accountLabel = auth()->check() ? 'Tai khoan' : 'Dang nhap')
-@php($accountUrl = auth()->check() ? route('account.show') : route('login'))
+@php($currentUser = auth()->user())
+@php($isStaffOrAdmin = $currentUser !== null && $currentUser->hasAnyRole(['admin', 'staff']))
+@php($accountLabel = $isStaffOrAdmin ? 'Khu vuc quan tri' : (auth()->check() ? 'Tai khoan' : 'Dang nhap'))
+@php($accountUrl = $isStaffOrAdmin ? route('admin.dashboard') : (auth()->check() ? route('account.show') : route('login')))
 @php($inventoryMenuActive = request()->routeIs('inventory.*'))
 
 @once

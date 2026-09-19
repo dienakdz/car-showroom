@@ -146,6 +146,21 @@ class User extends Authenticatable
         return $this->roleNames()->intersect($roleNames)->isNotEmpty();
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->hasRole('staff');
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->hasRole('customer');
+    }
+
     public function hasPermission(string $permissionName): bool
     {
         return $this->permissionNames()->contains($permissionName);
