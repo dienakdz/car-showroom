@@ -66,7 +66,20 @@
             <div class="c1-auth-logo">
                 <i class="fa fa-car" style="color: var(--c1-primary);"></i> BOXCARS
             </div>
-            <span class="c1-auth-portal-tag">Admin Portal</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button
+                    type="button"
+                    class="c1-theme-toggle"
+                    id="adminThemeToggle"
+                    title="Chuyển chế độ sáng/tối"
+                    aria-label="Chuyển chế độ sáng/tối"
+                    style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--c1-border-card); background: var(--c1-bg-page); color: var(--c1-text-heading); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"
+                >
+                    <i class="fa fa-moon c1-icon-moon"></i>
+                    <i class="fa fa-sun c1-icon-sun"></i>
+                </button>
+                <span class="c1-auth-portal-tag">Admin Portal</span>
+            </div>
         </div>
 
         <h2 class="c1-auth-title">Đăng nhập quản trị</h2>

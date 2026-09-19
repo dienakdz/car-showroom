@@ -2798,22 +2798,24 @@ body.c1-body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8fafc;
+    background: var(--c1-bg-page);
     padding: 32px 16px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    transition: background-color 0.2s ease;
 }
 
 .c1-auth-container {
     width: 100%;
     max-width: 1020px;
     min-height: 560px;
-    background: #ffffff;
+    background: var(--c1-bg-card);
     border: 1px solid var(--c1-border-card);
     border-radius: 16px;
     box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.08), 0 10px 15px -5px rgba(15, 23, 42, 0.04);
     display: grid;
     grid-template-columns: 1.15fr 1fr;
     overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Left Hero Showcase */
@@ -2922,7 +2924,8 @@ body.c1-body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: #ffffff;
+    background: var(--c1-bg-card);
+    transition: background-color 0.2s ease;
 }
 
 .c1-auth-brand {
@@ -2935,7 +2938,7 @@ body.c1-body {
 .c1-auth-logo {
     font-size: 22px;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--c1-text-heading);
     letter-spacing: -0.5px;
     margin: 0;
     display: flex;
@@ -2946,9 +2949,9 @@ body.c1-body {
 .c1-auth-portal-tag {
     font-size: 11.5px;
     font-weight: 600;
-    background: #eff6ff;
+    background: var(--c1-bg-hover);
     color: var(--c1-primary);
-    border: 1px solid #bfdbfe;
+    border: 1px solid var(--c1-border-card);
     padding: 3px 8px;
     border-radius: 6px;
 }
@@ -2987,7 +2990,7 @@ body.c1-body {
 .c1-auth-input-icon {
     position: absolute;
     left: 12px;
-    color: #94a3b8;
+    color: var(--c1-text-muted);
     pointer-events: none;
 }
 
@@ -2997,16 +3000,16 @@ body.c1-body {
     padding: 0 12px 0 38px;
     border: 1px solid var(--c1-border-card);
     border-radius: var(--c1-radius-btn);
-    background: #ffffff;
+    background: var(--c1-bg-input);
     font-size: 14px;
     color: var(--c1-text-heading);
     outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
 
 .c1-auth-input:focus {
     border-color: var(--c1-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .c1-auth-password-toggle {
@@ -3014,7 +3017,7 @@ body.c1-body {
     right: 12px;
     background: none;
     border: none;
-    color: #94a3b8;
+    color: var(--c1-text-muted);
     cursor: pointer;
     padding: 0;
     display: flex;
@@ -3073,7 +3076,7 @@ body.c1-body {
 .c1-auth-demo-card {
     margin-top: 22px;
     padding: 12px 14px;
-    background: #f8fafc;
+    background: var(--c1-bg-page);
     border: 1px solid var(--c1-border-card);
     border-radius: var(--c1-radius-card);
     text-align: center;
@@ -3097,21 +3100,101 @@ body.c1-body {
 }
 
 .c1-auth-demo-pill {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
+    background: var(--c1-bg-card);
+    border: 1px solid var(--c1-border-card);
     color: var(--c1-text-heading);
     cursor: pointer;
     transition: all 0.15s;
 }
 
 .c1-auth-demo-pill:hover {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: var(--c1-bg-hover);
+    border-color: var(--c1-primary);
     color: var(--c1-primary);
+}
+
+/* Dark Mode explicit overrides for Auth */
+[data-theme="dark"] .c1-auth-shell,
+[data-theme="dark"] .admin-auth-shell {
+    background: #070d1e;
+}
+
+[data-theme="dark"] .c1-auth-container {
+    background: #0f1935;
+    border-color: #1e2e56;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .c1-auth-hero {
+    background: linear-gradient(145deg, #070d1e 0%, #0e172e 100%);
+    border-right: 1px solid #1e2e56;
+}
+
+[data-theme="dark"] .c1-auth-form-side {
+    background: #0f1935;
+}
+
+[data-theme="dark"] .c1-auth-logo {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .c1-auth-portal-tag {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .c1-auth-title {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .c1-auth-subtitle {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .c1-auth-label {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .c1-auth-input {
+    background: #0a1124;
+    border-color: #1e2e56;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .c1-auth-input:focus {
+    background: #0a1124;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .c1-auth-checkbox-wrap {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .c1-auth-demo-card {
+    background: #0a1124;
+    border-color: #1e2e56;
+}
+
+[data-theme="dark"] .c1-auth-demo-title {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .c1-auth-demo-pill {
+    background: #152243;
+    border-color: #233566;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .c1-auth-demo-pill:hover {
+    background: #1d2e5b;
+    border-color: #3b82f6;
+    color: #60a5fa;
 }
 
 /* Responsive */
