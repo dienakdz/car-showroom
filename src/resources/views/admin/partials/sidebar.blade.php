@@ -57,6 +57,14 @@
             'permission' => 'appointments.manage',
         ],
         [
+            'label' => 'Đánh giá xe',
+            'sublabel' => 'Reviews',
+            'icon' => 'fa fa-star',
+            'route' => 'admin.reviews.index',
+            'patterns' => ['admin.reviews.*'],
+            'permission' => 'reviews.approve',
+        ],
+        [
             'label' => 'Thông báo',
             'sublabel' => 'Notifications',
             'icon' => 'fa fa-bell',
