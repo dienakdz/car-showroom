@@ -33,7 +33,15 @@
             'permission' => 'sales.manage',
         ],
         [
-            'label' => 'Khách hàng (CRM)',
+            'label' => 'Khách hàng',
+            'sublabel' => 'Customers',
+            'icon' => 'fa fa-user-circle',
+            'route' => 'admin.customers.index',
+            'patterns' => ['admin.customers.*'],
+            'permission' => 'customers.manage',
+        ],
+        [
+            'label' => 'Khách tiềm năng (Leads)',
             'sublabel' => 'CRM Leads',
             'icon' => 'fa fa-users',
             'route' => 'admin.leads.index',

@@ -138,6 +138,7 @@ class UsersAndRbacSeeder extends Seeder
         $permissions = [
             ['name' => 'catalog.manage', 'description' => 'Quản lý hãng xe, dòng xe, phiên bản'],
             ['name' => 'inventory.manage', 'description' => 'Quản lý xe trong kho và media'],
+            ['name' => 'customers.manage', 'description' => 'Quản lý tài khoản khách hàng và hồ sơ 360'],
             ['name' => 'leads.manage', 'description' => 'Quản lý lead và ghi chú lead'],
             ['name' => 'appointments.manage', 'description' => 'Quản lý lịch hẹn'],
             ['name' => 'sales.manage', 'description' => 'Tạo và cập nhật giao dịch bán xe'],
@@ -219,6 +220,7 @@ class UsersAndRbacSeeder extends Seeder
         $staffPermissionNames = [
             'catalog.manage',
             'inventory.manage',
+            'customers.manage',
             'leads.manage',
             'appointments.manage',
             'sales.manage',

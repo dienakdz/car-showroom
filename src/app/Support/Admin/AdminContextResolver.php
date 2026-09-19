@@ -12,6 +12,7 @@ class AdminContextResolver
     public const PERMISSION_KEYS = [
         'catalog.manage',
         'inventory.manage',
+        'customers.manage',
         'leads.manage',
         'appointments.manage',
         'sales.manage',

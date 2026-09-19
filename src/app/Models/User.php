@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'is_active',
     ];
 
     /**
@@ -49,6 +51,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -57,6 +60,9 @@ class User extends Authenticatable
         return $this->hasMany(UserRole::class, 'user_id');
     }
 
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
@@ -112,6 +118,24 @@ class User extends Authenticatable
         return $this->hasMany(Sale::class, 'created_by');
     }
 
+    /**
+     * @param  Builder<User>  $query
+     * @return Builder<User>
+     */
+    public function scopeCustomer(Builder $query): Builder
+    {
+        return $query->whereHas('roles', fn (Builder $q): Builder => $q->where('name', 'customer'));
+    }
+
+    /**
+     * @param  Builder<User>  $query
+     * @return Builder<User>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
     public function hasRole(string $roleName): bool
     {
         return $this->roleNames()->contains($roleName);
@@ -148,8 +172,11 @@ class User extends Authenticatable
 
         $this->loadMissing('roles.permissions');
 
-        return $this->resolvedPermissionNames = $this->roles
-            ->flatMap(fn (Role $role): Collection => $role->permissions)
+        /** @var Collection<int, Role> $roles */
+        $roles = $this->roles;
+
+        return $this->resolvedPermissionNames = $roles
+            ->flatMap(static fn (Role $role) => $role->permissions)
             ->pluck('name')
             ->unique()
             ->values();

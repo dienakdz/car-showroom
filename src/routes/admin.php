@@ -5,6 +5,8 @@ use App\Livewire\Admin\Appointments\Form as AppointmentForm;
 use App\Livewire\Admin\Appointments\Index as AppointmentsIndex;
 use App\Livewire\Admin\Catalog\Index as CatalogIndex;
 use App\Livewire\Admin\Catalog\Trims\Form as TrimForm;
+use App\Livewire\Admin\Customers\Index as CustomersIndex;
+use App\Livewire\Admin\Customers\Show as CustomerShow;
 use App\Livewire\Admin\Dashboard\Index as DashboardIndex;
 use App\Livewire\Admin\Inventory\Form as InventoryForm;
 use App\Livewire\Admin\Inventory\Index as InventoryIndex;
@@ -84,6 +86,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
                 Route::get('/', InventoryIndex::class)->name('index');
                 Route::get('/create', InventoryForm::class)->name('create');
                 Route::get('/{carUnit}/edit', InventoryForm::class)->name('edit');
+            });
+
+        Route::prefix('customers')
+            ->name('customers.')
+            ->middleware('admin.permission:customers.manage')
+            ->group(function (): void {
+                Route::get('/', CustomersIndex::class)->name('index');
+                Route::get('/{customer}', CustomerShow::class)->name('show');
             });
 
         Route::prefix('leads')
