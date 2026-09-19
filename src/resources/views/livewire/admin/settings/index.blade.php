@@ -219,7 +219,7 @@
                         </span>
                     </div>
 
-                    <div class="mb-4" style="font-size: 13px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed #e2e8f0; padding-top: 14px;">
+                    <div class="mb-4" style="font-size: 13px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--c1-border-card); padding-top: 14px;">
                         <div>
                             <div class="text-muted small" style="margin-bottom: 2px;">Tên đại lý:</div>
                             <div class="fw-bold" style="color: var(--c1-text-heading); font-size: 14px;">
@@ -237,7 +237,7 @@
                         @if (!empty($form['sales_hotline']) || !empty($form['showroom_phone']))
                             <div>
                                 <div class="text-muted small" style="margin-bottom: 2px;">Hotline tư vấn:</div>
-                                <div class="fw-semibold text-dark">
+                                <div class="fw-semibold" style="color: var(--c1-text-heading);">
                                     <i class="fa fa-phone text-primary me-1" aria-hidden="true"></i>
                                     {{ $form['sales_hotline'] ?: $form['showroom_phone'] }}
                                 </div>

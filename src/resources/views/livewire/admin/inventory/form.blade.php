@@ -392,12 +392,12 @@
                 $coverItem = collect($media)->firstWhere('is_cover', true) ?? ($media[0] ?? null);
             @endphp
             <div class="c1-panel mb-4" style="padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <div class="c1-form-card-title mb-3" style="font-size: 15px; font-weight: 700; color: #0f172a;">
+                <div class="c1-form-card-title mb-3" style="font-size: 15px; font-weight: 700; color: var(--c1-text-heading);">
                     <span><i class="fa fa-eye text-primary me-2"></i>Xem trước hiển thị (Live Preview)</span>
                 </div>
 
-                <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: #f8fafc;">
-                    <div style="height: 150px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <div style="border: 1px solid var(--c1-border-card); border-radius: 10px; overflow: hidden; background: var(--c1-bg-page);">
+                    <div style="height: 150px; background: var(--c1-border-card); display: flex; align-items: center; justify-content: center; overflow: hidden;">
                         @if ($coverItem)
                             @php
                                 $coverUploadKey = (string) ($coverItem['upload_key'] ?? '');
@@ -415,13 +415,13 @@
                         <span class="badge bg-primary" style="font-size: 11px; margin-bottom: 6px;">
                             {{ ($form['condition'] ?? 'new') === 'new' ? 'Xe mới 100%' : (($form['condition'] ?? '') === 'cpo' ? 'Chính hãng CPO' : 'Đã qua sử dụng') }}
                         </span>
-                        <div style="font-weight: 700; font-size: 15px; color: #1e293b; margin-bottom: 4px;">
+                        <div style="font-weight: 700; font-size: 15px; color: var(--c1-text-heading); margin-bottom: 4px;">
                             {{ $selectedTrim ? $selectedTrim->model?->make?->name . ' ' . $selectedTrim->model?->name . ' ' . $selectedTrim->name : 'Chưa chọn phiên bản xe' }}
                         </div>
                         <div style="font-size: 12px; color: var(--c1-text-muted); margin-bottom: 8px;">
                             Năm {{ $form['year'] ?? date('Y') }} • Mã: {{ $form['stock_code'] ?? 'STK-...' }}
                         </div>
-                        <div style="font-size: 16px; font-weight: 800; color: #0f172a;">
+                        <div style="font-size: 16px; font-weight: 800; color: var(--c1-primary);">
                             {{ !empty($form['price']) ? number_format((float) $form['price'], 0, ',', '.') . ' ' . ($form['currency'] ?? 'VND') : 'Liên hệ' }}
                         </div>
                     </div>

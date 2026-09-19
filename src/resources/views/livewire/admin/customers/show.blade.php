@@ -97,7 +97,7 @@
 
             <div class="col-lg-6">
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center;">
-                    <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+                    <div style="padding: 12px; background: var(--c1-bg-card-subtle, #f8fafc); border: 1px solid var(--c1-border-card); border-radius: 8px;">
                         <div style="font-size: 24px; font-weight: 700; color: #2563eb;">
                             {{ $customer->purchases->count() }}
                         </div>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
 
-                    <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+                    <div style="padding: 12px; background: var(--c1-bg-card-subtle, #f8fafc); border: 1px solid var(--c1-border-card); border-radius: 8px;">
                         <div style="font-size: 24px; font-weight: 700; color: #4f46e5;">
                             {{ $customer->appointments->count() }}
                         </div>
@@ -115,7 +115,7 @@
                         </div>
                     </div>
 
-                    <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+                    <div style="padding: 12px; background: var(--c1-bg-card-subtle, #f8fafc); border: 1px solid var(--c1-border-card); border-radius: 8px;">
                         <div style="font-size: 24px; font-weight: 700; color: #0891b2;">
                             {{ $customer->leads->count() }}
                         </div>
@@ -191,7 +191,7 @@
                                 : null;
                         @endphp
                         <div
-                            style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 18px; border: 1px solid var(--c1-border-card); border-radius: 8px; background: #fafafa;"
+                            style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 18px; border: 1px solid var(--c1-border-card); border-radius: 8px; background: var(--c1-bg-card-subtle, #fafafa);"
                         >
                             @if ($thumbUrl)
                                 <img
@@ -201,7 +201,7 @@
                                 >
                             @else
                                 <div
-                                    style="width: 140px; height: 95px; border-radius: 6px; border: 1px solid var(--c1-border-card); background: #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; flex-shrink: 0;"
+                                    style="width: 140px; height: 95px; border-radius: 6px; border: 1px solid var(--c1-border-card); background: var(--c1-bg-hover, #f1f5f9); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; flex-shrink: 0;"
                                 >
                                     <i class="fa fa-car" style="font-size: 26px; margin-bottom: 4px; color: #cbd5e1;"></i>
                                     <span style="font-size: 11px; color: #94a3b8;">Chưa có ảnh</span>

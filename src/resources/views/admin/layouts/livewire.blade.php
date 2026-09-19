@@ -16,6 +16,30 @@
     @livewireStyles
     <link rel="shortcut icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
     <link rel="icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
+    <script>
+        (function () {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const paramTheme = urlParams.get('theme');
+                let t = paramTheme;
+                if (!t) {
+                    const match = document.cookie.match(/(^|;)\s*admin_theme=([^;]+)/);
+                    t = match ? match[2] : null;
+                }
+                if (!t) {
+                    t = localStorage.getItem('admin_theme');
+                }
+                if (t !== 'dark' && t !== 'light') {
+                    t = 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+                if (paramTheme) {
+                    localStorage.setItem('admin_theme', paramTheme);
+                    document.cookie = "admin_theme=" + paramTheme + ";path=/;max-age=31536000;SameSite=Lax";
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body class="c1-body">
 <div class="c1-layout">
@@ -47,6 +71,7 @@
 @livewireScripts
 @flasher_render
 @include('admin.partials.toast')
+@include('admin.partials.theme-script')
 @stack('scripts')
 </body>
 </html>
