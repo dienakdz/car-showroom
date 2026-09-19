@@ -94,7 +94,7 @@
 
     {{-- Filter Toolbar --}}
     <div class="c1-panel c1-table-panel" style="padding: 16px 20px; margin-bottom: 20px;">
-        <div class="c1-filter-toolbar">
+        <div class="c1-filter-toolbar" style="margin-bottom: 0;">
             <div class="c1-filter-search">
                 <i class="fa fa-search" aria-hidden="true"></i>
                 <input type="search" wire:model.live.debounce.300ms="search" placeholder="Tìm theo tên khách hàng, SĐT, email...">
@@ -132,82 +132,108 @@
 
     {{-- VIEW MODE: KANBAN --}}
     @if ($viewMode === 'kanban')
-        <div class="c1-kanban-board">
-            @foreach ($kanbanColumns as $columnKey => $column)
-                <div class="c1-kanban-col" wire:key="lead-column-{{ $columnKey }}">
-                    <div class="c1-kanban-col-head">
-                        <span style="display: flex; align-items: center; gap: 8px;">
-                            <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: {{ $column['color'] }}; color: #fff; font-size: 11px; font-weight: 700;">
-                                {{ $column['order'] }}
-                            </span>
-                            <span>{{ $column['title'] }}</span>
-                        </span>
-                        <span class="c1-pill {{ $column['pill'] }}">{{ count($kanbanLeads[$columnKey]) }}</span>
-                    </div>
-
-                    @forelse ($kanbanLeads[$columnKey] as $lead)
-                        @php
-                            $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
-                            $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
-                            $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
-                            $rawPath = $contextMedia?->path_or_url;
-                            $thumbUrl = filled($rawPath)
-                                ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
-                                : null;
-                        @endphp
-                        <a href="{{ route('admin.leads.show', $lead) }}" wire:navigate class="c1-kanban-card" wire:key="kanban-lead-{{ $lead->id }}">
-                            {{-- Header thẻ: Avatar & Tên --}}
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="c1-user-avatar" style="width: 32px; height: 32px; font-size: 12px; background: {{ $column['color'] }}; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">
-                                    {{ strtoupper(substr($lead->name, 0, 1)) }}
-                                </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="c1-cell-primary" style="font-size: 13.5px; font-weight: 600;">{{ $lead->name }}</div>
-                                    <div class="c1-cell-sub" style="font-size: 12px; color: var(--c1-text-muted);">{{ $lead->phone }}</div>
-                                </div>
-                                @if ($lead->carUnit)
-                                    <span class="c1-vehicle-tag" style="font-size: 10px; background: #e0f2fe; color: #0369a1;">#{{ $lead->carUnit->stock_code }}</span>
-                                @endif
+        <div class="c1-kanban-wrapper">
+            <div class="c1-kanban-board">
+                @foreach ($kanbanColumns as $columnKey => $column)
+                    <div class="c1-kanban-col" wire:key="lead-column-{{ $columnKey }}">
+                        <div class="c1-kanban-col-head">
+                            <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: {{ $column['color'] }}; color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;">
+                                    {{ $column['order'] }}
+                                </span>
+                                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;">{{ $column['title'] }}</span>
                             </div>
-
-                            {{-- Context xe quan tâm --}}
-                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 6px;">
-                                @if ($thumbUrl)
-                                    <img src="{{ $thumbUrl }}" alt="Thumb" style="width: 38px; height: 26px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
-                                @else
-                                    <span style="width: 38px; height: 26px; border-radius: 4px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; flex-shrink: 0;">
-                                        <i class="fa fa-car"></i>
-                                    </span>
-                                @endif
-                                <div style="font-size: 12px; color: var(--c1-text-heading); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    {{ $contextName ?: $column['fallback'] }}
-                                </div>
-                            </div>
-
-                            {{-- Footer thẻ: Phân công & Ghi chú --}}
-                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--c1-text-muted); padding-top: 6px; border-top: 1px dashed #e2e8f0;">
-                                <div style="display: flex; align-items: center; gap: 4px;">
-                                    <i class="fa fa-user-circle" style="color: #94a3b8;"></i>
-                                    <span>{{ $lead->assignedTo?->name ?? 'Chưa gán NV' }}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    @if ($lead->notes_count > 0)
-                                        <span title="{{ $lead->notes_count }} ghi chú"><i class="fa fa-comment-o"></i> {{ $lead->notes_count }}</span>
-                                    @endif
-                                    @if ($lead->appointments_count > 0)
-                                        <span title="{{ $lead->appointments_count }} lịch hẹn" style="color: #d97706;"><i class="fa fa-calendar-check-o"></i> {{ $lead->appointments_count }}</span>
-                                    @endif
-                                    <span>{{ $lead->created_at?->diffForHumans(null, true) ?? 'Mới' }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="c1-empty-cell" style="padding: 32px 12px !important; color: #94a3b8; text-align: center; font-size: 12.5px;">
-                            Chưa có lead trong giai đoạn này.
+                            <span class="c1-pill {{ $column['pill'] }}" style="flex-shrink: 0; font-weight: 700;">{{ count($kanbanLeads[$columnKey]) }}</span>
                         </div>
-                    @endforelse
-                </div>
-            @endforeach
+
+                        <div class="c1-kanban-cards-list">
+                            @forelse ($kanbanLeads[$columnKey] as $lead)
+                                @php
+                                    $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
+                                    $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
+                                    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
+                                    $rawPath = $contextMedia?->path_or_url;
+                                    $thumbUrl = filled($rawPath)
+                                        ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
+                                        : null;
+                                    $leadCarPrice = $lead->carUnit?->price ?? $contextTrim?->msrp;
+                                @endphp
+                                <a href="{{ route('admin.leads.show', $lead) }}" wire:navigate class="c1-kanban-card" wire:key="kanban-lead-{{ $lead->id }}">
+                                    {{-- Header thẻ: Avatar, Tên & Nguồn --}}
+                                    <div class="c1-kanban-card-head">
+                                        <div class="c1-kanban-avatar" style="background: {{ $column['color'] }};">
+                                            {{ strtoupper(substr($lead->name, 0, 1)) }}
+                                        </div>
+                                        <div class="c1-kanban-card-user">
+                                            <div class="c1-kanban-card-name" title="{{ $lead->name }}">{{ $lead->name }}</div>
+                                            <div class="c1-kanban-card-phone">{{ $lead->phone }}</div>
+                                        </div>
+                                        @if ($lead->source)
+                                            <span class="c1-kanban-source-badge" title="Nguồn: {{ $sourceOptions[$lead->source] ?? ucfirst($lead->source) }}">
+                                                {{ $sourceOptions[$lead->source] ?? ucfirst($lead->source) }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Context xe quan tâm --}}
+                                    <div class="c1-kanban-car-box">
+                                        @if ($thumbUrl)
+                                            <img src="{{ $thumbUrl }}" alt="Thumb" class="c1-kanban-car-thumb">
+                                        @else
+                                            <span class="c1-kanban-car-thumb-placeholder">
+                                                <i class="fa fa-car" aria-hidden="true"></i>
+                                            </span>
+                                        @endif
+                                        <div class="c1-kanban-car-info">
+                                            <div class="c1-kanban-car-title" title="{{ $contextName ?: $column['fallback'] }}">
+                                                {{ $contextName ?: $column['fallback'] }}
+                                            </div>
+                                            <div class="c1-kanban-car-meta">
+                                                @if ($lead->carUnit)
+                                                    <span class="c1-kanban-stock-code">#{{ $lead->carUnit->stock_code }}</span>
+                                                    @if ($lead->carUnit->price > 0)
+                                                        <span class="c1-kanban-car-price">{{ number_format((float) $lead->carUnit->price, 0, ',', '.') }} đ</span>
+                                                    @endif
+                                                @elseif ($contextTrim && $contextTrim->msrp > 0)
+                                                    <span class="c1-kanban-car-price" style="color: #64748b; font-weight: 500;">Từ {{ number_format((float) $contextTrim->msrp, 0, ',', '.') }} đ</span>
+                                                @else
+                                                    <span style="font-size: 11px; color: #94a3b8;">{{ $column['context'] }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Footer thẻ: Phân công & Tác vụ --}}
+                                    <div class="c1-kanban-card-foot">
+                                        <div class="c1-kanban-staff" title="Phụ trách: {{ $lead->assignedTo?->name ?? 'Chưa gán NV' }}">
+                                            <i class="fa fa-user-circle-o" aria-hidden="true" style="color: #94a3b8;"></i>
+                                            <span>{{ $lead->assignedTo?->name ?? 'Chưa gán NV' }}</span>
+                                        </div>
+                                        <div class="c1-kanban-activity">
+                                            @if ($lead->notes_count > 0)
+                                                <span class="c1-kanban-stat" title="{{ $lead->notes_count }} ghi chú">
+                                                    <i class="fa fa-commenting-o" aria-hidden="true"></i> {{ $lead->notes_count }}
+                                                </span>
+                                            @endif
+                                            @if ($lead->appointments_count > 0)
+                                                <span class="c1-kanban-stat c1-kanban-stat-alert" title="{{ $lead->appointments_count }} lịch hẹn lái thử">
+                                                    <i class="fa fa-calendar-check-o" aria-hidden="true"></i> {{ $lead->appointments_count }}
+                                                </span>
+                                            @endif
+                                            <span class="c1-kanban-time">{{ $lead->created_at?->diffForHumans(null, true) ?? 'Mới' }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="c1-kanban-empty">
+                                    <i class="fa fa-inbox" aria-hidden="true"></i>
+                                    <span>Chưa có khách hàng trong giai đoạn này</span>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     @else
         {{-- VIEW MODE: TABLE --}}
