@@ -57,6 +57,13 @@
             'permission' => 'appointments.manage',
         ],
         [
+            'label' => 'Thông báo',
+            'sublabel' => 'Notifications',
+            'icon' => 'fa fa-bell',
+            'route' => 'admin.notifications.index',
+            'patterns' => ['admin.notifications.*'],
+        ],
+        [
             'label' => 'Cài đặt',
             'sublabel' => 'Settings',
             'icon' => 'fa fa-cog',

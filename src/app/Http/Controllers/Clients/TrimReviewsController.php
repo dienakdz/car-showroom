@@ -42,6 +42,19 @@ class TrimReviewsController extends ClientBaseController
             'comment' => trim($data['comment']),
             'status' => 'pending',
         ]);
+
+        try {
+            app(\App\Services\Admin\NotificationService::class)->notifyAdmins(
+                'review',
+                'Đánh giá xe mới cần duyệt',
+                "Khách hàng {$user->name} đã gửi đánh giá {$data['rating']} sao cho phiên bản {$trim->name}.",
+                route('admin.reviews.index'),
+                'fa fa-star',
+                ['trim_id' => $trim->id, 'rating' => (int) $data['rating']]
+            );
+        } catch (\Throwable) {
+        }
+
         $this->pushSuccessToast('Danh gia cua ban da duoc gui va dang cho duyet.');
 
         return redirect()

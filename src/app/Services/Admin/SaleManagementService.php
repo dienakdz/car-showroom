@@ -48,6 +48,21 @@ class SaleManagementService
                     ->update(['status' => 'closed']);
             }
 
+            try {
+                $buyerName = $buyer->name ?? 'Khách hàng';
+                $saleCode = '#HD-' . str_pad((string) $sale->id, 4, '0', STR_PAD_LEFT);
+                $amountFormatted = number_format((float) ($sale->sold_price ?? 0), 0, ',', '.') . ' VND';
+                app(\App\Services\Admin\NotificationService::class)->notifyAdmins(
+                    'sale',
+                    'Hợp đồng mua bán đã hoàn tất',
+                    "Hợp đồng {$saleCode} của {$buyerName} giá trị {$amountFormatted}.",
+                    route('admin.sales.index'),
+                    'fa fa-handshake',
+                    ['sale_id' => $sale->id, 'contract_code' => $saleCode]
+                );
+            } catch (\Throwable) {
+            }
+
             return $sale->fresh([
                 'buyer',
                 'carUnit.trim.model.make',

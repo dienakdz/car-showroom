@@ -83,6 +83,22 @@ class AppointmentManagementService
             $appointment->fill($payload);
             $appointment->save();
 
+            if ($isNew) {
+                try {
+                    $customerName = $lead !== null ? (string) $lead->name : 'Khách hàng';
+                    $timeStr = optional($appointment->scheduled_at)->format('H:i d/m/Y') ?? '';
+                    app(\App\Services\Admin\NotificationService::class)->notifyAdmins(
+                        'appointment',
+                        'Lịch hẹn lái thử / xem xe mới',
+                        "Lịch hẹn của {$customerName} lúc {$timeStr}.",
+                        route('admin.appointments.index'),
+                        'fa fa-calendar-check',
+                        ['appointment_id' => $appointment->id]
+                    );
+                } catch (\Throwable) {
+                }
+            }
+
             if ($lead !== null) {
                 $currentStatus = (string) $appointment->status;
                 $statusMap = self::STATUS_LABELS;

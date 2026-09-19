@@ -12,6 +12,7 @@ use App\Livewire\Admin\Inventory\Form as InventoryForm;
 use App\Livewire\Admin\Inventory\Index as InventoryIndex;
 use App\Livewire\Admin\Leads\Index as LeadsIndex;
 use App\Livewire\Admin\Leads\Show as LeadShow;
+use App\Livewire\Admin\Notifications\Index as NotificationsIndex;
 use App\Livewire\Admin\Reviews\Index as ReviewsIndex;
 use App\Livewire\Admin\Sales\Form as SaleForm;
 use App\Livewire\Admin\Sales\Index as SalesIndex;
@@ -134,5 +135,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->group(function (): void {
                 Route::get('/', SettingsIndex::class)->name('index');
             });
+
+        Route::get('/notifications', NotificationsIndex::class)->name('notifications.index');
     });
 });

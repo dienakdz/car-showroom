@@ -43,10 +43,7 @@
             <span>Xem website</span>
         </a>
 
-        <div class="c1-notif-wrap" title="Thông báo hệ thống">
-            <i class="fa fa-bell c1-notif-icon" aria-hidden="true"></i>
-            <span class="c1-notif-badge"></span>
-        </div>
+        <livewire:admin.notifications.dropdown />
 
         <div class="c1-user-wrap">
             <div class="c1-user-avatar">

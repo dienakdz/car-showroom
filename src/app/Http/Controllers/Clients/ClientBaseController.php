@@ -292,7 +292,7 @@ abstract class ClientBaseController extends Controller
 
     protected function createLead(array $payload): Lead
     {
-        return Lead::query()->create([
+        $lead = Lead::query()->create([
             'user_id' => auth()->id(),
             'car_unit_id' => $payload['car_unit_id'] ?? null,
             'trim_id' => $payload['trim_id'] ?? null,
@@ -307,6 +307,20 @@ abstract class ClientBaseController extends Controller
             'utm_medium' => $payload['utm_medium'] ?? null,
             'utm_campaign' => $payload['utm_campaign'] ?? null,
         ]);
+
+        try {
+            app(\App\Services\Admin\NotificationService::class)->notifyAdmins(
+                'lead',
+                'Khách tiềm năng mới từ Website',
+                "Khách hàng {$lead->name} ({$lead->phone}) vừa gửi thông tin liên hệ.",
+                route('admin.leads.show', $lead->id),
+                'fa fa-user-plus',
+                ['lead_id' => $lead->id]
+            );
+        } catch (\Throwable) {
+        }
+
+        return $lead;
     }
 
     protected function leadSourceTitle(string $source): string
