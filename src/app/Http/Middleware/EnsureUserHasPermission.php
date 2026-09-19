@@ -13,11 +13,11 @@ class EnsureUserHasPermission
         $user = $request->user();
 
         if ($user === null) {
-            abort(403, 'Ban can dang nhap de truy cap chuc nang nay.');
+            abort(403, 'Bạn cần đăng nhập để truy cập chức năng này.');
         }
 
         if (! $user->hasPermission($permission)) {
-            abort(403, 'Ban khong du quyen thuc hien thao tac nay.');
+            abort(403, 'Bạn không đủ quyền thực hiện thao tác này.');
         }
 
         return $next($request);

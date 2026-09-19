@@ -80,7 +80,7 @@ class Index extends AdminPageComponent
 
         $service->publish($carUnit);
 
-        $this->toast('success', "Đã publish xe [{$carUnit->stock_code}] lên sàn inventory.");
+        $this->toast('success', "Đã niêm yết xe [{$carUnit->stock_code}] lên sàn xe.");
     }
 
     public function archive(int $carUnitId, InventoryWorkflowService $service): void
@@ -89,7 +89,7 @@ class Index extends AdminPageComponent
 
         $service->archive($carUnit);
 
-        $this->toast('success', "Đã lưu trữ (archive) xe [{$carUnit->stock_code}].");
+        $this->toast('success', "Đã chuyển xe [{$carUnit->stock_code}] vào kho lưu trữ.");
     }
 
     public function delete(int $carUnitId, InventoryWorkflowService $service): void

@@ -22,4 +22,16 @@ class AdminLoginRequest extends FormRequest
             'remember' => ['nullable', 'boolean'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'identifier.required' => 'Vui lòng nhập tên đăng nhập, email hoặc số điện thoại.',
+            'identifier.max' => 'Thông tin đăng nhập không được vượt quá 255 ký tự.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+        ];
+    }
 }

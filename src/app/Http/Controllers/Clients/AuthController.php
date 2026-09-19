@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Clients;
 
 use App\Models\Appointment;
+use App\Models\CarUnit;
+use App\Models\CarUnitMedia;
 use App\Models\Lead;
 use App\Models\Role;
 use App\Models\Sale;
+use App\Models\Trim;
 use App\Models\TrimReview;
 use App\Models\User;
 use App\Models\UserRole;
@@ -127,7 +130,7 @@ class AuthController extends ClientBaseController
             Auth::logout();
 
             return back()
-                ->withErrors(['identifier' => 'Khong the xac thuc nguoi dung.'])
+                ->withErrors(['identifier' => 'Không thể xác thực người dùng.'])
                 ->withInput($request->except('password'));
         }
 
@@ -138,7 +141,7 @@ class AuthController extends ClientBaseController
             $request->session()->regenerateToken();
 
             return back()
-                ->withErrors(['identifier' => 'Tai khoan nhan vien / quan tri khong duoc dang nhap tai cong khach hang. Vui long dang nhap tai Trang quan tri.'])
+                ->withErrors(['identifier' => 'Tài khoản nhân viên / quản trị không được đăng nhập tại cổng khách hàng. Vui lòng đăng nhập tại Trang quản trị.'])
                 ->withInput($request->except('password'));
         }
 
@@ -149,12 +152,12 @@ class AuthController extends ClientBaseController
             $request->session()->regenerateToken();
 
             return back()
-                ->withErrors(['identifier' => 'Tai khoan cua ban da bi tam khoa. Vui long lien he bo phan ho tro.'])
+                ->withErrors(['identifier' => 'Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ bộ phận hỗ trợ.'])
                 ->withInput($request->except('password'));
         }
 
         $request->session()->regenerate();
-        $this->pushSuccessToast('Dang nhap thanh cong.');
+        $this->pushSuccessToast('Đăng nhập thành công.');
 
         return redirect()->intended(route('home'));
     }
@@ -178,12 +181,12 @@ class AuthController extends ClientBaseController
             'accept_privacy' => ['accepted'],
             'form_mode' => ['nullable', 'string'],
         ], [
-            'accept_privacy.accepted' => 'Ban can dong y voi chinh sach bao mat de tao tai khoan.',
+            'accept_privacy.accepted' => 'Bạn cần đồng ý với chính sách bảo mật để tạo tài khoản.',
         ]);
 
         $validator->after(function ($validator) use ($request): void {
             if ($this->normalizeEmail($request->input('email')) === null && $this->normalizePhone($request->input('phone')) === null) {
-                $validator->errors()->add('email', 'Vui long nhap email hoac so dien thoai.');
+                $validator->errors()->add('email', 'Vui lòng nhập email hoặc số điện thoại.');
             }
         });
 
@@ -200,7 +203,7 @@ class AuthController extends ClientBaseController
 
         Auth::login($user);
         $request->session()->regenerate();
-        $this->pushSuccessToast('Tao tai khoan thanh cong.');
+        $this->pushSuccessToast('Tạo tài khoản thành công.');
 
         return redirect()->route('home');
     }
@@ -211,7 +214,7 @@ class AuthController extends ClientBaseController
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            $this->pushSuccessToast('Da dang xuat.');
+            $this->pushSuccessToast('Đã đăng xuất.');
         }
 
         return redirect()->route('home');
@@ -249,7 +252,7 @@ class AuthController extends ClientBaseController
 
         $validator->after(function ($validator) use ($request): void {
             if ($this->normalizeEmail($request->input('email')) === null && $this->normalizePhone($request->input('phone')) === null) {
-                $validator->errors()->add('email', 'Vui long nhap email hoac so dien thoai.');
+                $validator->errors()->add('email', 'Vui lòng nhập email hoặc số điện thoại.');
             }
         });
 
@@ -262,7 +265,7 @@ class AuthController extends ClientBaseController
         ]);
         $user->save();
 
-        $this->pushSuccessToast('Cap nhat thong tin ca nhan thanh cong.');
+        $this->pushSuccessToast('Cập nhật thông tin cá nhân thành công.');
 
         return redirect()->route('account.show', ['tab' => 'account-profile']);
     }
@@ -283,20 +286,20 @@ class AuthController extends ClientBaseController
 
         if (! Hash::check($validated['current_password'], $user->password)) {
             return back()
-                ->withErrors(['current_password' => 'Mat khau hien tai khong dung.'])
+                ->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng.'])
                 ->withInput(['form_mode' => 'account_password']);
         }
 
         if (Hash::check($validated['new_password'], $user->password)) {
             return back()
-                ->withErrors(['new_password' => 'Mat khau moi phai khac mat khau hien tai.'])
+                ->withErrors(['new_password' => 'Mật khẩu mới phải khác mật khẩu hiện tại.'])
                 ->withInput(['form_mode' => 'account_password']);
         }
 
         $user->password = $validated['new_password'];
         $user->save();
 
-        $this->pushSuccessToast('Doi mat khau thanh cong.');
+        $this->pushSuccessToast('Đổi mật khẩu thành công.');
 
         return redirect()->route('account.show', ['tab' => 'account-profile']);
     }
@@ -387,11 +390,14 @@ class AuthController extends ClientBaseController
             ->limit($limit)
             ->get()
             ->map(function (Lead $lead): object {
-                $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
+                /** @var CarUnit|null $carUnit */
+                $carUnit = $lead->carUnit;
+                /** @var Trim|null $contextTrim */
+                $contextTrim = $carUnit !== null ? $carUnit->trim : $lead->trim;
 
                 return (object) [
                     'id' => $lead->id,
-                    'created_at_label' => optional($lead->created_at)->format('d/m/Y H:i') ?? 'Dang cap nhat',
+                    'created_at_label' => optional($lead->created_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
                     'source_label' => $this->leadSourceLabel((string) $lead->source),
                     'status_label' => $this->leadStatusLabel((string) $lead->status),
                     'status_tone' => $this->leadStatusTone((string) $lead->status),
@@ -418,11 +424,14 @@ class AuthController extends ClientBaseController
 
     protected function mapAccountAppointment(Appointment $appointment): object
     {
-        $contextTrim = $appointment->carUnit?->trim ?? $appointment->trim;
+        /** @var CarUnit|null $carUnit */
+        $carUnit = $appointment->carUnit;
+        /** @var Trim|null $contextTrim */
+        $contextTrim = $carUnit !== null ? $carUnit->trim : $appointment->trim;
 
         return (object) [
             'id' => $appointment->id,
-            'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Dang cap nhat',
+            'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
             'status_label' => $this->appointmentStatusLabel((string) $appointment->status),
             'status_tone' => $this->appointmentStatusTone((string) $appointment->status),
             'context_label' => $this->formatCarContextLabel($appointment->carUnit, $contextTrim),
@@ -446,21 +455,25 @@ class AuthController extends ClientBaseController
             ->limit($limit)
             ->get()
             ->map(function (Sale $sale) use ($reviewModelsByTrim): object {
-                $trim = $sale->carUnit?->trim;
+                /** @var CarUnit|null $carUnit */
+                $carUnit = $sale->carUnit;
+                /** @var Trim|null $trim */
+                $trim = $carUnit !== null ? $carUnit->trim : null;
                 $review = $trim ? $reviewModelsByTrim->get($trim->id) : null;
-                $coverMediaPath = $sale->carUnit?->media->first()?->path_or_url;
+                $coverMedia = $carUnit !== null ? $carUnit->media->first() : null;
+                $coverMediaPath = $coverMedia instanceof CarUnitMedia ? (string) $coverMedia->path_or_url : null;
 
                 return (object) [
                     'id' => $sale->id,
                     'image_url' => $this->resolveMediaPath($coverMediaPath),
                     'car_label' => $this->formatCarContextLabel($sale->carUnit, $trim),
                     'trim_label' => $this->formatTrimLabel($trim),
-                    'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Dang cap nhat',
+                    'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Đang cập nhật',
                     'sold_price_label' => $sale->sold_price !== null
-                        ? number_format((float) $sale->sold_price, 0, ',', '.') . ' VND'
-                        : 'Theo hop dong',
+                        ? number_format((float) $sale->sold_price, 0, ',', '.') . ' VNĐ'
+                        : 'Theo hợp đồng',
                     'trim_url' => $trim?->slug ? route('trim.show', ['trimSlug' => $trim->slug]) : route('inventory.index'),
-                    'review_status_label' => $review ? $this->reviewStatusLabel((string) $review->status) : 'Chua danh gia',
+                    'review_status_label' => $review ? $this->reviewStatusLabel((string) $review->status) : 'Chưa đánh giá',
                     'review_status_tone' => $review ? $this->reviewStatusTone((string) $review->status) : 'warning',
                     'can_review' => $trim !== null && $review === null,
                 ];
@@ -476,15 +489,18 @@ class AuthController extends ClientBaseController
             ->limit($limit)
             ->get()
             ->map(function (TrimReview $review): object {
+                /** @var Trim|null $trim */
+                $trim = $review->trim;
+
                 return (object) [
                     'id' => $review->id,
-                    'trim_label' => $this->formatTrimLabel($review->trim),
-                    'trim_url' => $review->trim?->slug ? route('trim.show', ['trimSlug' => $review->trim->slug]) : route('inventory.index'),
+                    'trim_label' => $this->formatTrimLabel($trim),
+                    'trim_url' => $trim !== null && filled($trim->slug) ? route('trim.show', ['trimSlug' => $trim->slug]) : route('inventory.index'),
                     'rating' => (int) $review->rating,
                     'comment' => trim((string) $review->comment),
                     'status_label' => $this->reviewStatusLabel((string) $review->status),
                     'status_tone' => $this->reviewStatusTone((string) $review->status),
-                    'created_at_label' => optional($review->created_at)->format('d/m/Y') ?? 'Dang cap nhat',
+                    'created_at_label' => optional($review->created_at)->format('d/m/Y') ?? 'Đang cập nhật',
                 ];
             });
     }
@@ -507,7 +523,7 @@ class AuthController extends ClientBaseController
 
     protected function formatCarContextLabel(mixed $carUnit, mixed $trim = null): string
     {
-        $resolvedTrim = $carUnit?->trim ?? $trim;
+        $resolvedTrim = ($carUnit instanceof CarUnit ? $carUnit->trim : null) ?? ($trim instanceof Trim ? $trim : null);
         $trimLabel = $this->formatTrimLabel($resolvedTrim);
 
         if ($carUnit !== null && filled($carUnit->stock_code)) {
@@ -520,7 +536,7 @@ class AuthController extends ClientBaseController
     protected function formatTrimLabel(mixed $trim): string
     {
         if ($trim === null) {
-            return 'Dang cap nhat phien ban';
+            return 'Đang cập nhật phiên bản';
         }
 
         $makeName = $trim->model?->make?->name;
@@ -533,23 +549,23 @@ class AuthController extends ClientBaseController
     protected function leadSourceLabel(string $source): string
     {
         return match ($source) {
-            'unit_detail' => 'Tu trang chi tiet xe',
-            'trim_page' => 'Tu trang phien ban',
-            'finance' => 'Tu van tai chinh',
-            'trade_in' => 'Thu cu doi moi',
-            default => 'Lien he chung',
+            'unit_detail' => 'Từ trang chi tiết xe',
+            'trim_page' => 'Từ trang phiên bản',
+            'finance' => 'Tư vấn tài chính',
+            'trade_in' => 'Thu cũ đổi mới',
+            default => 'Liên hệ chung',
         };
     }
 
     protected function leadStatusLabel(string $status): string
     {
         return match ($status) {
-            'contacted' => 'Da lien he',
-            'qualified' => 'Da xac thuc nhu cau',
-            'booked' => 'Da dat lich',
-            'closed' => 'Da chot',
-            'lost' => 'Khong chot',
-            default => 'Moi tao',
+            'contacted' => 'Đã liên hệ',
+            'qualified' => 'Đã xác thực nhu cầu',
+            'booked' => 'Đã đặt lịch',
+            'closed' => 'Đã chốt',
+            'lost' => 'Không chốt',
+            default => 'Mới tạo',
         };
     }
 
@@ -567,10 +583,10 @@ class AuthController extends ClientBaseController
     protected function appointmentStatusLabel(string $status): string
     {
         return match ($status) {
-            'confirmed' => 'Da xac nhan',
-            'done' => 'Da hoan tat',
-            'cancelled' => 'Da huy',
-            default => 'Cho xac nhan',
+            'confirmed' => 'Đã xác nhận',
+            'done' => 'Đã hoàn tất',
+            'cancelled' => 'Đã hủy',
+            default => 'Chờ xác nhận',
         };
     }
 
@@ -587,9 +603,9 @@ class AuthController extends ClientBaseController
     protected function reviewStatusLabel(string $status): string
     {
         return match ($status) {
-            'approved' => 'Da duyet',
-            'hidden' => 'Da an',
-            default => 'Cho duyet',
+            'approved' => 'Đã duyệt',
+            'hidden' => 'Đã ẩn',
+            default => 'Chờ duyệt',
         };
     }
 

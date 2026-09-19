@@ -48,13 +48,20 @@ class AdminContextResolver
             $brandName = $showroom?->name ?: 'Car Showroom';
         }
 
+        $primaryRole = (string) ($roleNames->first() ?? 'admin');
+        $adminRoleLabel = match (strtolower($primaryRole)) {
+            'admin' => 'Quản trị viên',
+            'staff' => 'Nhân viên',
+            default => Str::headline($primaryRole),
+        };
+
         $this->context = [
             'adminCurrentUser' => $user,
             'adminShowroom' => $showroom,
             'adminSettings' => $settings,
             'adminBrandName' => $brandName,
             'adminDefaultCurrency' => data_get($settings, 'site.default_currency.value', 'VND'),
-            'adminRoleLabel' => Str::headline((string) ($roleNames->first() ?? 'Admin')),
+            'adminRoleLabel' => $adminRoleLabel,
             'adminPermissionMap' => collect(self::PERMISSION_KEYS)
                 ->mapWithKeys(fn (string $permission): array => [$permission => $permissionNames->contains($permission)])
                 ->all(),

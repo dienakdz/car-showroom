@@ -18,7 +18,7 @@ class EnsureAdminAccess
         }
 
         if (! $user->hasAnyRole(['admin', 'staff'])) {
-            abort(403, 'Ban khong co quyen truy cap khu vuc quan tri.');
+            abort(403, 'Bạn không có quyền truy cập khu vực quản trị.');
         }
 
         if (! $user->is_active) {
@@ -27,7 +27,7 @@ class EnsureAdminAccess
             $request->session()->regenerateToken();
 
             return redirect()->route('admin.login')
-                ->withErrors(['identifier' => 'Tai khoan cua ban da bi tam khoa. Vui long lien he quan tri vien.']);
+                ->withErrors(['identifier' => 'Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ quản trị viên.']);
         }
 
         return $next($request);

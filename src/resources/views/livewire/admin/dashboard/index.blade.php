@@ -44,7 +44,7 @@
                     @endif
                     @if ($urgentAlerts['pending_reviews'] > 0)
                         <a href="{{ route('admin.reviews.index') }}" wire:navigate.hover class="c1-badge" style="background: #f1f5f9; color: #475569; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
-                            <i class="fa fa-star-half-o"></i> {{ $urgentAlerts['pending_reviews'] }} review chờ duyệt
+                            <i class="fa fa-star-half-o"></i> {{ $urgentAlerts['pending_reviews'] }} đánh giá chờ duyệt
                         </a>
                     @endif
                 </div>

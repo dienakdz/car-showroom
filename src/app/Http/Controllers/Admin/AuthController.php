@@ -19,12 +19,12 @@ class AuthController extends AdminBaseController
         }
 
         if ($user !== null) {
-            abort(403, 'Tai khoan hien tai khong co quyen truy cap khu vuc quan tri.');
+            abort(403, 'Tài khoản hiện tại không có quyền truy cập khu vực quản trị.');
         }
 
         return $this->adminView('admin.auth.login', [
-            'adminPageTitle' => 'Dang nhap quan tri',
-            'adminPageDescription' => 'Truy cap dashboard de quan ly inventory, CRM va van hanh showroom.',
+            'adminPageTitle' => 'Đăng nhập quản trị',
+            'adminPageDescription' => 'Truy cập bảng điều khiển để quản lý kho xe, CRM và vận hành showroom.',
             'withoutAdminChrome' => true,
         ]);
     }
@@ -35,7 +35,7 @@ class AuthController extends AdminBaseController
 
         if (! Auth::attempt([$field => $value, 'password' => $request->string('password')->value()], $request->boolean('remember'))) {
             return back()
-                ->withErrors(['identifier' => 'Thong tin dang nhap khong hop le.'])
+                ->withErrors(['identifier' => 'Thông tin đăng nhập không hợp lệ.'])
                 ->withInput($request->except('password'));
         }
 
@@ -47,7 +47,7 @@ class AuthController extends AdminBaseController
             $request->session()->regenerateToken();
 
             return back()
-                ->withErrors(['identifier' => 'Tai khoan nay khong duoc cap quyen quan tri.'])
+                ->withErrors(['identifier' => 'Tài khoản này không được cấp quyền quản trị.'])
                 ->withInput($request->except('password'));
         }
 
@@ -57,11 +57,11 @@ class AuthController extends AdminBaseController
             $request->session()->regenerateToken();
 
             return back()
-                ->withErrors(['identifier' => 'Tai khoan quan tri cua ban da bi tam khoa. Vui long lien he quan tri vien.'])
+                ->withErrors(['identifier' => 'Tài khoản quản trị của bạn đã bị tạm khóa. Vui lòng liên hệ quản trị viên.'])
                 ->withInput($request->except('password'));
         }
 
-        $this->pushSuccessToast('Dang nhap khu vuc quan tri thanh cong.');
+        $this->pushSuccessToast('Đăng nhập khu vực quản trị thành công.');
 
         return redirect()->intended(route('admin.dashboard'));
     }
@@ -72,7 +72,7 @@ class AuthController extends AdminBaseController
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            $this->pushSuccessToast('Da dang xuat khoi dashboard.');
+            $this->pushSuccessToast('Đã đăng xuất khỏi hệ thống quản trị.');
         }
 
         return redirect()->route('admin.login');

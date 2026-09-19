@@ -27,12 +27,12 @@ class LeadController extends ClientBaseController
             && ($validated['car_unit_id'] ?? null) === null
             && ($validated['trim_id'] ?? null) === null) {
             return back()
-                ->withErrors(['trim_id' => 'Ngu canh tu van khong hop le. Vui long chon xe hoac phien ban.'])
+                ->withErrors(['trim_id' => 'Ngữ cảnh tư vấn không hợp lệ. Vui lòng chọn xe hoặc phiên bản.'])
                 ->withInput();
         }
 
         $this->createLead($validated);
-        $this->pushSuccessToast('Yeu cau cua ban da duoc gui. Showroom se lien he som.');
+        $this->pushSuccessToast('Yêu cầu của bạn đã được gửi. Showroom sẽ liên hệ trong thời gian sớm nhất.');
 
         return back();
     }
