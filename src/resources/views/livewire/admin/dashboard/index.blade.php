@@ -20,6 +20,37 @@
             </div>
         </div>
 
+        {{-- Urgent Operational Alerts Banner --}}
+        @if ($urgentAlerts['has_urgent'])
+            <div class="c1-dash-alerts" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px; padding: 12px 18px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="c1-pill c1-pill-blue" style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                        <i class="fa fa-bell"></i> Tác nghiệp cần chú ý
+                    </span>
+                    <span style="font-size: 13px; font-weight: 500; color: var(--c1-text-main);">
+                        Các công việc vận hành quan trọng cần xử lý trong ngày:
+                    </span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    @if ($urgentAlerts['today_appointments'] > 0)
+                        <a href="{{ route('admin.appointments.index') }}" wire:navigate.hover class="c1-badge" style="background: #e0f2fe; color: #0369a1; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="fa fa-calendar-check-o"></i> {{ $urgentAlerts['today_appointments'] }} lịch hẹn hôm nay
+                        </a>
+                    @endif
+                    @if ($urgentAlerts['unassigned_leads'] > 0)
+                        <a href="{{ route('admin.leads.index') }}" wire:navigate.hover class="c1-badge" style="background: #fef3c7; color: #92400e; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="fa fa-user-plus"></i> {{ $urgentAlerts['unassigned_leads'] }} lead chưa phân công
+                        </a>
+                    @endif
+                    @if ($urgentAlerts['pending_reviews'] > 0)
+                        <a href="{{ route('admin.reviews.index') }}" wire:navigate.hover class="c1-badge" style="background: #f1f5f9; color: #475569; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="fa fa-star-half-o"></i> {{ $urgentAlerts['pending_reviews'] }} review chờ duyệt
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         {{-- Row 1: 4 KPI Cards (Clickable to jump to modules) --}}
         <div class="c1-kpi-grid">
             {{-- Card 1: Total Inventory --}}
@@ -33,7 +64,7 @@
                         <span class="c1-kpi-value">{{ number_format($summaryCards[0]['value'] ?? 0) }}</span>
                         <span class="c1-kpi-unit">Xe</span>
                     </div>
-                    <span class="c1-badge c1-badge-green">+3%</span>
+                    <span class="c1-badge c1-badge-green">{{ $summaryCards[0]['highlight'] ?? 'Sẵn sàng' }}</span>
                 </div>
                 <div class="c1-cell-sub" style="font-size: 11.5px; margin-top: 4px;">
                     {{ $summaryCards[0]['note'] }}
@@ -51,7 +82,7 @@
                         <span class="c1-kpi-value">{{ number_format($summaryCards[1]['value'] ?? 0) }}</span>
                         <span class="c1-kpi-unit">Tuần này</span>
                     </div>
-                    <span class="c1-badge c1-badge-green">+12%</span>
+                    <span class="c1-badge" style="background: rgba(3, 105, 161, 0.12); color: #0284c7;">{{ $summaryCards[1]['highlight'] ?? 'Chờ xử lý' }}</span>
                 </div>
                 <div class="c1-cell-sub" style="font-size: 11.5px; margin-top: 4px;">
                     {{ $summaryCards[1]['note'] }}
@@ -69,7 +100,7 @@
                         <span class="c1-kpi-value">{{ number_format($summaryCards[2]['value'] ?? 0) }}</span>
                         <span class="c1-kpi-unit">Sắp tới</span>
                     </div>
-                    <span class="c1-badge c1-badge-red">-1%</span>
+                    <span class="c1-badge" style="background: rgba(217, 119, 6, 0.12); color: #d97706;">{{ $summaryCards[2]['highlight'] ?? 'Gần kề' }}</span>
                 </div>
                 <div class="c1-cell-sub" style="font-size: 11.5px; margin-top: 4px;">
                     {{ $summaryCards[2]['note'] }}
@@ -85,11 +116,11 @@
                 <div class="c1-kpi-body">
                     <div class="c1-kpi-val-group">
                         <span class="c1-kpi-value">{{ number_format($summaryCards[3]['value'] ?? 0) }}</span>
-                        <span class="c1-kpi-unit">Đơn chốt</span>
+                        <span class="c1-kpi-unit">Hợp đồng</span>
                     </div>
-                    <span class="c1-badge c1-badge-green">+8%</span>
+                    <span class="c1-badge c1-badge-green">{{ $summaryCards[3]['highlight'] ?? 'Doanh thu' }}</span>
                 </div>
-                <div class="c1-cell-sub" style="font-size: 11.5px; margin-top: 4px;">
+                <div class="c1-cell-sub" style="font-size: 11.5px; margin-top: 4px; font-weight: 500; color: var(--c1-primary);">
                     {{ $summaryCards[3]['note'] }}
                 </div>
             </a>
@@ -98,36 +129,33 @@
         {{-- Row 2: Analytics & Inventory Status (Grid 68% : 32%) --}}
         <div class="c1-analytics-grid">
             {{-- Sales & Leads Chart --}}
-            <div class="c1-panel c1-chart-panel">
+            <div class="c1-panel c1-chart-panel" style="min-width: 0;">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                     <div>
-                        <h3 class="c1-panel-title">Hiệu quả kinh doanh & Leads</h3>
-                        <span class="c1-cell-sub">Biểu đồ tăng trưởng tương tác khách hàng theo thời gian</span>
+                        <h3 class="c1-panel-title">Hiệu quả kinh doanh &amp; Leads</h3>
+                        <span class="c1-cell-sub">So sánh hợp đồng bán và lead tiếp nhận theo thời gian thực</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Lọc thời gian">
+                        <div class="c1-period-btn-group" role="group" aria-label="Lọc thời gian">
                             <button
                                 type="button"
                                 wire:click="setLeadTrendMonths(3)"
-                                class="btn {{ $leadTrendMonths === 3 ? 'btn-primary' : 'btn-outline-secondary' }}"
-                                style="font-size: 12px; padding: 3px 10px;"
+                                class="c1-period-btn {{ $leadTrendMonths === 3 ? 'active' : '' }}"
                             >3T</button>
                             <button
                                 type="button"
                                 wire:click="setLeadTrendMonths(6)"
-                                class="btn {{ $leadTrendMonths === 6 ? 'btn-primary' : 'btn-outline-secondary' }}"
-                                style="font-size: 12px; padding: 3px 10px;"
+                                class="c1-period-btn {{ $leadTrendMonths === 6 ? 'active' : '' }}"
                             >6T</button>
                             <button
                                 type="button"
                                 wire:click="setLeadTrendMonths(12)"
-                                class="btn {{ $leadTrendMonths === 12 ? 'btn-primary' : 'btn-outline-secondary' }}"
-                                style="font-size: 12px; padding: 3px 10px;"
+                                class="c1-period-btn {{ $leadTrendMonths === 12 ? 'active' : '' }}"
                             >12T</button>
                         </div>
                         <div class="c1-chart-legend">
-                            <span class="c1-legend-item"><span class="c1-legend-dot dot-sales"></span> Doanh số</span>
-                            <span class="c1-legend-item"><span class="c1-legend-dot dot-leads"></span> Leads</span>
+                            <span class="c1-legend-item"><span class="c1-legend-dot" style="background: #10b981;"></span> Doanh số</span>
+                            <span class="c1-legend-item"><span class="c1-legend-dot" style="background: #38bdf8;"></span> Leads</span>
                         </div>
                     </div>
                 </div>
@@ -137,18 +165,23 @@
             </div>
 
             {{-- Inventory Status --}}
-            <div class="c1-panel c1-status-panel">
+            <div class="c1-panel c1-status-panel" style="min-width: 0;">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 class="c1-panel-title">Trạng thái kho xe</h3>
-                    <span class="c1-cell-sub" style="font-weight: 600; color: var(--c1-primary);">
+                    <span class="c1-cell-sub" style="font-weight: 600; color: var(--c1-primary);" title="Tổng giá trị các xe sẵn sàng bán">
                         {{ $availableInventoryValueLabel }}
                     </span>
                 </div>
                 <div class="c1-progress-list">
                     <div class="c1-prog-item">
                         <div class="c1-prog-meta">
-                            <span class="c1-prog-name">Sẵn sàng bán (Available)</span>
-                            <span class="c1-prog-pct">{{ $inventoryBreakdown['available']['count'] ?? 0 }} xe ({{ $inventoryBreakdown['available']['percent'] ?? 0 }}%)</span>
+                            <span class="c1-prog-name" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                                Sẵn sàng bán (Available)
+                            </span>
+                            <span class="c1-prog-pct" style="font-weight: 600;">
+                                {{ $inventoryBreakdown['available']['count'] ?? 0 }} xe <span style="font-size: 11.5px; opacity: 0.85;">({{ $inventoryBreakdown['available']['percent'] ?? 0 }}%)</span>
+                            </span>
                         </div>
                         <div class="c1-prog-track">
                             <div class="c1-prog-bar bar-inventory" style="width: {{ $inventoryBreakdown['available']['percent'] ?? 0 }}%"></div>
@@ -157,8 +190,13 @@
 
                     <div class="c1-prog-item">
                         <div class="c1-prog-meta">
-                            <span class="c1-prog-name">Đang giữ cọc (On Hold)</span>
-                            <span class="c1-prog-pct">{{ $inventoryBreakdown['on_hold']['count'] ?? 0 }} xe ({{ $inventoryBreakdown['on_hold']['percent'] ?? 0 }}%)</span>
+                            <span class="c1-prog-name" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                                Đang giữ cọc (On Hold)
+                            </span>
+                            <span class="c1-prog-pct" style="font-weight: 600;">
+                                {{ $inventoryBreakdown['on_hold']['count'] ?? 0 }} xe <span style="font-size: 11.5px; opacity: 0.85;">({{ $inventoryBreakdown['on_hold']['percent'] ?? 0 }}%)</span>
+                            </span>
                         </div>
                         <div class="c1-prog-track">
                             <div class="c1-prog-bar bar-reserved" style="width: {{ $inventoryBreakdown['on_hold']['percent'] ?? 0 }}%"></div>
@@ -167,8 +205,13 @@
 
                     <div class="c1-prog-item">
                         <div class="c1-prog-meta">
-                            <span class="c1-prog-name">Bản nháp / Chờ duyệt (Draft)</span>
-                            <span class="c1-prog-pct">{{ $inventoryBreakdown['draft']['count'] ?? 0 }} xe ({{ $inventoryBreakdown['draft']['percent'] ?? 0 }}%)</span>
+                            <span class="c1-prog-name" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #6366f1; display: inline-block;"></span>
+                                Bản nháp / Kiểm định (Draft)
+                            </span>
+                            <span class="c1-prog-pct" style="font-weight: 600;">
+                                {{ $inventoryBreakdown['draft']['count'] ?? 0 }} xe <span style="font-size: 11.5px; opacity: 0.85;">({{ $inventoryBreakdown['draft']['percent'] ?? 0 }}%)</span>
+                            </span>
                         </div>
                         <div class="c1-prog-track">
                             <div class="c1-prog-bar bar-intransit" style="width: {{ $inventoryBreakdown['draft']['percent'] ?? 0 }}%"></div>
@@ -177,8 +220,13 @@
 
                     <div class="c1-prog-item">
                         <div class="c1-prog-meta">
-                            <span class="c1-prog-name">Đã bàn giao (Sold)</span>
-                            <span class="c1-prog-pct">{{ $inventoryBreakdown['sold']['count'] ?? 0 }} xe ({{ $inventoryBreakdown['sold']['percent'] ?? 0 }}%)</span>
+                            <span class="c1-prog-name" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 7px; height: 7px; border-radius: 50%; background: #0ea5e9; display: inline-block;"></span>
+                                Đã bàn giao (Sold)
+                            </span>
+                            <span class="c1-prog-pct" style="font-weight: 600;">
+                                {{ $inventoryBreakdown['sold']['count'] ?? 0 }} xe <span style="font-size: 11.5px; opacity: 0.85;">({{ $inventoryBreakdown['sold']['percent'] ?? 0 }}%)</span>
+                            </span>
                         </div>
                         <div class="c1-prog-track">
                             <div class="c1-prog-bar bar-distribution" style="width: {{ $inventoryBreakdown['sold']['percent'] ?? 0 }}%"></div>
@@ -193,36 +241,52 @@
             {{-- Left Table: Recent Activity (Leads) --}}
             <div class="c1-panel c1-table-panel">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="c1-panel-title">Lead mới tiếp nhận</h3>
+                    <div>
+                        <h3 class="c1-panel-title">Lead mới tiếp nhận</h3>
+                        <span class="c1-cell-sub">Khách hàng quan tâm và đăng ký tư vấn gần đây</span>
+                    </div>
                     <a href="{{ route('admin.leads.index') }}" wire:navigate.hover class="c1-see-all">Xem tất cả ▾</a>
                 </div>
                 <div class="c1-table-wrap">
-                    <table class="c1-table">
+                    <table class="c1-table" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>Xe quan tâm</th>
-                                <th>Khách hàng</th>
-                                <th>Nguồn</th>
-                                <th>Ngày tạo</th>
-                                <th class="text-right"></th>
+                                <th style="width: 26%;">Xe quan tâm</th>
+                                <th style="width: 28%;">Khách hàng</th>
+                                <th style="width: 24%;">Nguồn / Tư vấn</th>
+                                <th style="width: 22%;">Thời gian</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($recentLeads as $lead)
                                 <tr wire:key="recent-lead-{{ $loop->index }}">
-                                     <td>
-                                         <span class="c1-vehicle-tag">{{ \Illuminate\Support\Str::limit($lead->context, 20) }}</span>
-                                     </td>
-                                     <td class="c1-cell-primary">{{ $lead->name }}</td>
-                                     <td><span class="c1-cell-sub">{{ ucfirst($lead->source ?? 'Web') }}</span></td>
-                                     <td><span class="c1-cell-sub">{{ $lead->created_at_label }}</span></td>
-                                     <td class="text-right">
-                                         <a href="{{ $lead->url }}" wire:navigate class="c1-row-action" title="Xem chi tiết lead">•••</a>
-                                     </td>
-                                 </tr>
+                                    <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        <a href="{{ $lead->url }}" wire:navigate style="text-decoration: none;">
+                                            <span class="c1-vehicle-tag" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: inline-block;">
+                                                {{ $lead->car_context }}
+                                            </span>
+                                        </a>
+                                    </td>
+                                    <td style="overflow: hidden;">
+                                        <div class="c1-cell-primary" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <a href="{{ $lead->url }}" wire:navigate style="color: inherit; text-decoration: none;">{{ $lead->name }}</a>
+                                        </div>
+                                        @if ($lead->phone)
+                                            <div class="c1-cell-sub" style="font-size: 11px;">{{ $lead->phone }}</div>
+                                        @endif
+                                    </td>
+                                    <td style="overflow: hidden;">
+                                        <div class="c1-cell-primary" style="font-size: 11.5px; white-space: nowrap;">{{ $lead->source }}</div>
+                                        <div class="c1-cell-sub" style="font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $lead->assigned_to }}</div>
+                                    </td>
+                                    <td style="overflow: hidden;">
+                                        <div style="font-size: 11.5px; color: var(--c1-text-muted); white-space: nowrap;">{{ $lead->created_at_label }}</div>
+                                        <span class="c1-pill c1-pill-{{ $lead->status_class }}" style="margin-top: 2px;">{{ $lead->status_label }}</span>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="c1-empty-cell">Chưa có lead mới tiếp nhận.</td>
+                                    <td colspan="4" class="c1-empty-cell">Chưa có lead mới tiếp nhận.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -233,17 +297,19 @@
             {{-- Right Table: Recent Activity (Sales / Appointments) --}}
             <div class="c1-panel c1-table-panel">
                 <div class="c1-panel-head" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="c1-panel-title">Giao dịch & Lịch hẹn gần đây</h3>
+                    <div>
+                        <h3 class="c1-panel-title">Giao dịch &amp; Lịch hẹn gần đây</h3>
+                        <span class="c1-cell-sub">Hợp đồng mua bán và lịch hẹn lái thử mới nhất</span>
+                    </div>
                     <a href="{{ route('admin.sales.index') }}" wire:navigate.hover class="c1-see-all">Xem tất cả ▾</a>
                 </div>
                 <div class="c1-table-wrap">
-                    <table class="c1-table">
+                    <table class="c1-table" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>Khách hàng / Liên hệ</th>
-                                <th>Thời gian</th>
-                                <th>Trạng thái</th>
-                                <th class="text-right"></th>
+                                <th style="width: 44%;">Khách hàng &amp; Mẫu xe</th>
+                                <th style="width: 34%;">Chi tiết &amp; Thời gian</th>
+                                <th style="width: 22%;">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -251,34 +317,50 @@
                             @foreach ($recentSales as $sale)
                                 @php $activityCount++; @endphp
                                 <tr wire:key="recent-sale-{{ $loop->index }}">
-                                    <td class="c1-cell-primary">{{ $sale->buyer_name }}</td>
-                                    <td><span class="c1-cell-sub">{{ $sale->sold_at_label }}</span></td>
-                                    <td>
-                                        <span class="c1-pill c1-pill-green">Đã bán</span>
+                                    <td style="overflow: hidden;">
+                                        <div class="c1-cell-primary" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <a href="{{ $sale->url }}" wire:navigate style="color: inherit; text-decoration: none;">{{ $sale->buyer_name }}</a>
+                                        </div>
+                                        <div class="c1-cell-sub" style="font-size: 11.5px; color: var(--c1-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <i class="fa fa-car" style="margin-right: 3px;"></i> {{ $sale->car_name }}
+                                        </div>
                                     </td>
-                                    <td class="text-right">
-                                        <a href="{{ $sale->url }}" wire:navigate class="c1-row-action" title="Xem hợp đồng">•••</a>
+                                    <td style="overflow: hidden;">
+                                        <div style="font-weight: 600; font-size: 12px; color: var(--c1-primary); white-space: nowrap;">
+                                            {{ $sale->sold_price_label }}
+                                        </div>
+                                        <div class="c1-cell-sub" style="font-size: 11px; white-space: nowrap;">{{ $sale->sold_at_label }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="c1-pill c1-pill-green"><i class="fa fa-check"></i> Đã bán</span>
                                     </td>
                                 </tr>
                             @endforeach
                             @foreach ($upcomingAppointments as $app)
-                                @if ($activityCount < 5)
+                                @if ($activityCount < 6)
                                     @php $activityCount++; @endphp
                                     <tr wire:key="recent-app-{{ $loop->index }}">
-                                        <td class="c1-cell-primary">{{ $app->handled_by }}</td>
-                                        <td><span class="c1-cell-sub">{{ $app->scheduled_date }} {{ $app->scheduled_time }}</span></td>
-                                        <td>
-                                            <span class="c1-pill c1-pill-blue">Lịch hẹn</span>
+                                        <td style="overflow: hidden;">
+                                            <div class="c1-cell-primary" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                <a href="{{ $app->url }}" wire:navigate style="color: inherit; text-decoration: none;">{{ $app->customer_name }}</a>
+                                            </div>
+                                            <div class="c1-cell-sub" style="font-size: 11.5px; color: var(--c1-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                <i class="fa fa-calendar-check-o" style="margin-right: 3px;"></i> {{ $app->car_name }}
+                                            </div>
                                         </td>
-                                        <td class="text-right">
-                                            <a href="{{ $app->url }}" wire:navigate class="c1-row-action" title="Xem lịch hẹn">•••</a>
+                                        <td style="overflow: hidden;">
+                                            <div class="c1-cell-primary" style="font-size: 12px; white-space: nowrap;">{{ $app->scheduled_date }} - {{ $app->scheduled_time }}</div>
+                                            <div class="c1-cell-sub" style="font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TV: {{ $app->handled_by }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="c1-pill c1-pill-{{ $app->status_class }}">{{ $app->status_label }}</span>
                                         </td>
                                     </tr>
                                 @endif
                             @endforeach
                             @if ($activityCount === 0)
                                 <tr>
-                                    <td colspan="4" class="c1-empty-cell">Chưa có giao dịch hoặc lịch hẹn nào.</td>
+                                    <td colspan="3" class="c1-empty-cell">Chưa có giao dịch hoặc lịch hẹn nào.</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -297,7 +379,7 @@
 <script>
     let adminLeadChartInstance = null;
 
-    const renderLeadChart = (labels, leadData) => {
+    const renderLeadChart = (labels, leadData, salesData) => {
         const canvas = document.getElementById('admin-lead-chart');
         if (!canvas || typeof Chart === 'undefined') {
             return;
@@ -309,22 +391,24 @@
         }
 
         const ctx = canvas.getContext('2d');
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        const salesColor = isDark ? '#34d399' : '#10b981';
+        const leadsColor = isDark ? '#38bdf8' : '#2563eb';
 
         const gradientSales = ctx.createLinearGradient(0, 0, 0, 220);
-        gradientSales.addColorStop(0, 'rgba(51, 65, 85, 0.22)');
-        gradientSales.addColorStop(0.8, 'rgba(51, 65, 85, 0.03)');
-        gradientSales.addColorStop(1, 'rgba(51, 65, 85, 0.0)');
+        gradientSales.addColorStop(0, isDark ? 'rgba(52, 211, 153, 0.30)' : 'rgba(16, 185, 129, 0.22)');
+        gradientSales.addColorStop(0.8, isDark ? 'rgba(52, 211, 153, 0.03)' : 'rgba(16, 185, 129, 0.02)');
+        gradientSales.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
         const gradientLeads = ctx.createLinearGradient(0, 0, 0, 220);
-        gradientLeads.addColorStop(0, 'rgba(148, 163, 184, 0.18)');
-        gradientLeads.addColorStop(0.8, 'rgba(148, 163, 184, 0.02)');
-        gradientLeads.addColorStop(1, 'rgba(148, 163, 184, 0.0)');
+        gradientLeads.addColorStop(0, isDark ? 'rgba(56, 189, 248, 0.28)' : 'rgba(37, 99, 235, 0.18)');
+        gradientLeads.addColorStop(0.8, isDark ? 'rgba(56, 189, 248, 0.03)' : 'rgba(37, 99, 235, 0.02)');
+        gradientLeads.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
 
         Chart.defaults.global.defaultFontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-        Chart.defaults.global.defaultFontColor = '#94a3b8';
+        Chart.defaults.global.defaultFontColor = isDark ? '#94a3b8' : '#64748b';
         Chart.defaults.global.defaultFontSize = 12;
-
-        const salesData = leadData.map(val => Math.round(val * 1.35) + 1);
 
         adminLeadChartInstance = new Chart(ctx, {
             type: 'line',
@@ -332,31 +416,31 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Sales',
+                        label: 'Doanh số (Hợp đồng)',
                         backgroundColor: gradientSales,
-                        borderColor: '#334155',
-                        borderWidth: 2,
+                        borderColor: salesColor,
+                        borderWidth: 2.2,
                         data: salesData,
-                        pointRadius: 3.5,
-                        pointHoverRadius: 5,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#334155',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: isDark ? '#152243' : '#ffffff',
+                        pointBorderColor: salesColor,
                         pointBorderWidth: 2,
-                        lineTension: 0.42,
+                        lineTension: 0.38,
                         fill: true
                     },
                     {
-                        label: 'Leads',
+                        label: 'Leads (Khách tiềm năng)',
                         backgroundColor: gradientLeads,
-                        borderColor: '#94a3b8',
-                        borderWidth: 1.8,
+                        borderColor: leadsColor,
+                        borderWidth: 2,
                         data: leadData,
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#94a3b8',
-                        pointBorderWidth: 1.8,
-                        lineTension: 0.42,
+                        pointRadius: 3.5,
+                        pointHoverRadius: 5.5,
+                        pointBackgroundColor: isDark ? '#152243' : '#ffffff',
+                        pointBorderColor: leadsColor,
+                        pointBorderWidth: 2,
+                        lineTension: 0.38,
                         fill: true
                     }
                 ]
@@ -371,20 +455,20 @@
                             precision: 0,
                             beginAtZero: true,
                             padding: 8,
-                            fontColor: '#94a3b8'
+                            fontColor: isDark ? '#94a3b8' : '#64748b'
                         },
                         gridLines: {
                             borderDash: [3, 5],
-                            color: '#f1f5f9',
+                            color: isDark ? 'rgba(255, 255, 255, 0.06)' : '#f1f5f9',
                             lineWidth: 1,
                             drawBorder: false,
-                            zeroLineColor: '#e2e8f0'
+                            zeroLineColor: isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0'
                         }
                     }],
                     xAxes: [{
                         ticks: {
                             padding: 8,
-                            fontColor: '#64748b',
+                            fontColor: isDark ? '#94a3b8' : '#64748b',
                             fontStyle: '500'
                         },
                         gridLines: {
@@ -397,7 +481,9 @@
                     enabled: true,
                     mode: 'index',
                     intersect: false,
-                    backgroundColor: '#0f172a',
+                    backgroundColor: isDark ? '#0b132b' : '#0f172a',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+                    borderWidth: isDark ? 1 : 0,
                     titleFontColor: '#f8fafc',
                     titleFontSize: 12,
                     bodyFontColor: '#e2e8f0',
@@ -412,11 +498,12 @@
     };
 
     const initialLabels = @json($leadTrendLabels);
-    const initialValues = @json($leadTrendValues);
+    const initialLeadValues = @json($leadTrendValues);
+    const initialSalesValues = @json($salesTrendValues);
 
     const tryInitChart = () => {
         if (typeof Chart !== 'undefined') {
-            renderLeadChart(initialLabels, initialValues);
+            renderLeadChart(initialLabels, initialLeadValues, initialSalesValues);
         } else {
             setTimeout(tryInitChart, 50);
         }
@@ -426,8 +513,12 @@
 
     $wire.hook('commit', ({ succeed }) => {
         succeed(() => {
-            renderLeadChart(@json($leadTrendLabels), @json($leadTrendValues));
+            renderLeadChart(@json($leadTrendLabels), @json($leadTrendValues), @json($salesTrendValues));
         });
+    });
+
+    window.addEventListener('admin-theme-changed', () => {
+        renderLeadChart(@json($leadTrendLabels), @json($leadTrendValues), @json($salesTrendValues));
     });
 </script>
 @endscript

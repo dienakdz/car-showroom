@@ -730,8 +730,8 @@ body.c1-body {
 
 .c1-prog-track {
     width: 100%;
-    height: 8px;
-    background-color: #e2e8f0;
+    height: 7px;
+    background-color: #f1f5f9;
     border-radius: 4px;
     overflow: hidden;
 }
@@ -743,26 +743,75 @@ body.c1-body {
 }
 
 .c1-prog-bar.bar-inventory {
-    background-color: #334155;
+    background: linear-gradient(90deg, #10b981, #059669);
 }
 
 .c1-prog-bar.bar-reserved {
-    background-color: #64748b;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
 }
 
 .c1-prog-bar.bar-intransit {
-    background-color: #94a3b8;
+    background: linear-gradient(90deg, #6366f1, #4f46e5);
 }
 
 .c1-prog-bar.bar-distribution {
-    background-color: #cbd5e1;
+    background: linear-gradient(90deg, #0ea5e9, #0284c7);
 }
 
 /* Row 3: Two Activity Tables Grid */
 .c1-tables-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 20px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.c1-table-panel {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.c1-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Period Filter Buttons in Header */
+.c1-period-btn-group {
+    display: inline-flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--c1-border-card);
+}
+
+.c1-period-btn {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: none;
+    background: var(--c1-bg-hover);
+    color: var(--c1-text-body);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.c1-period-btn:not(:last-child) {
+    border-right: 1px solid var(--c1-border-card);
+}
+
+.c1-period-btn.active {
+    background: var(--c1-primary);
+    color: #ffffff;
+}
+
+.c1-period-btn:hover:not(.active) {
+    background: var(--c1-bg-input);
+    color: var(--c1-text-heading);
 }
 
 .c1-see-all {
@@ -4440,6 +4489,48 @@ body.c1-body {
     background-color: rgba(225, 29, 72, 0.25) !important;
     color: #fda4af !important;
     border: 1px solid rgba(244, 63, 94, 0.35) !important;
+}
+
+/* Dashboard Inventory Progress Bars in Dark Mode */
+[data-theme="dark"] .c1-prog-track {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .c1-prog-bar.bar-inventory {
+    background: linear-gradient(90deg, #34d399, #10b981) !important;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+[data-theme="dark"] .c1-prog-bar.bar-reserved {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+}
+
+[data-theme="dark"] .c1-prog-bar.bar-intransit {
+    background: linear-gradient(90deg, #818cf8, #6366f1) !important;
+    box-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
+}
+
+[data-theme="dark"] .c1-prog-bar.bar-distribution {
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+[data-theme="dark"] .c1-see-all {
+    background-color: var(--c1-bg-hover) !important;
+    border-color: var(--c1-border-card) !important;
+    color: var(--c1-text-body) !important;
+}
+
+[data-theme="dark"] .c1-see-all:hover {
+    background-color: var(--c1-bg-input) !important;
+    color: var(--c1-text-heading) !important;
+}
+
+[data-theme="dark"] .c1-vehicle-tag {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--c1-text-heading) !important;
+    border: 1px solid var(--c1-border-card) !important;
 }
 
 /* Customer 360 & Specific Items */
