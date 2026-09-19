@@ -1,115 +1,115 @@
-<div class="c1-settings-workspace">
-    <div class="c1-page-header mb-4">
+<div class="c1-dash-wrapper">
+    <div class="c1-page-header">
         <div>
-            <h1 class="c1-page-title">Settings / Cài đặt</h1>
-            <p class="c1-page-subtitle">Quản lý thông tin showroom, định cấu hình thương hiệu và các chính sách vận hành.</p>
+            <h1 class="c1-page-title">Cài đặt hệ thống &amp; Showroom</h1>
+            <div class="c1-page-subtitle" style="color: var(--c1-text-muted); font-size: 13px; margin-top: 4px;">
+                Quản lý thông tin showroom, nhận diện thương hiệu và các chính sách vận hành.
+            </div>
         </div>
     </div>
 
-    @if (($feedback['message'] ?? '') !== '')
-        <div class="c1-alert {{ ($feedback['type'] ?? 'success') === 'error' ? 'c1-alert-danger' : 'c1-alert-success' }} mb-4" style="padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-            <div class="d-flex align-items-center gap-2">
-                @if (($feedback['type'] ?? 'success') === 'error')
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                @else
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                @endif
-                <span>{{ $feedback['message'] }}</span>
-            </div>
-            <button type="button" class="btn-close" wire:click="dismissFeedback" aria-label="Đóng"></button>
-        </div>
-    @endif
-
     <form wire:submit="save" id="settingsForm">
         <div class="c1-settings-layout">
-            <!-- Left Main Column (65%) -->
+            <!-- Cột chính (Nội dung biểu mẫu cài đặt) -->
             <div class="c1-settings-main">
-                <!-- Card 1: Thông tin Showroom -->
-                <div class="c1-catalog-card">
-                    <div class="c1-catalog-card-header mb-3">
-                        <h3 class="c1-catalog-card-title">Thông tin Showroom</h3>
+                <!-- Card 1: Thông tin Showroom & Trụ sở -->
+                <div class="c1-panel" style="padding: 22px 24px;">
+                    <div style="padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--c1-border-card);">
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--c1-text-heading);">
+                            1. Thông tin Showroom &amp; Địa chỉ
+                        </h3>
+                        <p style="margin: 4px 0 0; font-size: 12.5px; color: var(--c1-text-muted);">
+                            Thông tin pháp nhân và thông tin liên hệ chính của showroom được hiển thị trên website.
+                        </p>
                     </div>
 
                     <div class="row g-3 mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="c1-field-label">
-                                Showroom Name <span class="text-danger">*</span>
+                                Tên Showroom / Đại lý <span class="text-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 class="c1-field-input"
-                                wire:model.live.debounce.300ms="form.showroom_name"
-                                placeholder="Nhập tên showroom"
+                                wire:model="form.showroom_name"
+                                placeholder="Nhập tên showroom hoặc tên đại lý"
                                 required
                             >
                             @error('form.showroom_name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="c1-field-label">
-                                Phone <span class="text-danger">*</span>
+                                Số điện thoại bàn / Hotline đại lý <span class="text-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 class="c1-field-input"
-                                wire:model.live.debounce.300ms="form.showroom_phone"
-                                placeholder="Số điện thoại"
+                                wire:model="form.showroom_phone"
+                                placeholder="Ví dụ: 028.3888.9999 hoặc 0900000002"
                                 required
                             >
                             @error('form.showroom_phone') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
+                    </div>
 
-                        <div class="col-md-4">
-                            <label class="c1-field-label">Email</label>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="c1-field-label">Email liên hệ showroom</label>
                             <input
                                 type="email"
                                 class="c1-field-input"
-                                wire:model.blur="form.showroom_email"
-                                placeholder="email@example.com"
+                                wire:model="form.showroom_email"
+                                placeholder="contact@showroom.test"
                             >
                             @error('form.showroom_email') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="c1-field-label">Address</label>
-                        <input
-                            type="text"
-                            class="c1-field-input"
-                            wire:model.blur="form.showroom_address"
-                            placeholder="Địa chỉ trụ sở showroom"
-                        >
-                        @error('form.showroom_address') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                        <div class="col-md-6">
+                            <label class="c1-field-label">Địa chỉ trụ sở showroom</label>
+                            <input
+                                type="text"
+                                class="c1-field-input"
+                                wire:model="form.showroom_address"
+                                placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành"
+                            >
+                            @error('form.showroom_address') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                        </div>
                     </div>
 
                     <div>
-                        <label class="c1-field-label">Description</label>
+                        <label class="c1-field-label">Giới thiệu ngắn về showroom</label>
                         <textarea
-                            rows="4"
+                            rows="3"
                             class="c1-field-textarea"
-                            wire:model.blur="form.showroom_description"
-                            placeholder="Mô tả giới thiệu ngắn về showroom..."
+                            wire:model="form.showroom_description"
+                            placeholder="Mô tả tóm tắt thế mạnh, cam kết chất lượng xe của showroom..."
                         ></textarea>
                         @error('form.showroom_description') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                     </div>
                 </div>
 
-                <!-- Card 2: Cấu hình Thương hiệu & Tiền tệ -->
-                <div class="c1-catalog-card">
-                    <div class="c1-catalog-card-header mb-3">
-                        <h3 class="c1-catalog-card-title">Cấu hình Thương hiệu &amp; Tiền tệ</h3>
+                <!-- Card 2: Nhận diện Thương hiệu & Tiền tệ -->
+                <div class="c1-panel" style="padding: 22px 24px;">
+                    <div style="padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--c1-border-card);">
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--c1-text-heading);">
+                            2. Nhận diện Thương hiệu &amp; Tiền tệ
+                        </h3>
+                        <p style="margin: 4px 0 0; font-size: 12.5px; color: var(--c1-text-muted);">
+                            Cấu hình tên thương hiệu tiêu đề, đơn vị tiền tệ giao dịch và hotline tư vấn bán hàng.
+                        </p>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-md-5">
                             <label class="c1-field-label">
-                                Brand Name <span class="text-danger">*</span>
+                                Tên thương hiệu hiển thị <span class="text-danger">*</span>
                             </label>
                             <input
                                 type="text"
                                 class="c1-field-input"
-                                wire:model.live.debounce.300ms="form.brand_name"
-                                placeholder="Tên thương hiệu"
+                                wire:model="form.brand_name"
+                                placeholder="Ví dụ: Minh Dien Auto Showroom"
                                 required
                             >
                             @error('form.brand_name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
@@ -117,28 +117,23 @@
 
                         <div class="col-md-3">
                             <label class="c1-field-label">
-                                Default Currency <span class="text-danger">*</span>
+                                Đơn vị tiền tệ <span class="text-danger">*</span>
                             </label>
-                            <div class="position-relative">
-                                <input
-                                    type="text"
-                                    maxlength="3"
-                                    class="c1-field-input text-uppercase fw-bold"
-                                    wire:model.live.debounce.300ms="form.default_currency"
-                                    placeholder="VND"
-                                    required
-                                >
-                            </div>
+                            <select wire:model="form.default_currency" class="c1-field-input c1-select" style="cursor: pointer;" required>
+                                @foreach ($currencyOptions as $code => $label)
+                                    <option value="{{ $code }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
                             @error('form.default_currency') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
 
                         <div class="col-md-4">
-                            <label class="c1-field-label">Sales Hotline</label>
+                            <label class="c1-field-label">Hotline bán hàng (Tư vấn 24/7)</label>
                             <input
                                 type="text"
                                 class="c1-field-input"
-                                wire:model.blur="form.sales_hotline"
-                                placeholder="Hotline bán hàng"
+                                wire:model="form.sales_hotline"
+                                placeholder="Ví dụ: 0900000002"
                             >
                             @error('form.sales_hotline') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                         </div>
@@ -146,81 +141,119 @@
                 </div>
 
                 <!-- Card 3: Chính sách Vận hành & Thông báo -->
-                <div class="c1-catalog-card">
-                    <div class="c1-catalog-card-header mb-3">
-                        <h3 class="c1-catalog-card-title">Chính sách Vận hành &amp; Thông báo</h3>
+                <div class="c1-panel" style="padding: 22px 24px;">
+                    <div style="padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--c1-border-card);">
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--c1-text-heading);">
+                            3. Chính sách Vận hành &amp; Thông báo
+                        </h3>
+                        <p style="margin: 4px 0 0; font-size: 12.5px; color: var(--c1-text-muted);">
+                            Bật tắt các tính năng hiển thị và thông báo tự động cho hệ thống showroom.
+                        </p>
                     </div>
 
-                    <div class="c1-toggle-grid">
-                        <div class="c1-toggle-item-inline">
-                            <span class="c1-toggle-label">Hiển thị xe đang giữ chỗ (On-Hold)</span>
-                            <label class="c1-toggle-switch">
-                                <input type="checkbox" wire:model.live="form.show_on_hold_public">
+                    <div class="c1-toggle-list">
+                        <div class="c1-toggle-row">
+                            <div class="c1-toggle-info">
+                                <div class="c1-toggle-title">
+                                    <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
+                                    <span>Hiển thị xe đang giữ chỗ (On-Hold)</span>
+                                </div>
+                                <p class="c1-toggle-desc">
+                                    Khi kích hoạt, các xe kho đang trong trạng thái cọc hoặc giữ chỗ vẫn hiển thị công khai trên website kèm nhãn "Đang giữ chỗ" để khách hàng theo dõi.
+                                </p>
+                            </div>
+                            <label class="c1-toggle-switch" title="Gạt để bật/tắt">
+                                <input type="checkbox" wire:model="form.show_on_hold_public">
                                 <span class="c1-toggle-slider"></span>
                             </label>
                         </div>
 
-                        <div class="c1-toggle-item-inline">
-                            <span class="c1-toggle-label">Nhận email thông báo Lead mới</span>
-                            <label class="c1-toggle-switch">
-                                <input type="checkbox" wire:model.live="form.email_lead_notifications">
+                        <div class="c1-toggle-row">
+                            <div class="c1-toggle-info">
+                                <div class="c1-toggle-title">
+                                    <i class="fa fa-envelope-o text-primary" aria-hidden="true"></i>
+                                    <span>Nhận email thông báo khi có Lead mới</span>
+                                </div>
+                                <p class="c1-toggle-desc">
+                                    Tự động gửi email thông báo tới hòm thư quản trị viên showroom ngay khi có khách hàng mới đăng ký lái thử, yêu cầu tư vấn hoặc để lại số điện thoại.
+                                </p>
+                            </div>
+                            <label class="c1-toggle-switch" title="Gạt để bật/tắt">
+                                <input type="checkbox" wire:model="form.email_lead_notifications">
                                 <span class="c1-toggle-slider"></span>
                             </label>
                         </div>
                     </div>
                 </div>
+
+                <!-- Nút Lưu cài đặt duy nhất ở chân form -->
+                <div class="d-flex align-items-center justify-content-end gap-3 pt-2">
+                    <button
+                        type="submit"
+                        class="c1-btn c1-btn-primary"
+                        wire:loading.attr="disabled"
+                        wire:target="save"
+                        style="height: 42px; padding: 0 28px; font-size: 14px; font-weight: 600;"
+                    >
+                        <i class="fa fa-save" wire:loading.remove wire:target="save"></i>
+                        <i class="fa fa-spinner fa-spin" wire:loading wire:target="save" style="display: none;"></i>
+                        <span wire:loading.remove wire:target="save">Lưu cài đặt</span>
+                        <span wire:loading wire:target="save" style="display: none;">Đang lưu...</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Right Sidebar Column (35% - Sticky) -->
+            <!-- Cột phụ (Showroom Snapshot & Trạng thái hệ thống) -->
             <div class="c1-settings-sidebar">
-                <div class="c1-snapshot-card">
+                <div class="c1-snapshot-card" style="box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05); border: 1px solid var(--c1-border-card); border-radius: var(--c1-radius-card); padding: 22px;">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="m-0 fw-bold" style="font-size: 16px; color: var(--c1-text-heading);">Showroom Snapshot</h4>
+                        <h4 class="m-0 fw-bold" style="font-size: 15px; color: var(--c1-text-heading);">
+                            Tổng quan Showroom
+                        </h4>
                     </div>
 
                     <div class="mb-3">
                         <span class="c1-snapshot-status-pill">
                             <span class="c1-snapshot-status-dot"></span>
-                            Đang hoạt động
+                            Hệ thống hoạt động bình thường
                         </span>
                     </div>
 
-                    <div class="mb-4">
-                        <div class="text-muted small mb-1">Showroom quick info</div>
-                        <div class="fw-bold" style="font-size: 15px; color: var(--c1-text-heading);">
-                            {{ $form['showroom_name'] ?: ($form['brand_name'] ?: 'Minh Dien Auto Showroom') }}
+                    <div class="mb-4" style="font-size: 13px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed #e2e8f0; padding-top: 14px;">
+                        <div>
+                            <div class="text-muted small" style="margin-bottom: 2px;">Tên đại lý:</div>
+                            <div class="fw-bold" style="color: var(--c1-text-heading); font-size: 14px;">
+                                {{ $form['showroom_name'] ?: ($form['brand_name'] ?: 'Minh Dien Auto Showroom') }}
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2 mt-2">
-                            <span class="text-muted small">Currency:</span>
-                            <span class="c1-pill-badge c1-pill-blue fw-bold">
-                                {{ strtoupper((string) ($form['default_currency'] ?: 'VND')) }}
+
+                        <div>
+                            <div class="text-muted small" style="margin-bottom: 2px;">Tiền tệ niêm yết:</div>
+                            <span class="c1-pill c1-pill-blue" style="font-weight: 700;">
+                                {{ $form['default_currency'] ?: 'VND' }}
                             </span>
                         </div>
+
                         @if (!empty($form['sales_hotline']) || !empty($form['showroom_phone']))
-                            <div class="d-flex align-items-center gap-2 mt-2">
-                                <span class="text-muted small">Hotline:</span>
-                                <span class="small fw-semibold text-dark">
+                            <div>
+                                <div class="text-muted small" style="margin-bottom: 2px;">Hotline tư vấn:</div>
+                                <div class="fw-semibold text-dark">
+                                    <i class="fa fa-phone text-primary me-1" aria-hidden="true"></i>
                                     {{ $form['sales_hotline'] ?: $form['showroom_phone'] }}
-                                </span>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if (!empty($form['showroom_address']))
+                            <div>
+                                <div class="text-muted small" style="margin-bottom: 2px;">Trụ sở:</div>
+                                <div class="text-muted small" style="line-height: 1.4;">
+                                    <i class="fa fa-map-marker text-danger me-1" aria-hidden="true"></i>
+                                    {{ $form['showroom_address'] }}
+                                </div>
                             </div>
                         @endif
                     </div>
-
-                    <button
-                        type="submit"
-                        class="c1-btn c1-btn-primary c1-btn-block"
-                        wire:loading.attr="disabled"
-                        wire:target="save"
-                    >
-                        <span wire:loading.remove wire:target="save">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display: inline-block; vertical-align: -2px; margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                            Lưu cài đặt
-                        </span>
-                        <span wire:loading wire:target="save" style="display: none;">
-                            <svg class="fa-spin" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display: inline-block; vertical-align: -2px; margin-right: 4px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
-                            Đang lưu...
-                        </span>
-                    </button>
                 </div>
             </div>
         </div>

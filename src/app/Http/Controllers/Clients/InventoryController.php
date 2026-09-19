@@ -179,7 +179,7 @@ class InventoryController extends ClientBaseController
             'transmissions' => Transmission::query()->orderBy('name')->get(['slug', 'name']),
             'colors' => Color::query()->orderBy('name')->get(['slug', 'name']),
             'years' => CarUnit::query()
-                ->where('status', 'available')
+                ->whereIn('status', $this->publicAllowedStatuses())
                 ->whereNotNull('published_at')
                 ->whereNotNull('year')
                 ->select('year')

@@ -83,10 +83,21 @@ abstract class ClientBaseController extends Controller
             ->selectSub($coverMediaSubQuery, 'cover_media');
     }
 
+    /**
+     * @return array<int, string>
+     */
+    protected function publicAllowedStatuses(): array
+    {
+        $settings = ViewDataCache::rememberAdminSettings();
+        $showOnHold = (bool) data_get($settings, 'inventory.show_on_hold_public.enabled', false);
+
+        return $showOnHold ? ['available', 'on_hold'] : ['available'];
+    }
+
     protected function publicVisibleCarQuery(): EloquentBuilder
     {
         return $this->baseCarQuery()
-            ->where('car_units.status', 'available')
+            ->whereIn('car_units.status', $this->publicAllowedStatuses())
             ->whereNotNull('car_units.published_at');
     }
 
