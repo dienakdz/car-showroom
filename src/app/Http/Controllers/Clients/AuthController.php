@@ -120,7 +120,7 @@ class AuthController extends ClientBaseController
 
         if (! Auth::attempt([$field => $value, 'password' => $credentials['password']], $request->boolean('remember'))) {
             return back()
-                ->withErrors(['identifier' => 'Thong tin dang nhap khong dung.'])
+                ->withErrors(['identifier' => 'Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu.'])
                 ->withInput($request->except('password'));
         }
 
