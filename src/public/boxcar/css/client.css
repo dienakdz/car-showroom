@@ -1,0 +1,2089 @@
+/**
+ * BoxCar Client Custom Stylesheet
+ * Standardized for Client Area (Option 1: Modern Clean Luxury Layout)
+ * All custom client styles are consolidated here - NO inline <style> blocks in Blade.
+ */
+
+/* ==========================================================================
+   1. HEADER STYLES (Option 1: Modern Clean Luxury)
+   ========================================================================== */
+
+/* Site Header (Pristine White Background - Option 1) */
+.boxcar-header,
+.boxcar-header.header-style-v1,
+.boxcar-header.style-two,
+.boxcar-header.inner-header,
+.boxcar-header.header-default {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    background-color: #FFFFFF !important;
+    z-index: 1000;
+}
+
+.boxcar-header .site-header-bar {
+    background-color: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05);
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1001;
+}
+
+.boxcar-header .header-inner {
+    padding: 14px 0 !important;
+}
+
+.boxcar-header .c-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.boxcar-header .logo-inner {
+    flex-shrink: 0;
+}
+
+.boxcar-header .logo img {
+    max-height: 32px;
+    width: auto;
+    display: block;
+}
+
+/* Main Navigation Menu (Clean Luxury Spacing) */
+.boxcar-header .nav-out-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    margin: 0 24px;
+}
+
+.boxcar-header .main-menu .navigation {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.boxcar-header .main-menu .navigation > li {
+    position: relative;
+    padding: 12px 0;
+}
+
+.boxcar-header .main-menu .navigation > li > a,
+.boxcar-header .main-menu .navigation > li > span {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0F172A !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+}
+
+.boxcar-header .main-menu .navigation > li > a:hover,
+.boxcar-header .main-menu .navigation > li > span:hover {
+    color: #B89358 !important;
+}
+
+/* Active Menu Indicator (Luxury Gold Underline - Option 1) */
+.boxcar-header .main-menu .navigation > li.current > a,
+.boxcar-header .main-menu .navigation > li.current > span {
+    color: #0F172A !important;
+    font-weight: 700;
+}
+
+.boxcar-header .main-menu .navigation > li.current::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background: #B89358;
+    border-radius: 2px;
+}
+
+/* Dropdown Menu Styling */
+.boxcar-header .main-menu .navigation > li .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 230px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+    border: 1px solid #E2E8F0;
+    padding: 8px 0;
+    margin: 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.2s ease;
+    z-index: 1050;
+}
+
+.boxcar-header .main-menu .navigation > li:hover .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.boxcar-header .main-menu .navigation > li .dropdown li a {
+    display: block;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.boxcar-header .main-menu .navigation > li .dropdown li a:hover,
+.boxcar-header .main-menu .navigation > li .dropdown li.current a {
+    background-color: #F8FAFC;
+    color: #B89358;
+    padding-left: 24px;
+}
+
+/* Right Box Actions */
+.boxcar-header .right-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Search Trigger Button */
+.search-trigger-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    color: #0F172A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-trigger-btn:hover,
+.search-trigger-btn.active {
+    border-color: #B89358;
+    color: #B89358;
+    background: #FFFBF5;
+    box-shadow: 0 2px 8px rgba(184, 147, 88, 0.15);
+}
+
+/* Search Popover */
+.header-search-wrap {
+    position: relative;
+}
+
+.header-search-popover {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 320px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+    border: 1px solid #E2E8F0;
+    padding: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: all 0.2s ease;
+    z-index: 1060;
+}
+
+.header-search-popover.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.header-search-popover .search-input-group {
+    display: flex;
+    align-items: center;
+    background: #F8FAFC;
+    border-radius: 10px;
+    border: 1px solid #CBD5E1;
+    overflow: hidden;
+}
+
+.header-search-popover input[type="search"] {
+    flex: 1;
+    height: 42px;
+    border: none;
+    background: transparent;
+    padding: 0 14px;
+    font-size: 13.5px;
+    color: #0F172A;
+    outline: none;
+}
+
+.header-search-popover .submit-btn {
+    border: none;
+    background: #B89358;
+    color: #FFFFFF;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.header-search-popover .submit-btn:hover {
+    background: #A0783D;
+}
+
+/* User Account Trigger Button (Pill Design - Option 1) */
+.user-account-trigger,
+.boxcar-header .user-account-trigger,
+.boxcar-header .right-box .user-account-trigger {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: 42px !important;
+    padding: 0 18px !important;
+    border-radius: 50px !important;
+    border: 1.5px solid #CBD5E1 !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.user-account-trigger:hover,
+.boxcar-header .user-account-trigger:hover {
+    border-color: #0F172A !important;
+    background: #F8FAFC !important;
+    color: #0F172A !important;
+}
+
+.boxcar-header .user-account-trigger span,
+.boxcar-header .right-box .user-account-trigger span {
+    color: #0F172A !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+    background: transparent !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: normal !important;
+    border-radius: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.user-account-trigger .user-avatar-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #050B20;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* User Dropdown Menu */
+.user-account-hub {
+    position: relative;
+}
+
+.user-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 240px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+    border: 1px solid #E2E8F0;
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: all 0.2s ease;
+    z-index: 1060;
+}
+
+.user-account-hub.active .user-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.user-dropdown-item:hover {
+    background-color: #F8FAFC;
+    color: #0F172A;
+}
+
+.user-dropdown-divider {
+    height: 1px;
+    background-color: #E2E8F0;
+    margin: 6px 0;
+}
+
+/* Primary CTA Button (Luxury Gold / Bronze - Option 1) */
+.btn-test-drive-cta,
+.boxcar-header .btn-test-drive-cta,
+.boxcar-header .right-box .btn-test-drive-cta {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: 42px !important;
+    padding: 0 22px !important;
+    border-radius: 50px !important;
+    background: linear-gradient(135deg, #B89358 0%, #A0783D 100%) !important;
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(160, 120, 61, 0.35) !important;
+    transition: all 0.25s ease !important;
+    border: none !important;
+    white-space: nowrap !important;
+}
+
+.btn-test-drive-cta:hover,
+.boxcar-header .btn-test-drive-cta:hover {
+    background: linear-gradient(135deg, #A0783D 0%, #8A642B 100%) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(160, 120, 61, 0.45) !important;
+}
+
+.btn-test-drive-cta span,
+.boxcar-header .btn-test-drive-cta span {
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: normal !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+}
+
+.btn-test-drive-cta i {
+    font-size: 14px;
+}
+
+/* Sticky Header Behavior */
+.js-site-header.is-sticky .site-header-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #FFFFFF !important;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    animation: headerSlideDown 0.3s ease;
+}
+
+@keyframes headerSlideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Navigation Hamburger */
+.boxcar-header .mobile-navigation {
+    display: none;
+}
+
+.boxcar-header .mobile-navigation a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: #0F172A;
+}
+
+@media (max-width: 991.98px) {
+    .boxcar-header .main-menu {
+        display: none;
+    }
+    .btn-test-drive-cta {
+        display: none;
+    }
+    .boxcar-header .mobile-navigation {
+        display: block;
+    }
+}
+
+/* ==========================================================================
+   2. HOME HERO BANNER ENHANCEMENT (Option 1 Harmony & Contrast)
+   ========================================================================== */
+
+.boxcar-banner-section-v1 {
+    position: relative !important;
+    min-height: 640px !important;
+    height: auto !important;
+    padding: 90px 0 110px !important;
+    display: flex !important;
+    align-items: center !important;
+    background: linear-gradient(180deg, rgba(5, 11, 32, 0.72) 0%, rgba(5, 11, 32, 0.55) 50%, rgba(5, 11, 32, 0.82) 100%),
+                url(../images/banner/banner-page1.jpg) center center / cover no-repeat !important;
+}
+
+/* Guarantee visibility of banner elements - prevent WOW.js hiding above-the-fold */
+.boxcar-banner-section-v1 .wow {
+    visibility: visible !important;
+    opacity: 1 !important;
+    animation-name: none !important;
+}
+
+.boxcar-banner-section-v1 .banner-content {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 960px !important;
+    text-align: center !important;
+}
+
+.boxcar-banner-section-v1 .banner-content > span {
+    display: inline-block !important;
+    color: #C5A880 !important;
+    font-size: 13.5px !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    margin-bottom: 14px !important;
+    background: rgba(197, 168, 128, 0.12) !important;
+    padding: 6px 20px !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(197, 168, 128, 0.3) !important;
+}
+
+.boxcar-banner-section-v1 .banner-content h2 {
+    color: #FFFFFF !important;
+    font-size: 50px !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 30px !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Form Tabs Pill Selector */
+.boxcar-banner-section-v1 .form-tabs {
+    margin-bottom: 15px;
+}
+
+.boxcar-banner-section-v1 .form-tabs-list {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50px !important;
+    padding: 5px !important;
+    margin-bottom: 20px !important;
+    gap: 6px !important;
+}
+
+.boxcar-banner-section-v1 .form-tabs-list li {
+    color: #CBD5E1 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 8px 22px !important;
+    border-radius: 50px !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+    text-decoration: none !important;
+}
+
+.boxcar-banner-section-v1 .form-tabs-list li::before,
+.boxcar-banner-section-v1 .form-tabs-list li::after,
+.boxcar-banner-section-v1 .form-tabs-list li.current::before,
+.boxcar-banner-section-v1 .form-tabs-list li.current::after {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.boxcar-banner-section-v1 .form-tabs-list li.current {
+    color: #050B20 !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    font-weight: 700 !important;
+    border-bottom: none !important;
+}
+
+/* Floating Clean White Filter Card */
+.boxcar-banner-section-v1 .banner-content .form-tab-pane {
+    margin-bottom: 30px !important;
+}
+
+.boxcar-banner-section-v1 .banner-content .form-tab-pane form {
+    display: flex !important;
+    align-items: center !important;
+    background: #FFFFFF !important;
+    border-radius: 60px !important;
+    padding: 8px 10px 8px 24px !important;
+    height: 74px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+.boxcar-banner-section-v1 .form_boxes {
+    flex: 1 !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+}
+
+.boxcar-banner-section-v1 .form_boxes.line-r::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 20% !important;
+    height: 60% !important;
+    width: 1px !important;
+    background: #E2E8F0 !important;
+}
+
+.boxcar-banner-section-v1 .drop-menu {
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.boxcar-banner-section-v1 .drop-menu .select {
+    color: #0F172A !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 16px !important;
+}
+
+.boxcar-banner-section-v1 .drop-menu .select span {
+    color: #0F172A !important;
+}
+
+.boxcar-banner-section-v1 .drop-menu .select i {
+    color: #94A3B8 !important;
+    font-size: 12px !important;
+}
+
+.boxcar-banner-section-v1 .form-submit {
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+}
+
+.boxcar-banner-section-v1 .form-submit .theme-btn {
+    background: linear-gradient(135deg, #405FF2 0%, #2546E8 100%) !important;
+    color: #FFFFFF !important;
+    height: 56px !important;
+    line-height: 56px !important;
+    padding: 0 32px !important;
+    border-radius: 50px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 16px rgba(64, 95, 242, 0.4) !important;
+    border: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+}
+
+.boxcar-banner-section-v1 .form-submit .theme-btn:hover {
+    background: #1B3CD8 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Quick Model Links (Glassmorphic Pills) */
+.boxcar-banner-section-v1 .banner-content span[data-wow-delay="400ms"],
+.boxcar-banner-section-v1 .banner-content > .form-tab-content > span,
+.boxcar-banner-section-v1 .model-shortcuts-title {
+    color: #CBD5E1 !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    margin: 18px 0 12px !important;
+    display: block !important;
+}
+
+.boxcar-banner-section-v1 .model-links {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.boxcar-banner-section-v1 .model-links li a {
+    background: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(12px) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+}
+
+.boxcar-banner-section-v1 .model-links li a:hover {
+    background: #FFFFFF !important;
+    color: #050B20 !important;
+    border-color: #FFFFFF !important;
+    transform: translateY(-2px) !important;
+}
+
+@media (max-width: 767.98px) {
+    .boxcar-banner-section-v1 {
+        padding: 50px 0 70px !important;
+        min-height: auto !important;
+    }
+    .boxcar-banner-section-v1 .banner-content h2 {
+        font-size: 32px !important;
+        margin-bottom: 20px !important;
+    }
+    .boxcar-banner-section-v1 .banner-content .form-tab-pane form {
+        flex-direction: column !important;
+        height: auto !important;
+        border-radius: 20px !important;
+        padding: 16px !important;
+        gap: 12px !important;
+    }
+    .boxcar-banner-section-v1 .form_boxes {
+        width: 100% !important;
+    }
+    .boxcar-banner-section-v1 .form_boxes.line-r::after {
+        display: none !important;
+    }
+    .boxcar-banner-section-v1 .form-submit {
+        width: 100% !important;
+    }
+    .boxcar-banner-section-v1 .form-submit .theme-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* ==========================================================================
+   3. DEALERSHIP TRUST BAR (Option 1: 4 Cards)
+   ========================================================================== */
+
+.footer-trust-bar {
+    background-color: #FFFFFF !important;
+    padding: 36px 0 !important;
+    border-top: 1px solid #E2E8F0 !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+.footer-trust-bar .trust-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 18px 20px !important;
+    border-radius: 14px !important;
+    background: #F8FAFC !important;
+    border: 1px solid #EEF2F6 !important;
+    height: 100% !important;
+    transition: all 0.25s ease !important;
+}
+
+.footer-trust-bar .trust-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+    border-color: #CBD5E1 !important;
+    background: #FFFFFF !important;
+}
+
+.footer-trust-bar .trust-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 12px !important;
+    background: rgba(184, 147, 88, 0.12) !important;
+    color: #B89358 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    transition: all 0.25s ease !important;
+}
+
+.footer-trust-bar .trust-item:hover .trust-icon {
+    background: #B89358 !important;
+    color: #FFFFFF !important;
+    transform: scale(1.05) !important;
+}
+
+.footer-trust-bar .trust-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.footer-trust-bar .trust-title,
+.boxcar-footer .footer-trust-bar .trust-title,
+.boxcar-footer .footer-trust-bar h6 {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #050B20 !important;
+    margin-bottom: 4px !important;
+    display: block !important;
+    line-height: 1.3 !important;
+}
+
+.footer-trust-bar .trust-desc,
+.boxcar-footer .footer-trust-bar .trust-desc,
+.boxcar-footer .footer-trust-bar p {
+    font-size: 12.5px !important;
+    color: #64748B !important;
+    margin: 0 !important;
+    line-height: 1.45 !important;
+}
+
+.footer-trust-bar .trust-icon i,
+.boxcar-footer .footer-trust-bar .trust-icon i {
+    color: #B89358 !important;
+    font-size: 20px !important;
+}
+
+/* ==========================================================================
+   4. FOOTER STYLES (Option 1: Deep Navy #050B20 Luxury Footer)
+   ========================================================================== */
+
+.boxcar-footer {
+    background-color: #050B20 !important;
+    color: #94A3B8 !important;
+    font-size: 14px !important;
+    position: relative !important;
+}
+
+.boxcar-footer .widgets-section {
+    padding: 70px 0 50px !important;
+}
+
+.boxcar-footer .widget-title {
+    color: #FFFFFF !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin-bottom: 24px !important;
+    letter-spacing: -0.01em !important;
+    position: relative !important;
+    padding-bottom: 12px !important;
+}
+
+.boxcar-footer .widget-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 32px;
+    height: 2px;
+    background: #B89358;
+}
+
+.boxcar-footer .showroom-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.boxcar-footer .showroom-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13.5px;
+    color: #CBD5E1;
+}
+
+.boxcar-footer .showroom-info-item i {
+    color: #B89358;
+    margin-top: 3px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.boxcar-footer .showroom-info-item a {
+    color: #CBD5E1;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.boxcar-footer .showroom-info-item a:hover {
+    color: #B89358;
+}
+
+.boxcar-footer .footer-socials {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.boxcar-footer .footer-social-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #CBD5E1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.boxcar-footer .footer-social-btn:hover {
+    background: #B89358;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.boxcar-footer .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.boxcar-footer .footer-links li {
+    margin-bottom: 11px;
+}
+
+.boxcar-footer .footer-links a {
+    color: #94A3B8;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.boxcar-footer .footer-links a:hover {
+    color: #FFFFFF;
+    padding-left: 4px;
+}
+
+.boxcar-footer .hours-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.boxcar-footer .hours-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #CBD5E1;
+    margin-bottom: 8px;
+}
+
+.boxcar-footer .hours-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Footer Newsletter Form */
+.boxcar-footer .footer-newsletter-form .input-group {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    overflow: hidden;
+    padding: 3px;
+}
+
+.boxcar-footer .footer-newsletter-form input {
+    border: none;
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 13px;
+    padding: 0 16px;
+    height: 42px;
+}
+
+.boxcar-footer .footer-newsletter-form input::placeholder {
+    color: #64748B;
+}
+
+.boxcar-footer .footer-newsletter-form input:focus {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: #FFFFFF;
+}
+
+.boxcar-footer .btn-subscribe {
+    background: #B89358;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.boxcar-footer .btn-subscribe:hover {
+    background: #A0783D;
+    transform: scale(1.05);
+}
+
+/* Footer Bottom Bar */
+.boxcar-footer .footer-bottom {
+    background-color: #030712;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 22px 0;
+    font-size: 13px;
+    color: #64748B;
+}
+
+.boxcar-footer .footer-bottom a {
+    color: #94A3B8;
+    text-decoration: none;
+    margin-left: 18px;
+    transition: color 0.2s ease;
+}
+
+.boxcar-footer .footer-bottom a:hover {
+    color: #B89358;
+}
+
+@media (max-width: 767.98px) {
+    .boxcar-footer .footer-bottom .inner-container {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    .boxcar-footer .footer-bottom a {
+        margin: 0 8px;
+    }
+}
+
+/* ==========================================================================
+   5. AUTHENTICATION & LOGIN/REGISTER (Option 2: Centered BoxCar Card)
+   ========================================================================== */
+
+.boxcar-auth-section {
+    padding: 60px 0 80px;
+    background: linear-gradient(180deg, #f4f6fa 0%, #ffffff 45%, #f1f4f9 100%);
+    min-height: 560px;
+    display: flex;
+    align-items: center;
+}
+
+.boxcar-auth-card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 44px 40px 38px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+    position: relative;
+}
+
+/* Logo & Head */
+.boxcar-auth-head {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.boxcar-auth-head .auth-brand-logo {
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.boxcar-auth-head .auth-brand-logo img {
+    height: 38px;
+    width: auto;
+}
+
+.boxcar-auth-head .auth-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #050b20;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+}
+
+.boxcar-auth-head .auth-desc {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Underline Navigation Tabs */
+.boxcar-auth-nav {
+    margin-bottom: 28px;
+    border-bottom: 1.5px solid #e2e8f0;
+}
+
+.boxcar-auth-nav .nav-tabs {
+    border: 0;
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin: 0;
+}
+
+.boxcar-auth-nav .nav-tabs .nav-link {
+    position: relative;
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0 6px 14px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.boxcar-auth-nav .nav-tabs .nav-link:hover {
+    color: #050b20;
+}
+
+.boxcar-auth-nav .nav-tabs .nav-link.active {
+    color: #050b20;
+    font-weight: 700;
+}
+
+.boxcar-auth-nav .nav-tabs .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1.5px;
+    left: 0;
+    right: 0;
+    height: 2.5px;
+    background-color: #405ff2;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Input Fields */
+.boxcar-auth-card .form-group-field {
+    margin-bottom: 18px;
+}
+
+.boxcar-auth-card .form-group-field label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.boxcar-auth-card .field-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.boxcar-auth-card .field-wrapper .field-icon {
+    position: absolute;
+    left: 16px;
+    color: #94a3b8;
+    font-size: 15px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.boxcar-auth-card .field-wrapper input {
+    width: 100%;
+    height: 52px;
+    padding: 0 46px 0 44px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    font-size: 14.5px;
+    color: #0f172a;
+    transition: all 0.2s ease;
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.boxcar-auth-card .field-wrapper input:hover {
+    border-color: #94a3b8;
+    background: #ffffff;
+}
+
+.boxcar-auth-card .field-wrapper input:focus {
+    border-color: #405ff2;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.12);
+}
+
+.boxcar-auth-card .field-wrapper input.is-invalid {
+    border-color: #ef4444;
+    background: #fef2f2;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.boxcar-auth-card .field-wrapper .btn-toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    z-index: 2;
+}
+
+.boxcar-auth-card .field-wrapper .btn-toggle-password:hover {
+    color: #405ff2;
+    background: #eef2ff;
+}
+
+.boxcar-auth-card .error-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: #dc2626;
+    margin-top: 6px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.boxcar-auth-card .field-hint {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+/* Actions Row (Remember + Forgot) */
+.boxcar-auth-card .auth-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.boxcar-auth-card .custom-check {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    color: #334155;
+    font-weight: 500;
+}
+
+.boxcar-auth-card .custom-check input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.boxcar-auth-card .custom-check .checkmark {
+    width: 19px;
+    height: 19px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 5px;
+    background: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.boxcar-auth-card .custom-check:hover .checkmark {
+    border-color: #94a3b8;
+}
+
+.boxcar-auth-card .custom-check input:checked ~ .checkmark {
+    border-color: #405ff2;
+    background: #405ff2;
+}
+
+.boxcar-auth-card .custom-check .checkmark::after {
+    content: "";
+    display: none;
+    width: 5px;
+    height: 9px;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+.boxcar-auth-card .custom-check input:checked ~ .checkmark::after {
+    display: block;
+}
+
+.boxcar-auth-card .terms-row {
+    margin-bottom: 20px;
+}
+
+.boxcar-auth-card .terms-row.has-error .checkmark {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.boxcar-auth-card .link-forgot {
+    font-size: 13.5px;
+    color: #405ff2;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.boxcar-auth-card .link-forgot:hover {
+    color: #2642cb;
+    text-decoration: underline;
+}
+
+/* Primary Form Button */
+.boxcar-auth-card .btn-primary-auth {
+    width: 100%;
+    height: 52px;
+    border: 0;
+    border-radius: 12px;
+    background: #405ff2;
+    color: #ffffff;
+    font-size: 15.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(64, 95, 242, 0.25);
+}
+
+.boxcar-auth-card .btn-primary-auth:hover {
+    background: #2b49e0;
+    box-shadow: 0 8px 22px rgba(64, 95, 242, 0.38);
+    transform: translateY(-1px);
+}
+
+.boxcar-auth-card .btn-primary-auth i {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+}
+
+.boxcar-auth-card .btn-primary-auth:hover i {
+    transform: translateX(3px);
+}
+
+/* Divider */
+.boxcar-auth-card .auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 22px 0 18px;
+}
+
+.boxcar-auth-card .auth-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.boxcar-auth-card .auth-divider span {
+    position: relative;
+    background: #ffffff;
+    padding: 0 14px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Secondary Support Button */
+.boxcar-auth-card .btn-secondary-auth {
+    width: 100%;
+    height: 48px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.boxcar-auth-card .btn-secondary-auth:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.boxcar-auth-card .auth-card-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13.5px;
+    color: #64748b;
+}
+
+.boxcar-auth-card .auth-card-footer a {
+    color: #405ff2;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.boxcar-auth-card .auth-card-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Modal Support */
+.auth-support-modal .modal-content {
+    border-radius: 20px;
+    border: 0;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2);
+}
+
+.auth-support-modal .modal-header {
+    background: #050b20;
+    color: #ffffff;
+    border-bottom: 0;
+    padding: 20px 24px;
+}
+
+.auth-support-modal .modal-header .modal-title {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-support-modal .btn-close-custom {
+    background: rgba(255, 255, 255, 0.15);
+    border: 0;
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.auth-support-modal .btn-close-custom:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.auth-support-modal .modal-body {
+    padding: 24px;
+}
+
+.auth-support-modal .support-channel-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.auth-support-modal .support-channel-card:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.auth-support-modal .channel-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: #405ff2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.auth-support-modal .channel-icon.hotline {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.auth-support-modal .channel-content strong {
+    display: block;
+    font-size: 14px;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+
+.auth-support-modal .channel-content p {
+    margin: 0 0 6px;
+    font-size: 12.5px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.auth-support-modal .channel-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #405ff2;
+    text-decoration: none;
+}
+
+.auth-support-modal .channel-action.hotline {
+    color: #059669;
+}
+
+/* Responsive Auth */
+@media (max-width: 575.98px) {
+    .boxcar-auth-section {
+        padding: 32px 16px 64px;
+    }
+
+    .boxcar-auth-card {
+        padding: 30px 22px 28px;
+        border-radius: 20px;
+    }
+
+    .boxcar-auth-head .auth-title {
+        font-size: 21px;
+    }
+
+    .boxcar-auth-nav .nav-tabs {
+        gap: 28px;
+    }
+
+    .boxcar-auth-card .auth-actions-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* ==========================================================================
+   6. CLIENT ACCOUNT DASHBOARD STYLES
+   ========================================================================== */
+
+.client-account-shell {
+    padding: 42px 0 72px;
+    background: linear-gradient(180deg, #f7f8fc 0%, #ffffff 42%, #f5f7fb 100%);
+}
+
+.client-account-shell .shell {
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr);
+    gap: 24px;
+}
+
+.client-account-shell .panel {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+}
+
+.client-account-shell .panel-inner {
+    padding: 24px;
+}
+
+.client-account-shell .hero {
+    background: linear-gradient(155deg, #050b20 0%, #13224a 55%, #2746d8 100%);
+    color: #fff;
+}
+
+.client-account-shell .hero h1,
+.client-account-shell .hero h2,
+.client-account-shell .hero p,
+.client-account-shell .hero strong,
+.client-account-shell .hero span,
+.client-account-shell .hero a {
+    color: #fff;
+}
+
+.client-account-shell .sidebar {
+    position: sticky;
+    top: 118px;
+    display: grid;
+    gap: 18px;
+    align-self: start;
+}
+
+.client-account-shell .kicker,
+.client-login-shell .kicker {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(64, 95, 242, 0.12);
+    color: #405ff2;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.client-account-shell .hero .kicker {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.client-account-shell .avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 16px 0;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.client-account-shell .nav-list,
+.client-account-shell .list-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.client-account-shell .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.client-account-shell .nav-link {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #f7f9fc;
+    color: #050b20;
+    font-weight: 600;
+}
+
+.client-account-shell button.nav-link {
+    width: 100%;
+    border: 0;
+    text-align: left;
+}
+
+.client-account-shell .nav-link:hover {
+    background: #eef2ff;
+    color: #405ff2;
+}
+
+.client-account-shell .nav-link.active {
+    background: #405ff2;
+    color: #fff;
+}
+
+.client-account-shell .logout-btn {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(217, 48, 37, 0.18);
+    border-radius: 18px;
+    background: rgba(217, 48, 37, 0.04);
+    color: #b42318;
+    font-weight: 700;
+    text-align: left;
+}
+
+.client-account-shell .main {
+    display: grid;
+    gap: 24px;
+}
+
+.client-account-shell .stats,
+.client-account-shell .overview-grid,
+.client-account-shell .forms,
+.client-account-shell .purchase-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.client-account-shell .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 20px;
+}
+
+.client-account-shell .overview-grid,
+.client-account-shell .forms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.client-account-shell .purchase-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.client-account-shell .stat,
+.client-account-shell .mini-card,
+.client-account-shell .form-card,
+.client-account-shell .item,
+.client-account-shell .purchase,
+.client-account-shell .review {
+    border: 1px solid #e5eaf2;
+    border-radius: 22px;
+    background: #fff;
+}
+
+.client-account-shell .stat {
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.client-account-shell .stat strong {
+    display: block;
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.client-account-shell .section-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.client-account-shell .section-head h3,
+.client-account-shell .form-card h4 {
+    margin: 0;
+    font-size: 24px;
+    color: #050b20;
+}
+
+.client-account-shell .section-head p,
+.client-account-shell .form-card p,
+.client-account-shell .item p,
+.client-account-shell .mini-card p,
+.client-account-shell .purchase p,
+.client-account-shell .review p {
+    margin: 8px 0 0;
+    color: #667085;
+    line-height: 1.7;
+}
+
+.client-account-shell .mini-card,
+.client-account-shell .form-card,
+.client-account-shell .item,
+.client-account-shell .review {
+    padding: 20px;
+}
+
+.client-account-shell .item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.client-account-shell .title-link {
+    color: #050b20;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.client-account-shell .title-link:hover,
+.client-account-shell .action-link {
+    color: #405ff2;
+}
+
+.client-account-shell .meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.client-account-shell .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.client-account-shell .chip.info {
+    background: rgba(64, 95, 242, 0.12);
+    color: #405ff2;
+}
+
+.client-account-shell .chip.warning {
+    background: rgba(245, 158, 11, 0.16);
+    color: #b45309;
+}
+
+.client-account-shell .chip.success {
+    background: rgba(22, 163, 74, 0.14);
+    color: #15803d;
+}
+
+.client-account-shell .chip.danger {
+    background: rgba(217, 48, 37, 0.1);
+    color: #b42318;
+}
+
+.client-account-shell .chip.neutral {
+    background: #eef2f6;
+    color: #475467;
+}
+
+.client-account-shell .error-text {
+    display: block;
+    margin-top: 8px;
+    color: #d93025;
+    font-size: 13px;
+}
+
+.client-account-shell .purchase {
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr);
+    gap: 16px;
+    padding: 18px;
+}
+
+.client-account-shell .purchase img {
+    width: 100%;
+    height: 116px;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+.client-account-shell .rating {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    color: #f59e0b;
+    margin-bottom: 10px;
+}
+
+.client-account-shell .account-tab-pane {
+    display: none;
+}
+
+.client-account-shell .account-tab-pane.is-active {
+    display: grid;
+    gap: 24px;
+}
+
+.client-account-shell .profile-shell,
+.client-account-shell .profile-overview,
+.client-account-shell .profile-editor-grid,
+.client-account-shell .profile-summary-grid,
+.client-account-shell .security-points {
+    display: grid;
+    gap: 16px;
+}
+
+.client-account-shell .profile-overview,
+.client-account-shell .profile-editor-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+}
+
+.client-account-shell .profile-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.client-account-shell .profile-step {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(64, 95, 242, 0.12);
+    color: #405ff2;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.client-account-shell .profile-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.client-account-shell .profile-summary-item,
+.client-account-shell .security-point {
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid #e5eaf2;
+    background: #f8faff;
+}
+
+.client-account-shell .profile-summary-item label {
+    display: block;
+    margin-bottom: 8px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.client-account-shell .profile-summary-item strong,
+.client-account-shell .security-point strong {
+    display: block;
+    color: #050b20;
+    font-size: 17px;
+    line-height: 1.45;
+}
+
+.client-account-shell .profile-summary-item span,
+.client-account-shell .security-point span {
+    display: block;
+    margin-top: 6px;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.client-account-shell .profile-guide-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 12px;
+    color: #475467;
+    line-height: 1.7;
+}
+
+.client-account-shell .field-note {
+    display: block;
+    margin-top: 8px;
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.client-account-shell .form_boxes {
+    margin-bottom: 18px;
+}
+
+.client-account-shell .form_boxes label {
+    display: block;
+    margin-bottom: 10px;
+    color: #101828;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.client-account-shell .form_boxes input {
+    width: 100%;
+    height: 58px;
+    padding: 0 18px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #f8fbff;
+    color: #0f172a;
+    font-size: 16px;
+    line-height: 1.5;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.client-account-shell .form_boxes input:hover {
+    border-color: #94a3b8;
+    background: #fff;
+}
+
+.client-account-shell .form_boxes input:focus {
+    outline: none;
+    border-color: #405ff2;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.14);
+}
+
+.client-account-shell .form_boxes input.is-invalid {
+    border-color: #d93025;
+    background: #fff8f7;
+    box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.08);
+}
+
+.client-account-shell .form_boxes input::placeholder {
+    color: #98a2b3 !important;
+}
+
+.client-account-shell .profile-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.client-account-shell .profile-actions p {
+    margin: 0;
+    max-width: 360px;
+    color: #667085;
+    line-height: 1.7;
+}
+
+.client-account-shell .security-note {
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: #fff9eb;
+    border: 1px solid rgba(245, 158, 11, 0.24);
+    color: #92400e;
+    line-height: 1.7;
+}
+
+.client-account-shell .empty {
+    padding: 22px;
+    border-radius: 22px;
+    background: #f7f9fc;
+    border: 1px dashed #cfd8e6;
+    color: #667085;
+    line-height: 1.7;
+}
+
+@media (max-width: 1199px) {
+    .client-account-shell .stats,
+    .client-account-shell .purchase-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991px) {
+    .client-account-shell .shell,
+    .client-account-shell .overview-grid,
+    .client-account-shell .forms,
+    .client-account-shell .profile-overview,
+    .client-account-shell .profile-editor-grid {
+        grid-template-columns: 1fr;
+    }
+    .client-account-shell .sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 767px) {
+    .client-account-shell .panel-inner {
+        padding: 22px;
+    }
+    .client-account-shell .stats,
+    .client-account-shell .purchase-grid,
+    .client-account-shell .profile-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    .client-account-shell .purchase {
+        grid-template-columns: 1fr;
+    }
+}

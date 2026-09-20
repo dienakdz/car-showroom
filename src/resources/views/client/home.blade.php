@@ -24,36 +24,35 @@
 <section class="boxcar-banner-section-v1">
     <div class="container">
         <div class="banner-content">
-            <span class="wow fadeInUp">Showroom ô tô dành cho nhu cầu mua xe thực tế</span>
-            <h2 class="wow fadeInUp" data-wow-delay="100ms">Tìm chiếc xe phù hợp với bạn</h2>
+            <span class="banner-subtitle">Showroom ô tô nhập khẩu & chính hãng</span>
+            <h2 class="banner-title">Tìm Chiếc Xe Phù Hợp Với Bạn</h2>
             <div class="form-tabs">
-                <ul class="form-tabs-list wow fadeInUp" data-wow-delay="200ms">
+                <ul class="form-tabs-list">
                     <li class="current" data-tab="tab-1">Tất cả</li>
                     <li data-tab="tab-2">Xe mới</li>
                     <li data-tab="tab-3">Xe cũ</li>
                 </ul>
                 <div class="form-tab-content">
-                    <div class="form-tab-content wow fadeInUp" data-wow-delay="300ms">
-                        <div class="form-tab-pane current" id="tab-1">
-                            @include('client.partials.home-filter-form', [
-                                'action' => route('inventory.index'),
-                                'buttonLabel' => 'Tìm kho xe',
-                            ])
-                        </div>
-                        <div class="form-tab-pane" id="tab-2">
-                            @include('client.partials.home-filter-form', [
-                                'action' => route('inventory.new'),
-                                'buttonLabel' => 'Tìm xe mới',
-                            ])
-                        </div>
-                        <div class="form-tab-pane" id="tab-3">
-                            @include('client.partials.home-filter-form', [
-                                'action' => route('inventory.used'),
-                                'buttonLabel' => 'Tìm xe cũ',
-                            ])
-                        </div>
+                    <div class="form-tab-pane current" id="tab-1">
+                        @include('client.partials.home-filter-form', [
+                            'action' => route('inventory.index'),
+                            'buttonLabel' => 'Tìm kho xe',
+                        ])
                     </div>
-                    <span class="wow fadeInUp" data-wow-delay="400ms">Lối tắt nhanh</span>
+                    <div class="form-tab-pane" id="tab-2">
+                        @include('client.partials.home-filter-form', [
+                            'action' => route('inventory.new'),
+                            'buttonLabel' => 'Tìm xe mới',
+                        ])
+                    </div>
+                    <div class="form-tab-pane" id="tab-3">
+                        @include('client.partials.home-filter-form', [
+                            'action' => route('inventory.used'),
+                            'buttonLabel' => 'Tìm xe cũ',
+                        ])
+                    </div>
+                </div>
+                <span class="model-shortcuts-title">Lối tắt nhanh theo dòng xe</span>
                     <ul class="model-links">
                         @forelse ($bodyTypes->take(5) as $bodyType)
                             <li>
@@ -68,7 +67,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </section>
 
 <section class="boxcar-brand-section section-radius-top bg-1">

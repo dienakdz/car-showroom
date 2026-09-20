@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('boxcar/css/slick.css') }}">
     <link href="{{ asset('boxcar/css/mmenu.css') }}" rel="stylesheet">
     <link href="{{ asset('boxcar/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('boxcar/css/client.css') }}?v={{ filemtime(public_path('boxcar/css/client.css')) }}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
     <link rel="icon" href="{{ asset('boxcar/images/favicon.png') }}" type="image/x-icon">
     @stack('styles')
