@@ -4,20 +4,14 @@
 
 @section('content')
 @php
-    $heroBodyTypeIcons = [
-        'flaticon-car',
-        'flaticon-car-1',
-        'flaticon-van',
-        'flaticon-convertible-car',
-        'flaticon-electric-car-1',
-    ];
-    $bodyTypeCardImages = [
-        'brand-1.png',
-        'brand-2.png',
-        'brand-3.png',
-        'brand-4.png',
-        'brand-5.png',
-        'brand-6.png',
+    $bodyTypeIconMap = [
+        'sedan' => 'flaticon-car',
+        'suv' => 'flaticon-car-1',
+        'hatchback' => 'flaticon-van',
+        'pickup' => 'flaticon-pick-up-truck',
+        'coupe' => 'flaticon-convertible-car',
+        'hybrid' => 'flaticon-electric-car-1',
+        'electric' => 'flaticon-electric-car-2',
     ];
 @endphp
 
@@ -57,7 +51,7 @@
                         @forelse ($bodyTypes->take(5) as $bodyType)
                             <li>
                                 <a href="{{ route('inventory.index', ['body_type' => $bodyType->slug]) }}" title="{{ $bodyType->name }}">
-                                    <i class="{{ $heroBodyTypeIcons[$loop->index % count($heroBodyTypeIcons)] }}"></i>{{ $bodyType->name }}
+                                    <i class="{{ $bodyTypeIconMap[$bodyType->slug] ?? 'flaticon-car' }}"></i>{{ $bodyType->name }}
                                 </a>
                             </li>
                         @empty
@@ -72,7 +66,7 @@
 <section class="boxcar-brand-section section-radius-top bg-1">
     <div class="boxcar-container">
         <div class="boxcar-title">
-            <h2 class="wow fadeInUp">Khám phá theo loại xe</h2>
+            <h2 class="wow fadeInUp">Khám phá theo thương hiệu</h2>
             <a href="{{ route('inventory.index') }}" class="btn-title">Xem toàn bộ kho xe
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M13.6109 0H5.05533C4.84037 0 4.66643 0.173943 4.66643 0.388901C4.66643 0.603859 4.84037 0.777802 5.05533 0.777802H12.6721L0.113697 13.3362C-0.0382246 13.4881 -0.0382246 13.7342 0.113697 13.8861C0.18964 13.962 0.289171 14 0.388666 14C0.488161 14 0.587656 13.962 0.663635 13.8861L13.222 1.3277V8.94447C13.222 9.15943 13.3959 9.33337 13.6109 9.33337C13.8259 9.33337 13.9998 9.15943 13.9998 8.94447V0.388901C13.9998 0.173943 13.8258 0 13.6109 0Z" fill="#050B20"/>
@@ -80,24 +74,23 @@
             </a>
         </div>
         <div class="row">
-            @forelse ($bodyTypes->take(6) as $bodyType)
-                <div class="cars-block style-1 col-lg-2 col-md-6 col-sm-6">
-                    <div class="inner-box wow fadeInUp" @if ($loop->index > 0) data-wow-delay="{{ $loop->index * 100 }}ms" @endif>
-                        <div class="image-box">
-                            <figure class="image">
-                                <a href="{{ route('inventory.index', ['body_type' => $bodyType->slug]) }}">
-                                    <img src="{{ asset('boxcar/images/resource/' . $bodyTypeCardImages[$loop->index % count($bodyTypeCardImages)]) }}" alt="{{ $bodyType->name }}">
-                                </a>
-                            </figure>
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title"><a href="{{ route('inventory.index', ['body_type' => $bodyType->slug]) }}">{{ $bodyType->name }}</a></h6>
-                        </div>
+            @forelse ($makes->take(6) as $make)
+                <div class="cars-block style-1 col-lg-2 col-md-4 col-sm-6">
+                    <div class="inner-box brand-card wow fadeInUp" @if ($loop->index > 0) data-wow-delay="{{ $loop->index * 100 }}ms" @endif>
+                        <a href="{{ route('inventory.index', ['make' => $make->slug]) }}" class="brand-card-link">
+                            <div class="brand-logo-box">
+                                <img src="{{ $make->logo_url ?? asset('boxcar/images/brands/' . $make->slug . '.svg') }}" alt="{{ $make->name }}" class="brand-logo-img">
+                            </div>
+                            <div class="content-box">
+                                <h6 class="title">{{ $make->name }}</h6>
+                                <span class="brand-car-count">{{ (int) ($make->total_units ?? 0) }} xe có sẵn</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             @empty
                 <div class="col-12">
-                    <div class="alert alert-light">Chưa có loại xe để hiển thị.</div>
+                    <div class="alert alert-light">Chưa có thương hiệu xe để hiển thị.</div>
                 </div>
             @endforelse
         </div>
@@ -125,7 +118,7 @@
             <div class="nav nav-tabs" id="home-vehicles-tabs" role="tablist">
                 <button class="nav-link active" id="tab-featured-btn" data-bs-toggle="tab" data-bs-target="#tab-featured" type="button" role="tab" aria-controls="tab-featured" aria-selected="true">Xe nổi bật</button>
                 <button class="nav-link" id="tab-new-btn" data-bs-toggle="tab" data-bs-target="#tab-new" type="button" role="tab" aria-controls="tab-new" aria-selected="false">Xe mới</button>
-                <button class="nav-link" id="tab-used-btn" data-bs-toggle="tab" data-bs-target="#tab-used" type="button" role="tab" aria-controls="tab-used" aria-selected="false">Xe used/CPO</button>
+                <button class="nav-link" id="tab-used-btn" data-bs-toggle="tab" data-bs-target="#tab-used" type="button" role="tab" aria-controls="tab-used" aria-selected="false">Xe đã qua sử dụng</button>
             </div>
         </nav>
     </div>
@@ -148,7 +141,7 @@
                     @include('client.partials.home-featured-car-card', ['car' => $car])
                 @empty
                     <div class="col-12">
-                        <div class="alert alert-light">Chưa có xe mới.</div>
+                        <div class="alert alert-light">Chưa có xe mới để hiển thị.</div>
                     </div>
                 @endforelse
             </div>
@@ -157,10 +150,10 @@
             <div class="row car-slider-three slider-layout-1" data-preview="4.8">
                 @forelse ($usedCars as $car)
                     @include('client.partials.home-featured-car-card', ['car' => $car])
-                    @empty
-                        <div class="col-12">
-                            <div class="alert alert-light">Chưa có xe used/CPO.</div>
-                        </div>
+                @empty
+                    <div class="col-12">
+                        <div class="alert alert-light">Chưa có xe đã qua sử dụng để hiển thị.</div>
+                    </div>
                 @endforelse
             </div>
         </div>
@@ -230,7 +223,7 @@
                     <div class="inner wow fadeInUp" data-wow-delay="200ms">
                         <div class="content">
                             <div class="widget-counter"><span class="count-text" data-speed="3000" data-stop="{{ $stats['used'] }}">0</span>+</div>
-                            <h6 class="counter-title">XE USED/CPO</h6>
+                            <h6 class="counter-title">XE ĐÃ QUA SỬ DỤNG</h6>
                         </div>
                     </div>
                 </div>
@@ -336,7 +329,7 @@
 <section class="cars-section-two">
     <div class="boxcar-container">
         <div class="boxcar-title light wow fadeInUp">
-            <h2>Hãng xe nổi bật</h2>
+            <h2>Dòng xe theo thương hiệu nổi bật</h2>
             <a href="{{ route('inventory.index') }}" class="btn-title">Xem tất cả<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <g clip-path="url(#clip0_home_popular_makes_title)">
                         <path d="M13.6109 0H5.05533C4.84037 0 4.66643 0.173943 4.66643 0.388901C4.66643 0.603859 4.84037 0.777802 5.05533 0.777802H12.6721L0.113697 13.3362C-0.0382246 13.4881 -0.0382246 13.7342 0.113697 13.8861C0.18964 13.962 0.289171 14 0.388666 14C0.488161 14 0.587656 13.962 0.663635 13.8861L13.222 1.3277V8.94447C13.222 9.15943 13.3959 9.33337 13.6109 9.33337C13.8259 9.33337 13.9998 9.15943 13.9998 8.94447V0.388901C13.9998 0.173943 13.8258 0 13.6109 0Z" fill="white"></path>

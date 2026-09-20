@@ -2087,3 +2087,327 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   Homepage Refactor: Body Type Cards & Popular Makes Section
+   ========================================================================== */
+
+/* Prevent WOW.js from leaving elements permanently invisible */
+.wow {
+    visibility: visible !important;
+}
+
+/* 1. Brand Logo & Body Type Cards */
+.boxcar-brand-section .cars-block.style-1 {
+    display: flex;
+}
+
+.boxcar-brand-section .inner-box.brand-card,
+.boxcar-brand-section .inner-box.body-type-card {
+    width: 100%;
+    padding: 24px 16px 20px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+    text-align: center;
+}
+
+.boxcar-brand-section .inner-box.brand-card:hover,
+.boxcar-brand-section .inner-box.body-type-card:hover {
+    border-color: #405FF2;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(64, 95, 242, 0.12);
+}
+
+.brand-card-link,
+.body-type-card-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.brand-logo-box {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.brand-logo-img {
+    max-height: 44px;
+    max-width: 86px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.boxcar-brand-section .inner-box.brand-card:hover .brand-logo-img {
+    transform: scale(1.08);
+}
+
+.body-type-icon-box {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    background: #F1F4FD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.body-type-icon-box i {
+    font-size: 34px;
+    color: #405FF2;
+    transition: transform 0.3s ease;
+}
+
+.boxcar-brand-section .inner-box.body-type-card:hover .body-type-icon-box {
+    background: #405FF2;
+}
+
+.boxcar-brand-section .inner-box.body-type-card:hover .body-type-icon-box i {
+    color: #FFFFFF;
+    transform: scale(1.08);
+}
+
+.brand-card .content-box,
+.body-type-card .content-box {
+    padding: 0;
+    background: transparent;
+}
+
+.brand-card .content-box .title,
+.body-type-card .content-box .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 4px;
+    transition: color 0.2s ease;
+}
+
+.boxcar-brand-section .inner-box.brand-card:hover .content-box .title,
+.boxcar-brand-section .inner-box.body-type-card:hover .content-box .title {
+    color: #405FF2;
+}
+
+.brand-card .content-box .brand-car-count,
+.body-type-card .content-box .body-type-count {
+    font-size: 13px;
+    color: #64748B;
+    font-weight: 500;
+    display: block;
+}
+
+/* 2. Popular Makes Car Card (.cars-section-two .car-block-two) */
+.cars-section-two .car-slider {
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+.cars-section-two .car-block-two {
+    padding: 0 12px;
+}
+
+.cars-section-two .car-block-two .inner-box {
+    display: flex !important;
+    flex-direction: row;
+    background: #141A29 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 250px;
+    transition: all 0.3s ease;
+}
+
+.cars-section-two .car-block-two .inner-box:hover {
+    border-color: rgba(64, 95, 242, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.cars-section-two .car-block-two .inner-box .image-box {
+    width: 44% !important;
+    min-width: 44% !important;
+    max-width: 44% !important;
+    flex: 0 0 44% !important;
+    position: relative;
+    overflow: hidden;
+    background: #0B0F19;
+}
+
+.cars-section-two .car-block-two .inner-box .image-box .image,
+.cars-section-two .car-block-two .inner-box .image-box .image a,
+.cars-section-two .car-block-two .inner-box .image-box .image img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.cars-section-two .car-block-two .inner-box .image-box span {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #405FF2;
+    color: #FFFFFF;
+    z-index: 2;
+}
+
+.cars-section-two .car-block-two .inner-box .image-box .icon-box {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.2s ease;
+}
+
+.cars-section-two .car-block-two .inner-box .image-box .icon-box:hover {
+    background: #FFFFFF;
+}
+
+.cars-section-two .car-block-two .inner-box .content-box {
+    width: 56% !important;
+    flex: 1 1 56% !important;
+    min-width: 0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 22px 24px;
+    background: transparent !important;
+}
+
+.cars-section-two .car-block-two .car-meta-top .title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cars-section-two .car-block-two .car-meta-top .title a {
+    color: #FFFFFF;
+    transition: color 0.2s ease;
+}
+
+.cars-section-two .car-block-two .car-meta-top .title a:hover {
+    color: #6B8AFF;
+}
+
+.cars-section-two .car-block-two .car-meta-top .text {
+    font-size: 13px;
+    color: #94A3B8;
+    margin-bottom: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cars-section-two .car-block-two .specs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 0;
+    margin: 0 0 16px 0;
+    list-style: none;
+}
+
+.cars-section-two .car-block-two .specs-list li {
+    font-size: 12px;
+    color: #CBD5E1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cars-section-two .car-block-two .specs-list li i {
+    font-size: 14px;
+    color: #6B8AFF;
+}
+
+.cars-section-two .car-block-two .btn-box {
+    position: static !important;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cars-section-two .car-block-two .btn-box .price-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cars-section-two .car-block-two .btn-box .price-wrap .price-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.cars-section-two .car-block-two .btn-box .price-wrap .price-sub {
+    font-size: 12px;
+    color: #94A3B8;
+    margin-top: 2px;
+}
+
+.cars-section-two .car-block-two .btn-box .details {
+    position: static !important;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B8AFF !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.cars-section-two .car-block-two .btn-box .details:hover {
+    color: #FFFFFF !important;
+}
+
+@media (max-width: 767px) {
+    .cars-section-two .car-block-two .inner-box {
+        flex-direction: column;
+    }
+    .cars-section-two .car-block-two .inner-box .image-box {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 180px;
+    }
+    .cars-section-two .car-block-two .inner-box .content-box {
+        width: 100% !important;
+    }
+}
+

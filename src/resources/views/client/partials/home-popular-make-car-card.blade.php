@@ -21,18 +21,22 @@
             </a>
         </div>
         <div class="content-box">
-            <h6 class="title">
-                <a href="{{ route('car.show', $car->stock_code) }}">{{ $car->make_name }}, {{ $car->model_name }}</a>
-            </h6>
-            <div class="text">{{ $car->year }} {{ $car->trim_name }}</div>
-            <ul>
-                <li><i class="flaticon-speedometer"></i>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Xe mới về' }}</li>
-                <li><i class="flaticon-gasoline-pump"></i>{{ $car->fuel_type_name ?? 'N/A' }}</li>
-                <li><i class="flaticon-gearbox"></i>{{ $car->transmission_name ?? 'N/A' }}</li>
+            <div class="car-meta-top">
+                <h6 class="title">
+                    <a href="{{ route('car.show', $car->stock_code) }}">{{ $car->make_name }}, {{ $car->model_name }}</a>
+                </h6>
+                <div class="text">{{ $car->year }} {{ $car->trim_name }}</div>
+            </div>
+            <ul class="specs-list">
+                <li><i class="flaticon-speedometer"></i><span>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Xe mới về' }}</span></li>
+                <li><i class="flaticon-gasoline-pump"></i><span>{{ $car->fuel_label ?? $car->fuel_type_name ?? 'Đang cập nhật' }}</span></li>
+                <li><i class="flaticon-gearbox"></i><span>{{ $car->transmission_label ?? $car->transmission_name ?? 'Đang cập nhật' }}</span></li>
             </ul>
             <div class="btn-box">
-                <span>{{ $car->formatted_price }}</span>
-                <small>{{ $car->body_type_name ?? $car->condition_label }}</small>
+                <div class="price-wrap">
+                    <span class="price-value">{{ $car->formatted_price }}</span>
+                    <small class="price-sub">{{ $car->body_type_name ?? $car->condition_label }}</small>
+                </div>
                 <a href="{{ route('car.show', $car->stock_code) }}" class="details">Xem chi tiết
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <g clip-path="url(#clip0_home_popular_make_arrow)">

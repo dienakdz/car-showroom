@@ -30,9 +30,9 @@
             </h6>
             <div class="text">{{ $car->year }} {{ $car->trim_name }}</div>
             <ul>
-                <li><i class="flaticon-speedometer"></i>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Odo thấp' }}</li>
-                <li><i class="flaticon-gasoline-pump"></i>{{ $car->fuel_type_name ?? 'N/A' }}</li>
-                <li><i class="flaticon-gearbox"></i>{{ $car->transmission_name ?? 'N/A' }}</li>
+                <li><i class="flaticon-speedometer"></i>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Xe mới về' }}</li>
+                <li><i class="flaticon-gasoline-pump"></i>{{ $car->fuel_label ?? $car->fuel_type_name ?? 'Đang cập nhật' }}</li>
+                <li><i class="flaticon-gearbox"></i>{{ $car->transmission_label ?? $car->transmission_name ?? 'Đang cập nhật' }}</li>
             </ul>
             <div class="btn-box">
                 <span>{{ $car->formatted_price }}</span>

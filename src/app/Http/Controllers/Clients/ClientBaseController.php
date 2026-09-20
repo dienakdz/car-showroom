@@ -105,14 +105,29 @@ abstract class ClientBaseController extends Controller
     {
         $car->image_url = $this->resolveMediaPath($car->cover_media ?? null);
         $car->formatted_price = $car->price === null
-            ? 'Lien he'
+            ? 'Liên hệ'
             : number_format((float) $car->price, 0, ',', '.') . ' ' . $car->currency;
 
         $car->condition_label = match ($car->condition) {
-            'new' => 'Moi',
-            'used' => 'Da qua su dung',
-            'cpo' => 'CPO',
+            'new' => 'Mới',
+            'used' => 'Đã qua sử dụng',
+            'cpo' => 'Xe lướt CPO',
             default => strtoupper((string) $car->condition),
+        };
+
+        $car->fuel_label = match (strtolower((string) ($car->fuel_type_name ?? ''))) {
+            'gasoline' => 'Xăng',
+            'diesel' => 'Dầu (Diesel)',
+            'hybrid' => 'Hybrid',
+            'electric' => 'Điện',
+            default => $car->fuel_type_name ?? 'Đang cập nhật',
+        };
+
+        $car->transmission_label = match (strtolower((string) ($car->transmission_name ?? ''))) {
+            'automatic' => 'Tự động',
+            'manual' => 'Số sàn',
+            'cvt' => 'Tự động CVT',
+            default => $car->transmission_name ?? 'Đang cập nhật',
         };
 
         return $car;
@@ -239,7 +254,7 @@ abstract class ClientBaseController extends Controller
         }
 
         return $query->get()->map(function (TrimReview $review): object {
-            $review->user_name = $review->user?->name ?? 'Khach hang';
+            $review->user_name = $review->user?->name ?? 'Khách hàng';
 
             return $review;
         });

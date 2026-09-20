@@ -1,4 +1,16 @@
 @php
+    $fuelLabelMap = [
+        'gasoline' => 'Xăng',
+        'diesel' => 'Dầu (Diesel)',
+        'hybrid' => 'Hybrid',
+        'electric' => 'Điện',
+    ];
+    $bodyTypeLabelMap = [
+        'sedan' => 'Sedan',
+        'suv' => 'SUV',
+        'hatchback' => 'Hatchback',
+        'pickup' => 'Bán tải (Pickup)',
+    ];
     $selectedMake = collect($makes)->firstWhere('slug', request('make'));
     $selectedBodyType = collect($bodyTypes)->firstWhere('slug', request('body_type'));
     $selectedFuelType = collect($fuelTypes)->firstWhere('slug', request('fuel_type'));
@@ -23,14 +35,14 @@
     <div class="form_boxes line-r">
         <div class="drop-menu">
             <div class="select">
-                <span>{{ $selectedBodyType->name ?? 'Tất cả kiểu dáng' }}</span>
+                <span>{{ $bodyTypeLabelMap[$selectedBodyType->slug ?? ''] ?? $selectedBodyType->name ?? 'Tất cả kiểu dáng' }}</span>
                 <i class="fa fa-angle-down"></i>
             </div>
             <input type="hidden" name="body_type" value="{{ request('body_type', '') }}">
             <ul class="dropdown" style="display: none;">
                 <li data-value="">Tất cả kiểu dáng</li>
                 @foreach ($bodyTypes as $bodyType)
-                    <li data-value="{{ $bodyType->slug }}">{{ $bodyType->name }}</li>
+                    <li data-value="{{ $bodyType->slug }}">{{ $bodyTypeLabelMap[$bodyType->slug] ?? $bodyType->name }}</li>
                 @endforeach
             </ul>
         </div>
@@ -38,14 +50,14 @@
     <div class="form_boxes">
         <div class="drop-menu">
             <div class="select">
-                <span>{{ $selectedFuelType->name ?? 'Tất cả nhiên liệu' }}</span>
+                <span>{{ $fuelLabelMap[$selectedFuelType->slug ?? ''] ?? $selectedFuelType->name ?? 'Tất cả nhiên liệu' }}</span>
                 <i class="fa fa-angle-down"></i>
             </div>
             <input type="hidden" name="fuel_type" value="{{ request('fuel_type', '') }}">
             <ul class="dropdown" style="display: none;">
                 <li data-value="">Tất cả nhiên liệu</li>
                 @foreach ($fuelTypes as $fuelType)
-                    <li data-value="{{ $fuelType->slug }}">{{ $fuelType->name }}</li>
+                    <li data-value="{{ $fuelType->slug }}">{{ $fuelLabelMap[$fuelType->slug] ?? $fuelType->name }}</li>
                 @endforeach
             </ul>
         </div>
