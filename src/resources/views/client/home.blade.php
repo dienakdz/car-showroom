@@ -47,20 +47,20 @@
                     </div>
                 </div>
                 <span class="model-shortcuts-title">Lối tắt nhanh theo dòng xe</span>
-                    <ul class="model-links">
-                        @forelse ($bodyTypes->take(5) as $bodyType)
-                            <li>
-                                <a href="{{ route('inventory.index', ['body_type' => $bodyType->slug]) }}" title="{{ $bodyType->name }}">
-                                    <i class="{{ $bodyTypeIconMap[$bodyType->slug] ?? 'flaticon-car' }}"></i>{{ $bodyType->name }}
-                                </a>
-                            </li>
-                        @empty
-                            <li><a href="{{ route('inventory.index') }}" title=""><i class="flaticon-car"></i>Tất cả xe</a></li>
-                        @endforelse
-                    </ul>
-                </div>
+                <ul class="model-links">
+                    @forelse ($bodyTypes->take(5) as $bodyType)
+                        <li>
+                            <a href="{{ route('inventory.index', ['body_type' => $bodyType->slug]) }}" title="{{ $bodyType->name }}">
+                                <i class="{{ $bodyTypeIconMap[$bodyType->slug] ?? 'flaticon-car' }}"></i>{{ $bodyType->name }}
+                            </a>
+                        </li>
+                    @empty
+                        <li><a href="{{ route('inventory.index') }}" title=""><i class="flaticon-car"></i>Tất cả xe</a></li>
+                    @endforelse
+                </ul>
             </div>
         </div>
+    </div>
 </section>
 
 <section class="boxcar-brand-section section-radius-top bg-1">
@@ -121,40 +121,40 @@
                 <button class="nav-link" id="tab-used-btn" data-bs-toggle="tab" data-bs-target="#tab-used" type="button" role="tab" aria-controls="tab-used" aria-selected="false">Xe đã qua sử dụng</button>
             </div>
         </nav>
-    </div>
 
-    <div class="tab-content wow fadeInUp" data-wow-delay="200ms" id="home-vehicles-tabs-content">
-        <div class="tab-pane fade show active" id="tab-featured" role="tabpanel" aria-labelledby="tab-featured-btn">
-            <div class="row car-slider-three slider-layout-1" data-preview="4.8">
-                @forelse ($featuredCars as $car)
-                    @include('client.partials.home-featured-car-card', ['car' => $car])
-                @empty
-                    <div class="col-12">
-                        <div class="alert alert-light">Chưa có xe nổi bật để hiển thị.</div>
-                    </div>
-                @endforelse
+        <div class="tab-content wow fadeInUp" data-wow-delay="200ms" id="home-vehicles-tabs-content">
+            <div class="tab-pane fade show active" id="tab-featured" role="tabpanel" aria-labelledby="tab-featured-btn">
+                <div class="row car-slider-three" data-preview="4">
+                    @forelse ($featuredCars as $car)
+                        @include('client.partials.home-featured-car-card', ['car' => $car])
+                    @empty
+                        <div class="col-12">
+                            <div class="alert alert-light">Chưa có xe nổi bật để hiển thị.</div>
+                        </div>
+                    @endforelse
+                </div>
             </div>
-        </div>
-        <div class="tab-pane fade" id="tab-new" role="tabpanel" aria-labelledby="tab-new-btn">
-            <div class="row car-slider-three slider-layout-1" data-preview="4.8">
-                @forelse ($newCars as $car)
-                    @include('client.partials.home-featured-car-card', ['car' => $car])
-                @empty
-                    <div class="col-12">
-                        <div class="alert alert-light">Chưa có xe mới để hiển thị.</div>
-                    </div>
-                @endforelse
+            <div class="tab-pane fade" id="tab-new" role="tabpanel" aria-labelledby="tab-new-btn">
+                <div class="row car-slider-three" data-preview="4">
+                    @forelse ($newCars as $car)
+                        @include('client.partials.home-featured-car-card', ['car' => $car])
+                    @empty
+                        <div class="col-12">
+                            <div class="alert alert-light">Chưa có xe mới để hiển thị.</div>
+                        </div>
+                    @endforelse
+                </div>
             </div>
-        </div>
-        <div class="tab-pane fade" id="tab-used" role="tabpanel" aria-labelledby="tab-used-btn">
-            <div class="row car-slider-three slider-layout-1" data-preview="4.8">
-                @forelse ($usedCars as $car)
-                    @include('client.partials.home-featured-car-card', ['car' => $car])
-                @empty
-                    <div class="col-12">
-                        <div class="alert alert-light">Chưa có xe đã qua sử dụng để hiển thị.</div>
-                    </div>
-                @endforelse
+            <div class="tab-pane fade" id="tab-used" role="tabpanel" aria-labelledby="tab-used-btn">
+                <div class="row car-slider-three" data-preview="4">
+                    @forelse ($usedCars as $car)
+                        @include('client.partials.home-featured-car-card', ['car' => $car])
+                    @empty
+                        <div class="col-12">
+                            <div class="alert alert-light">Chưa có xe đã qua sử dụng để hiển thị.</div>
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -351,25 +351,24 @@
                 </div>
             </nav>
         @endif
-    </div>
-    <div class="tab-content wow fadeInUp" data-wow-delay="200ms" id="popular-makes-tabs-content">
-        @forelse ($popularMakes as $make)
-            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="popular-make-pane-{{ $loop->index }}" role="tabpanel" aria-labelledby="popular-make-tab-{{ $loop->index }}">
-                <div class="row car-slider slider-layout-1" data-preview="2.3">
-                    @forelse ($make->cars as $car)
-                        @include('client.partials.home-popular-make-car-card', ['car' => $car])
-                    @empty
-                        <div class="col-12">
-                            <div class="alert alert-light">Chưa có xe để hiển thị cho hãng {{ $make->name }}.</div>
-                        </div>
-                    @endforelse
+
+        <div class="tab-content wow fadeInUp" data-wow-delay="200ms" id="popular-makes-tabs-content">
+            @forelse ($popularMakes as $make)
+                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="popular-make-pane-{{ $loop->index }}" role="tabpanel" aria-labelledby="popular-make-tab-{{ $loop->index }}">
+                    <div class="row car-slider" data-preview="2">
+                        @forelse ($make->cars as $car)
+                            @include('client.partials.home-popular-make-car-card', ['car' => $car])
+                        @empty
+                            <div class="col-12">
+                                <div class="alert alert-light">Chưa có xe để hiển thị cho hãng {{ $make->name }}.</div>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
-            </div>
-        @empty
-            <div class="boxcar-container">
+            @empty
                 <div class="alert alert-light">Chưa có hãng xe nổi bật để hiển thị.</div>
-            </div>
-        @endforelse
+            @endforelse
+        </div>
     </div>
 </section>
 @endsection

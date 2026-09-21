@@ -126,7 +126,7 @@ abstract class ClientBaseController extends Controller
         $car->transmission_label = match (strtolower((string) ($car->transmission_name ?? ''))) {
             'automatic' => 'Tự động',
             'manual' => 'Số sàn',
-            'cvt' => 'Tự động CVT',
+            'cvt' => 'CVT',
             default => $car->transmission_name ?? 'Đang cập nhật',
         };
 

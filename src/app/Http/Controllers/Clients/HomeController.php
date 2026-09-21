@@ -90,13 +90,10 @@ class HomeController extends ClientBaseController
             'available' => (int) ($unitCounts->available ?? 0),
             'new' => (int) ($unitCounts->new ?? 0),
             'used' => (int) ($unitCounts->used ?? 0),
-            'makes' => Make::query()->count(),
+            'makes' => $allMakesWithCount->count(),
         ];
 
         $bodyTypes = BodyType::query()
-            ->withCount(['carUnits' => function ($query): void {
-                $query->where('status', 'available')->whereNotNull('published_at');
-            }])
             ->orderBy('name')
             ->get(['id', 'slug', 'name']);
 
