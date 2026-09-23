@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\Make;
 use App\Models\Trim;
 use App\Models\TrimReview;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class PagesController extends ClientBaseController
@@ -32,22 +33,66 @@ class PagesController extends ClientBaseController
         ]);
     }
 
-    public function contact(string $source = 'contact'): View
+    public function contact(): View
     {
-        $source = $this->normalizeLeadSource($source);
-        $sourceTitle = $this->leadSourceTitle($source);
+        return $this->viewWithSharedData('client.contact', [
+            'showroom' => $this->sharedShowroom(),
+            'source' => 'contact',
+            'sourceTitle' => 'Liên Hệ Showroom & Đặt Lịch Trải Nghiệm Xe',
+            'availableCars' => $this->getAvailableCarsForSelector(),
+            'trims' => $this->getTrimsForSelector(),
+        ]);
+    }
 
-        $availableCars = $this->publicVisibleCarQuery()
+    public function finance(): View
+    {
+        return $this->viewWithSharedData('client.finance', [
+            'showroom' => $this->sharedShowroom(),
+            'source' => 'finance',
+            'sourceTitle' => 'Dự Toán Tài Chính & Gói Vay Trả Góp Ưu Đãi',
+            'availableCars' => $this->getAvailableCarsForSelector(),
+            'trims' => $this->getTrimsForSelector(),
+        ]);
+    }
+
+    public function tradeIn(): View
+    {
+        $popularMakes = Make::query()->orderBy('name')->pluck('name');
+
+        return $this->viewWithSharedData('client.trade-in', [
+            'showroom' => $this->sharedShowroom(),
+            'source' => 'trade_in',
+            'sourceTitle' => 'Thu Cũ Đổi Mới - Lên Đời Xe Sang Nhanh Chóng',
+            'availableCars' => $this->getAvailableCarsForSelector(),
+            'trims' => $this->getTrimsForSelector(),
+            'popularMakes' => $popularMakes,
+        ]);
+    }
+
+    /**
+     * @return Collection<int, object>
+     */
+    protected function getAvailableCarsForSelector(): Collection
+    {
+        return $this->publicVisibleCarQuery()
+            ->toBase()
             ->orderByDesc('car_units.id')
-            ->limit(40)
+            ->limit(50)
             ->get()
             ->map(function (object $car): object {
                 $car->label = $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' (' . $car->stock_code . ')';
 
                 return $car;
             });
+    }
 
-        $trims = Trim::query()
+    /**
+     * @return Collection<int, object>
+     */
+    protected function getTrimsForSelector(): Collection
+    {
+        return Trim::query()
+            ->toBase()
             ->select([
                 'trims.id',
                 'trims.slug',
@@ -66,13 +111,5 @@ class PagesController extends ClientBaseController
 
                 return $trim;
             });
-
-        return $this->viewWithSharedData('client.contact', [
-            'showroom' => $this->sharedShowroom(),
-            'source' => $source,
-            'sourceTitle' => $sourceTitle,
-            'availableCars' => $availableCars,
-            'trims' => $trims,
-        ]);
     }
 }

@@ -341,9 +341,9 @@ abstract class ClientBaseController extends Controller
     protected function leadSourceTitle(string $source): string
     {
         return match ($source) {
-            'finance' => 'Dang Ky Tu Van Tai Chinh',
-            'trade_in' => 'Dang Ky Thu Cu Doi Moi',
-            default => 'Lien He Showroom',
+            'finance' => 'Dự Toán Tài Chính & Vay Trả Góp',
+            'trade_in' => 'Thu Cũ Đổi Mới - Lên Đời Xe',
+            default => 'Liên Hệ Showroom',
         };
     }
 

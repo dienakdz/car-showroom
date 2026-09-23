@@ -40,9 +40,9 @@ Route::post('/phien-ban/{trimSlug}/danh-gia', [TrimReviewsController::class, 'st
 Route::get('/phien-ban/{trimSlug}', [TrimsController::class, 'show'])->name('trim.show');
 
 Route::get('/ve-chung-toi', [PagesController::class, 'about'])->name('about');
-Route::get('/lien-he', [PagesController::class, 'contact'])->defaults('source', 'contact')->name('contact');
-Route::get('/tai-chinh', [PagesController::class, 'contact'])->defaults('source', 'finance')->name('finance');
-Route::get('/thu-cu-doi-moi', [PagesController::class, 'contact'])->defaults('source', 'trade_in')->name('tradein');
+Route::get('/lien-he', [PagesController::class, 'contact'])->name('contact');
+Route::get('/tai-chinh', [PagesController::class, 'finance'])->name('finance');
+Route::get('/thu-cu-doi-moi', [PagesController::class, 'tradeIn'])->name('tradein');
 Route::post('/lead', [LeadController::class, 'store'])->middleware('throttle:15,1')->name('lead.store');
 
 require __DIR__ . '/admin.php';
