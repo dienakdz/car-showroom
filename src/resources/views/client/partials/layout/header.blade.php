@@ -1,5 +1,4 @@
-@php($headerClasses = $headerClasses ?? 'boxcar-header header-style-v1 style-two inner-header')
-@php($isInnerHeader = str_contains($headerClasses, 'inner-header') || str_contains($headerClasses, 'style-two'))
+@php($headerClasses = $headerClasses ?? 'boxcar-header header-style-v1 header-default')
 @php($showSearch = $showSearch ?? false)
 @php($currentUser = auth()->user())
 @php($isStaffOrAdmin = $currentUser !== null && $currentUser->hasAnyRole(['admin', 'staff']))

@@ -38,7 +38,7 @@ License: copyright commercial
 @import url("linear.css");
 @import url("fontawesome.css");
 @import url("flaticon.css");
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 :root {
   --theme-color-light: #ffffff;
@@ -55,8 +55,8 @@ License: copyright commercial
   --headings-color: #050B20;
   --link-color: var(--headings-color);
   --link-hover-color: var(--headings-color);
-  --title-font: "DM Sans", sans-serif;
-  --text-font: "DM Sans", sans-serif;
+  --title-font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --title-font2: "Bebas Neue", sans-serif;
   --body-font-size: 16px;
   --body-line-height: 28px;

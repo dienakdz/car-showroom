@@ -1,453 +1,323 @@
 @extends('client.layouts.page')
 
-@section('title', 'Ve chung toi')
-
-@push('styles')
-<style>
-    .client-about-page {
-        padding: 48px 0 72px;
-        background:
-            radial-gradient(circle at top left, rgba(64, 95, 242, 0.12), transparent 34%),
-            linear-gradient(180deg, #f7f8fc 0%, #ffffff 40%, #f5f7fb 100%);
-    }
-
-    .client-about-page .about-hero,
-    .client-about-page .about-grid,
-    .client-about-page .about-media-grid,
-    .client-about-page .about-stat-grid,
-    .client-about-page .about-feature-grid,
-    .client-about-page .about-info-stack,
-    .client-about-page .about-checklist,
-    .client-about-page .about-note-grid,
-    .client-about-page .about-image-grid {
-        display: grid;
-        gap: 16px;
-    }
-
-    .client-about-page .about-hero {
-        grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
-        align-items: stretch;
-        margin-bottom: 24px;
-    }
-
-    .client-about-page .about-grid,
-    .client-about-page .about-media-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        margin-bottom: 24px;
-    }
-
-    .client-about-page .about-stat-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        margin-top: 24px;
-    }
-
-    .client-about-page .about-feature-grid,
-    .client-about-page .about-note-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .client-about-page .about-image-grid {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .client-about-page .about-panel {
-        border-radius: 28px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #fff;
-        box-shadow: 0 22px 65px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-    }
-
-    .client-about-page .about-panel-inner {
-        padding: 28px;
-    }
-
-    .client-about-page .about-hero-card {
-        background: linear-gradient(160deg, #050b20 0%, #13234f 56%, #2847da 100%);
-        color: #fff;
-    }
-
-    .client-about-page .about-hero-card h1,
-    .client-about-page .about-hero-card p,
-    .client-about-page .about-hero-card strong,
-    .client-about-page .about-hero-card span,
-    .client-about-page .about-hero-card a {
-        color: #fff;
-    }
-
-    .client-about-page .about-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .client-about-page .about-title {
-        margin: 18px 0 12px;
-        font-size: clamp(34px, 4vw, 52px);
-        line-height: 1.02;
-    }
-
-    .client-about-page .about-text {
-        margin: 0;
-        font-size: 16px;
-        line-height: 1.75;
-        color: #5f6980;
-    }
-
-    .client-about-page .about-actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 24px;
-    }
-
-    .client-about-page .about-action-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 50px;
-        padding: 0 18px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
-        font-weight: 700;
-    }
-
-    .client-about-page .about-action-link.alt {
-        background: #fff;
-        border-color: #fff;
-        color: #050b20;
-    }
-
-    .client-about-page .about-stat {
-        padding: 18px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .client-about-page .about-stat strong {
-        display: block;
-        font-size: 30px;
-        line-height: 1;
-        margin-bottom: 8px;
-    }
-
-    .client-about-page .about-info-card,
-    .client-about-page .about-note,
-    .client-about-page .about-feature {
-        padding: 18px 20px;
-        border-radius: 20px;
-        border: 1px solid #e5eaf2;
-        background: #f8fbff;
-    }
-
-    .client-about-page .about-info-card label {
-        display: block;
-        margin-bottom: 8px;
-        color: #667085;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .client-about-page .about-info-card strong,
-    .client-about-page .about-note strong,
-    .client-about-page .about-feature strong {
-        display: block;
-        margin-bottom: 6px;
-        color: #050b20;
-        font-size: 18px;
-        line-height: 1.4;
-    }
-
-    .client-about-page .about-info-card span,
-    .client-about-page .about-note span,
-    .client-about-page .about-feature span {
-        display: block;
-        color: #5f6980;
-        line-height: 1.7;
-    }
-
-    .client-about-page .about-section-title {
-        margin: 0 0 10px;
-        color: #050b20;
-        font-size: 28px;
-        line-height: 1.2;
-    }
-
-    .client-about-page .about-checklist {
-        margin-top: 22px;
-    }
-
-    .client-about-page .about-check {
-        display: grid;
-        grid-template-columns: 42px minmax(0, 1fr);
-        gap: 14px;
-        align-items: start;
-        padding: 18px 20px;
-        border-radius: 20px;
-        background: #f8fbff;
-        border: 1px solid #e5eaf2;
-    }
-
-    .client-about-page .about-check-index {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(64, 95, 242, 0.12);
-        color: #405ff2;
-        font-weight: 700;
-    }
-
-    .client-about-page .about-image-grid img {
-        width: 100%;
-        height: 100%;
-        min-height: 220px;
-        object-fit: cover;
-        border-radius: 22px;
-    }
-
-    .client-about-page .about-image-grid .stacked {
-        display: grid;
-        gap: 16px;
-    }
-
-    .client-about-page .about-cta {
-        background: linear-gradient(160deg, #050b20 0%, #142552 100%);
-        color: #fff;
-    }
-
-    .client-about-page .about-cta .about-section-title,
-    .client-about-page .about-cta .about-text {
-        color: #fff;
-    }
-
-    @media (max-width: 1199px) {
-        .client-about-page .about-stat-grid,
-        .client-about-page .about-feature-grid,
-        .client-about-page .about-note-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 991px) {
-        .client-about-page .about-hero,
-        .client-about-page .about-grid,
-        .client-about-page .about-media-grid,
-        .client-about-page .about-image-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .client-about-page {
-            padding: 36px 0 56px;
-        }
-
-        .client-about-page .about-panel-inner {
-            padding: 22px;
-        }
-
-        .client-about-page .about-stat-grid,
-        .client-about-page .about-feature-grid,
-        .client-about-page .about-note-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Về chúng tôi')
 
 @section('content')
 @php
-    $showroomName = $showroom->name ?? 'Car Showroom';
-    $showroomAddress = $showroom->address ?? 'TP. Ho Chi Minh';
+    $showroomName = $showroom->name ?? 'BoxCar Showroom';
+    $showroomAddress = $showroom->address ?? 'TP. Hồ Chí Minh';
     $showroomPhone = $showroom->phone ?? '0900 000 000';
-    $showroomEmail = $showroom->email ?? 'hello@showroom.test';
-    $showroomDescription = $showroom->description ?? 'Showroom tap trung vao trai nghiem chon xe, tao lead, dat lich va chot sale offline theo mot quy trinh ro rang.';
+    $showroomEmail = $showroom->email ?? 'contact@showroom.test';
 @endphp
 
-<section class="client-about-page layout-radius">
+<section class="about-page-v2 layout-radius">
     <div class="boxcar-container">
-        <div class="about-hero">
-            <div class="about-panel about-hero-card">
-                <div class="about-panel-inner">
-                    <ul class="breadcrumb">
-                        <li><a href="{{ route('home') }}">Trang chu</a></li>
-                        <li><span>Ve chung toi</span></li>
-                    </ul>
+        <!-- 1. Header & Brand Story (Matches Mockup 2) -->
+        <div class="about-header-intro wow fadeInUp">
+            <ul class="about-breadcrumb">
+                <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                <li><span>/</span></li>
+                <li><span>Về chúng tôi</span></li>
+            </ul>
+            <h1 class="about-main-title">VỀ CHÚNG TÔI - ĐẲNG CẤP & UY TÍN KHẲNG ĐỊNH GIÁ TRỊ</h1>
+            <p class="about-main-desc">
+                {{ $showroomName }} tự hào là điểm đến tin cậy của hàng ngàn khách hàng trên toàn quốc, mang đến những mẫu xe tuyển chọn khắt khe, chất lượng đỉnh cao cùng dịch vụ tận tâm và minh bạch tuyệt đối.
+            </p>
+        </div>
 
-                    <span class="about-eyebrow">Public showroom</span>
-                    <h1 class="about-title">{{ $showroomName }}</h1>
-                    <p class="about-text">{{ $showroomDescription }}</p>
+        <!-- 2. Showroom Multi-Vehicle Gallery (Matches Mockup 2) -->
+        <div class="about-gallery-grid wow fadeInUp" data-wow-delay="100ms">
+            <!-- Column 1: Featured Showroom Car -->
+            <div class="about-gallery-col">
+                <div class="about-gallery-img-wrap h-full">
+                    <img src="{{ asset('boxcar/images/resource/about-inner1-2.jpg') }}" alt="Showroom xe sang">
+                </div>
+            </div>
+            <!-- Column 2: Luxury Vehicle Center -->
+            <div class="about-gallery-col">
+                <div class="about-gallery-img-wrap h-full">
+                    <img src="{{ asset('boxcar/images/resource/about-inner1-3.jpg') }}" alt="Xe cao cấp tại showroom">
+                </div>
+            </div>
+            <!-- Column 3: Stacked Vehicles -->
+            <div class="about-gallery-col">
+                <div class="about-gallery-img-wrap h-half">
+                    <img src="{{ asset('boxcar/images/resource/about-inner1-4.jpg') }}" alt="Trưng bày xe hiện đại">
+                </div>
+                <div class="about-gallery-img-wrap h-half">
+                    <img src="{{ asset('boxcar/images/resource/about-inner1-5.jpg') }}" alt="Dịch vụ đón tiếp chu đáo">
+                </div>
+            </div>
+            <!-- Column 4: Stacked Vehicles -->
+            <div class="about-gallery-col">
+                <div class="about-gallery-img-wrap h-half">
+                    <img src="{{ asset('boxcar/images/resource/about-inner1-1.jpg') }}" alt="Khu tiếp đón VIP">
+                </div>
+                <div class="about-gallery-img-wrap h-half">
+                    <img src="{{ asset('boxcar/images/resource/pricing1-1.jpg') }}" alt="Quy trình thẩm định xe">
+                </div>
+            </div>
+        </div>
 
-                    <div class="about-actions">
-                        <a href="{{ route('inventory.index') }}" class="about-action-link alt">Xem kho xe</a>
-                        <a href="{{ route('contact') }}" class="about-action-link">Lien he showroom</a>
+        <!-- 3. Section: "Vì sao chọn chúng tôi?" (Matches Mockup 2) -->
+        <div class="about-values-section">
+            <div class="about-section-heading wow fadeInUp">
+                <h2>Vì sao chọn chúng tôi?</h2>
+            </div>
+            <div class="about-values-grid">
+                <!-- Card 1: Kiem dinh 160 diem -->
+                <div class="about-value-card wow fadeInUp">
+                    <div class="about-value-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <path d="M11 8v6"></path>
+                            <path d="M8 11h6"></path>
+                        </svg>
                     </div>
+                    <h3 class="about-value-title">Kiểm định 160 điểm khắt khe</h3>
+                    <p class="about-value-text">Kiểm định 160 điểm nghiêm ngặt, cam kết chuẩn chỉ về pháp lý và nguồn gốc xe.</p>
+                </div>
 
-                    <div class="about-stat-grid">
-                        <div class="about-stat">
-                            <strong>{{ number_format($stats['cars_for_sale']) }}</strong>
-                            <span>Xe dang san sang ban</span>
-                        </div>
-                        <div class="about-stat">
-                            <strong>{{ number_format($stats['trims']) }}</strong>
-                            <span>Phien ban trong catalog</span>
-                        </div>
-                        <div class="about-stat">
-                            <strong>{{ number_format($stats['reviews']) }}</strong>
-                            <span>Danh gia tu khach da mua</span>
-                        </div>
-                        <div class="about-stat">
-                            <strong>{{ number_format($stats['leads']) }}</strong>
-                            <span>Lead da duoc tiep nhan</span>
-                        </div>
+                <!-- Card 2: Gia ban minh bach -->
+                <div class="about-value-card wow fadeInUp" data-wow-delay="100ms">
+                    <div class="about-value-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
                     </div>
+                    <h3 class="about-value-title">Giá bán minh bạch</h3>
+                    <p class="about-value-text">Giá bán minh bạch, không phụ phí ẩn, hỗ trợ trọn gói thủ tục sang tên đổi chủ.</p>
+                </div>
+
+                <!-- Card 3: Tai chinh linh hoat -->
+                <div class="about-value-card wow fadeInUp" data-wow-delay="200ms">
+                    <div class="about-value-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <line x1="6" y1="8" x2="6" y2="8"></line>
+                            <line x1="10" y1="8" x2="10" y2="8"></line>
+                            <line x1="14" y1="8" x2="14" y2="8"></line>
+                            <line x1="18" y1="8" x2="18" y2="8"></line>
+                            <line x1="6" y1="12" x2="18" y2="12"></line>
+                            <line x1="6" y1="16" x2="18" y2="16"></line>
+                        </svg>
+                    </div>
+                    <h3 class="about-value-title">Tài chính linh hoạt</h3>
+                    <p class="about-value-text">Tài chính linh hoạt, hỗ trợ vay trả góp tới 80% với lãi suất ưu đãi nhanh gọn.</p>
+                </div>
+
+                <!-- Card 4: Dong hanh tron doi -->
+                <div class="about-value-card wow fadeInUp" data-wow-delay="300ms">
+                    <div class="about-value-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="about-value-title">Đồng hành trọn đời</h3>
+                    <p class="about-value-text">Đồng hành trọn đời, bảo hành chính hãng và hỗ trợ cứu hộ kỹ thuật 24/7.</p>
                 </div>
             </div>
 
-            <div class="about-panel">
-                <div class="about-panel-inner">
-                    <h2 class="about-section-title">Thong tin lien he va van hanh</h2>
-                    <p class="about-text">Trang nay tom tat cach showroom van hanh tren public site: inventory -> lead -> appointment -> sale -> review.</p>
+            <!-- 4. Dark Navy Stats Bar (Matches Mockup 2) -->
+            <div class="about-stats-bar wow fadeInUp" data-wow-delay="200ms">
+                <div class="about-stats-grid">
+                    <div class="about-stat-item">
+                        <div class="about-stat-number widget-counter">
+                            <span class="count-text" data-speed="2500" data-stop="{{ $stats['cars_for_sale'] }}">0</span>+
+                        </div>
+                        <p class="about-stat-label">Xe sẵn có</p>
+                    </div>
+                    <div class="about-stat-item">
+                        <div class="about-stat-number widget-counter">
+                            <span class="count-text" data-speed="2500" data-stop="{{ $stats['years_in_business'] ?? 10 }}">0</span>+
+                        </div>
+                        <p class="about-stat-label">Năm kinh nghiệm</p>
+                    </div>
+                    <div class="about-stat-item">
+                        <div class="about-stat-number widget-counter">
+                            <span class="count-text" data-speed="2500" data-stop="{{ $stats['satisfied_customers'] ?? 5000 }}">0</span>+
+                        </div>
+                        <p class="about-stat-label">Khách hàng tin cậy</p>
+                    </div>
+                    <div class="about-stat-item">
+                        <div class="about-stat-number">
+                            4.9/5
+                        </div>
+                        <p class="about-stat-label">Đánh giá hài lòng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="about-info-stack" style="margin-top: 22px;">
-                        <div class="about-info-card">
-                            <label>Dia chi</label>
-                            <strong>{{ $showroomAddress }}</strong>
-                            <span>Thong tin dia diem duoc hien xuyen suot o header, footer va trang lien he.</span>
+        <!-- 5. Pricing / Trade-in Section (Matches Home Page) -->
+        <div class="boxcar-pricing-section pb-0 pt-0" style="margin-bottom: 70px;">
+            <div class="large-container">
+                <div class="row g-0">
+                    <div class="image-column col-lg-6 col-md-12 col-sm-12">
+                        <div class="inner-column">
+                            <div class="image-box">
+                                <figure class="image"><a href="{{ route('tradein') }}"><img src="{{ asset('boxcar/images/resource/pricing1-1.jpg') }}" alt="Thu cũ đổi mới"></a></figure>
+                                <a href="https://www.youtube.com/watch?v=AC1cREPIw_o&amp;autoplay=1&amp;rel=0&amp;controls=0&amp;showinfo=0" class="play-now" data-fancybox="gallery" data-caption=""><i class="fa fa-play" aria-hidden="true"></i><span class="ripple"></span></a>
+                            </div>
                         </div>
-                        <div class="about-info-card">
-                            <label>Hotline</label>
-                            <strong>{{ $showroomPhone }}</strong>
-                            <span>Khach co the de lai lead online hoac goi truc tiep de duoc xac nhan nhanh hon.</span>
-                        </div>
-                        <div class="about-info-card">
-                            <label>Email</label>
-                            <strong>{{ $showroomEmail }}</strong>
-                            <span>Kenh nhan xac nhan, ho tro tai chinh va theo doi cac yeu cau phat sinh.</span>
+                    </div>
+                    <div class="content-column col-lg-6 col-md-12 col-sm-12">
+                        <div class="inner-column">
+                            <div class="boxcar-title wow fadeInUp">
+                                <h2>Định giá xe công bằng, bán xe cho chúng tôi ngay hôm nay</h2>
+                                <div class="text">Quy trình thu cũ đổi mới minh bạch, thẩm định nhanh chóng và hỗ trợ khách hàng nâng cấp lên dòng xe mơ ước thuận tiện nhất tại showroom.</div>
+                            </div>
+                            <ul class="list-style-one wow fadeInUp" data-wow-delay="100ms">
+                                <li><i class="fa-solid fa-check"></i>Định giá chính xác theo tình trạng thực tế và giá trị thị trường</li>
+                                <li><i class="fa-solid fa-check"></i>Hỗ trợ thủ tục sang tên, giải chấp ngân hàng và hồ sơ vay nhanh gọn</li>
+                                <li><i class="fa-solid fa-check"></i>Đổi trực tiếp sang mọi mẫu xe mới hoặc xe lướt có sẵn tại showroom</li>
+                            </ul>
+                            <a href="{{ route('tradein') }}" class="read-more wow fadeInUp" data-wow-delay="200ms">
+                                Định giá xe ngay
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <g clip-path="url(#clip0_about_pricing)">
+                                        <path d="M13.6106 0H5.05509C4.84013 0 4.66619 0.173943 4.66619 0.388901C4.66619 0.603859 4.84013 0.777802 5.05509 0.777802H12.6719L0.113453 13.3362C-0.0384687 13.4881 -0.0384687 13.7342 0.113453 13.8861C0.189396 13.962 0.288927 14 0.388422 14C0.487917 14 0.587411 13.962 0.663391 13.8861L13.2218 1.3277V8.94447C13.2218 9.15943 13.3957 9.33337 13.6107 9.33337C13.8256 9.33337 13.9996 9.15943 13.9996 8.94447V0.388901C13.9995 0.173943 13.8256 0 13.6106 0Z" fill="white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_about_pricing">
+                                            <rect width="14" height="14" fill="white"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="about-grid">
-            <div class="about-panel">
-                <div class="about-panel-inner">
-                    <h2 class="about-section-title">Showroom nay tap trung vao dieu gi?</h2>
-                    <p class="about-text">Muc tieu chinh cua public site la giup nguoi dung tim duoc xe phu hop, de lai dung context va duoc doi sale xu ly khong mat thong tin.</p>
-
-                    <div class="about-checklist">
-                        <div class="about-check">
-                            <span class="about-check-index">1</span>
-                            <div>
-                                <strong>Kho xe ro rang va de loc</strong>
-                                <span>Xe dang ban, phien ban, gia, nam san xuat va cac thuoc tinh chinh duoc hien minh bach de quyet dinh nhanh hon.</span>
+        <!-- 6. Team Section -->
+        <div class="boxcar-team-section-two pt-0" style="margin-bottom: 70px;">
+            <div class="boxcar-title text-center wow fadeInUp">
+                <h2>Đội ngũ chuyên gia ô tô của chúng tôi</h2>
+                <div class="text">Những con người nhiệt huyết, am hiểu sâu sắc về từng dòng xe, luôn sẵn sàng đồng hành cùng bạn.</div>
+            </div>
+            <div class="row">
+                <div class="team-block-two col-lg-3 col-md-6 col-sm-6">
+                    <div class="inner-box wow fadeInUp">
+                        <div class="image-box">
+                            <figure class="image"><img src="{{ asset('boxcar/images/resource/team2-1.jpg') }}" alt="Trần Đức Anh"></figure>
+                            <div class="contact-info">
+                                <span><a href="mailto:{{ $showroomEmail }}">{{ $showroomEmail }}</a></span>
+                                <small><a href="tel:{{ $showroomPhone }}">{{ $showroomPhone }}</a></small>
                             </div>
                         </div>
-                        <div class="about-check">
-                            <span class="about-check-index">2</span>
-                            <div>
-                                <strong>Lead di vao CRM co context</strong>
-                                <span>Moi form lien he, tai chinh hay trade-in deu co the gan voi xe hoac phien ban cu the de doi sale lam viec nhanh.</span>
-                            </div>
-                        </div>
-                        <div class="about-check">
-                            <span class="about-check-index">3</span>
-                            <div>
-                                <strong>Toan bo giao dich van xu ly offline</strong>
-                                <span>Website khong checkout. Viec dat coc, hop dong va giao xe duoc chot tai showroom theo quy trinh thuc te.</span>
-                            </div>
+                        <div class="content-box">
+                            <h4 class="title"><a href="{{ route('contact') }}">Trần Đức Anh</a></h4>
+                            <span>Giám Đốc Kinh Doanh</span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="about-panel">
-                <div class="about-panel-inner">
-                    <h2 class="about-section-title">Gia tri van hanh ma khach nhin thay</h2>
-                    <p class="about-text">Khong chi la mot landing page, day la diem tiep nhan nhu cau thuc te de chuyen thanh lich hen va sale.</p>
-
-                    <div class="about-note-grid" style="margin-top: 22px;">
-                        <div class="about-note">
-                            <strong>Thong tin minh bach</strong>
-                            <span>Ma xe, tinh trang, gia va context trim duoc hien ro de giam sai lech khi tu van.</span>
+                <div class="team-block-two col-lg-3 col-md-6 col-sm-6">
+                    <div class="inner-box wow fadeInUp" data-wow-delay="100ms">
+                        <div class="image-box">
+                            <figure class="image"><img src="{{ asset('boxcar/images/resource/team2-2.jpg') }}" alt="Nguyễn Thị Mai"></figure>
+                            <div class="contact-info">
+                                <span><a href="mailto:{{ $showroomEmail }}">{{ $showroomEmail }}</a></span>
+                                <small><a href="tel:{{ $showroomPhone }}">{{ $showroomPhone }}</a></small>
+                            </div>
                         </div>
-                        <div class="about-note">
-                            <strong>Phan loai lead dung luc</strong>
-                            <span>Lien he chung, tai chinh va thu cu doi moi duoc tach luong nhung van dung chung mot bo du lieu.</span>
+                        <div class="content-box">
+                            <h4 class="title"><a href="{{ route('contact') }}">Nguyễn Thị Mai</a></h4>
+                            <span>Trưởng Phòng CSKH</span>
                         </div>
-                        <div class="about-note">
-                            <strong>Danh gia sau mua</strong>
-                            <span>Review chi mo cho nguoi da co sale hop le, giup phan hoi tren site co gia tri tham khao thuc su.</span>
+                    </div>
+                </div>
+                <div class="team-block-two col-lg-3 col-md-6 col-sm-6">
+                    <div class="inner-box wow fadeInUp" data-wow-delay="200ms">
+                        <div class="image-box">
+                            <figure class="image"><img src="{{ asset('boxcar/images/resource/team2-3.jpg') }}" alt="Lê Hoàng Quân"></figure>
+                            <div class="contact-info">
+                                <span><a href="mailto:{{ $showroomEmail }}">{{ $showroomEmail }}</a></span>
+                                <small><a href="tel:{{ $showroomPhone }}">{{ $showroomPhone }}</a></small>
+                            </div>
+                        </div>
+                        <div class="content-box">
+                            <h4 class="title"><a href="{{ route('contact') }}">Lê Hoàng Quân</a></h4>
+                            <span>Kỹ Sư Trưởng Giám Định</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-block-two col-lg-3 col-md-6 col-sm-6">
+                    <div class="inner-box wow fadeInUp" data-wow-delay="300ms">
+                        <div class="image-box">
+                            <figure class="image"><img src="{{ asset('boxcar/images/resource/team2-4.jpg') }}" alt="Phạm Thu Trang"></figure>
+                            <div class="contact-info">
+                                <span><a href="mailto:{{ $showroomEmail }}">{{ $showroomEmail }}</a></span>
+                                <small><a href="tel:{{ $showroomPhone }}">{{ $showroomPhone }}</a></small>
+                            </div>
+                        </div>
+                        <div class="content-box">
+                            <h4 class="title"><a href="{{ route('contact') }}">Phạm Thu Trang</a></h4>
+                            <span>Chuyên Viên Tư Vấn Tài Chính</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="about-media-grid">
-            <div class="about-panel">
-                <div class="about-panel-inner">
-                    <h2 class="about-section-title">Khong gian va hinh anh showroom</h2>
-                    <p class="about-text">Mot page gioi thieu can cho thay cam giac ve thuong hieu, nhung van giu trong tam la kha nang chuyen doi sang lead va lich hen.</p>
-
-                    <div class="about-image-grid" style="margin-top: 22px;">
-                        <img src="{{ asset('boxcar/images/resource/about-inner1-2.jpg') }}" alt="Showroom exterior">
-                        <div class="stacked">
-                            <img src="{{ asset('boxcar/images/resource/about-inner1-3.jpg') }}" alt="Showroom inventory">
-                            <img src="{{ asset('boxcar/images/resource/about-inner1-5.jpg') }}" alt="Showroom experience">
+        <!-- 7. FAQs Section -->
+        <div class="faqs-section pt-0" style="margin-bottom: 70px;">
+            <div class="inner-container" style="max-width: 900px; margin: 0 auto;">
+                <div class="faq-column wow fadeInUp">
+                    <div class="inner-column">
+                        <div class="boxcar-title text-center">
+                            <h2 class="title">Câu hỏi thường gặp</h2>
+                            <div class="text">Giải đáp các thắc mắc phổ biến nhất khi tìm hiểu và mua xe tại showroom</div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="about-panel">
-                <div class="about-panel-inner">
-                    <h2 class="about-section-title">Nhung gi khach co the lam ngay tu day</h2>
-                    <p class="about-text">Noi dung gioi thieu khong nen bi tach roi khoi hanh dong. Sau khi doc xong, khach co the di tiep den kho xe hoac gui yeu cau ngay.</p>
-
-                    <div class="about-feature-grid" style="margin-top: 22px;">
-                        <div class="about-feature">
-                            <strong>Xem kho xe theo nhu cau</strong>
-                            <span>Loc theo tinh trang, trim, nam, gia, odo va vao thang trang chi tiet xe.</span>
-                        </div>
-                        <div class="about-feature">
-                            <strong>Gui yeu cau tai chinh</strong>
-                            <span>De lai muc tieu tai chinh tren dung mau xe ban dang can nhac de sales tu van sat hon.</span>
-                        </div>
-                        <div class="about-feature">
-                            <strong>Thu cu doi moi</strong>
-                            <span>Mo ta xe dang su dung va ky vong doi sang xe moi de doi sale co du context tham dinh.</span>
-                        </div>
+                        <ul class="widget-accordion wow fadeInUp">
+                            <li class="accordion block active-block">
+                                <div class="acc-btn active">Xe tại showroom có được bảo hành và kiểm định chất lượng không?<div class="icon fa fa-plus"></div></div>
+                                <div class="acc-content current">
+                                    <div class="content">
+                                        <div class="text">100% xe tại showroom đều trải qua quy trình kiểm định 160 bước nghiêm ngặt về khung gầm, máy móc, hộp số và lịch sử vận hành. Chúng tôi cam kết bảo hành động cơ và hộp số từ 12 đến 24 tháng hoặc 20.000 km, cùng chính sách cam kết bằng văn bản: xe không đâm đụng, không ngập nước, hồ sơ pháp lý minh bạch hoàn toàn.</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="accordion block">
+                                <div class="acc-btn">Tôi có thể lái thử xe trước khi quyết định mua không?<div class="icon fa fa-plus"></div></div>
+                                <div class="acc-content">
+                                    <div class="content">
+                                        <div class="text">Hoàn toàn có thể. Chúng tôi luôn khuyến khích khách hàng trực tiếp trải nghiệm cảm giác lái và kiểm tra chi tiết các trang bị trước khi ra quyết định. Quý khách chỉ cần liên hệ hotline hoặc gửi yêu cầu hẹn trước, chuyên viên sẽ chuẩn bị xe chu đáo và đồng hành cùng quý khách lái thử trải nghiệm.</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="accordion block">
+                                <div class="acc-btn">Thủ tục mua xe trả góp qua ngân hàng cần chuẩn bị những gì?<div class="icon fa fa-plus"></div></div>
+                                <div class="acc-content">
+                                    <div class="content">
+                                        <div class="text">Thủ tục trả góp tại showroom rất đơn giản và nhanh gọn. Quý khách chỉ cần chuẩn bị CCCD gắn chip và giấy tờ chứng minh thu nhập cơ bản. Đội ngũ chuyên viên tài chính của chúng tôi sẽ liên hệ đối tác ngân hàng uy tín, hỗ trợ duyệt gói vay lên tới 80% giá trị xe với lãi suất ưu đãi chỉ trong vòng 24 giờ.</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="accordion block">
+                                <div class="acc-btn">Showroom có hỗ trợ thu mua xe cũ và dịch vụ thu cũ đổi mới không?<div class="icon fa fa-plus"></div></div>
+                                <div class="acc-content">
+                                    <div class="content">
+                                        <div class="text">Có, chúng tôi cung cấp dịch vụ Trade-in (Thu cũ đổi mới) chuyên nghiệp. Kỹ thuật viên của showroom sẽ thẩm định thực tế chiếc xe của bạn theo giá trị thị trường tốt nhất và hỗ trợ thủ tục bù trừ trực tiếp để bạn nâng cấp sang dòng xe mới một cách tiện lợi, nhanh chóng nhất trong ngày.</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="about-panel about-cta">
-            <div class="about-panel-inner">
-                <h2 class="about-section-title">San sang bat dau tu nhu cau cu the?</h2>
-                <p class="about-text">Neu ban da co xe dang quan tam, hay vao kho xe de loc nhanh. Neu ban muon duoc goi lai, dung form lien he hoac tai chinh de tao lead ngay tren public site.</p>
-
-                <div class="about-actions">
-                    <a href="{{ route('inventory.index') }}" class="about-action-link alt">Di den kho xe</a>
-                    <a href="{{ route('contact') }}" class="about-action-link">Gui yeu cau lien he</a>
-                    <a href="{{ route('finance') }}" class="about-action-link">Tu van tai chinh</a>
+        <!-- 8. Call to Action Banner (Matches Mockup 1 & 2 CTA) -->
+        <div class="boxcar-cta-about wow fadeInUp">
+            <div class="inner-box" style="background: #050B20; border-radius: 20px; padding: 50px 36px; text-align: center; color: #fff; box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);">
+                <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 24px; text-transform: uppercase; letter-spacing: -0.01em;">BẠN ĐÃ SẴN SÀNG CHO HÀNH TRÌNH MỚI CÙNG BOXCAR?</h2>
+                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                    <a href="{{ route('inventory.index') }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s;">KHÁM PHÁ BỘ SƯU TẬP XE</a>
+                    <a href="{{ route('contact') }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: #405FF2; color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(64, 95, 242, 0.4);">LIÊN HỆ ĐẶT LỊCH HẸN</a>
                 </div>
             </div>
         </div>

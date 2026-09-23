@@ -4,7 +4,7 @@
 
 @section('header')
     @include('client.partials.layout.header', [
-        'headerClasses' => 'boxcar-header header-style-v1 style-two inner-header cus-style-1',
+        'headerClasses' => 'boxcar-header header-style-v1 header-default',
         'showSearch' => true,
     ])
 @endsection
