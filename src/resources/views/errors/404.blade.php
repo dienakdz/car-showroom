@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    <section class="error-section layout-radius">
+    <section class="error-section">
         <div class="boxcar-container">
             <div class="right-box">
                 <div class="image-box">

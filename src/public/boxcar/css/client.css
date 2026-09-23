@@ -55,6 +55,25 @@ input, button, select, textarea {
     }
 }
 
+/* Layout Radius Reset - Neutralize template negative margins that pull content under header or into footer */
+.layout-radius {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+}
+
+@media (max-width: 991px) {
+    .layout-radius {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        border-radius: 0 !important;
+    }
+}
+
+.cars-section-four.v1 {
+    padding-top: 40px !important;
+}
+
 .boxcar-header .site-header-bar {
     background-color: #FFFFFF !important;
     border-bottom: 1px solid #E2E8F0 !important;
@@ -2789,6 +2808,128 @@ input, button, select, textarea {
     .about-page-v2 .about-stat-item::after {
         display: none !important;
     }
+}
+
+/* ==========================================================================
+   ABOUT PAGE FAQ ACCORDION (Modern Clean Luxury)
+   ========================================================================== */
+
+.about-faq-accordion {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.about-faq-item {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.about-faq-item.is-active {
+    border-color: #405FF2;
+    box-shadow: 0 4px 20px rgba(64, 95, 242, 0.08);
+}
+
+.about-faq-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 16px;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.about-faq-header:hover {
+    background-color: #F8FAFC;
+}
+
+.about-faq-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0;
+    line-height: 1.45;
+    transition: color 0.2s ease;
+}
+
+.about-faq-item.is-active .about-faq-title,
+.about-faq-header:hover .about-faq-title {
+    color: #405FF2;
+}
+
+.about-faq-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    color: #64748B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.about-faq-item.is-active .about-faq-icon {
+    background: #405FF2;
+    color: #FFFFFF;
+    transform: rotate(45deg);
+}
+
+.about-faq-body {
+    display: none;
+    padding: 0 24px 22px 24px;
+}
+
+.about-faq-body p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #475569;
+    text-transform: none !important;
+}
+
+/* Universal Reset for BoxCar widget-accordion so it never renders black boxes or lowercase */
+.widget-accordion .block .acc-btn {
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    padding: 18px 24px !important;
+    letter-spacing: normal !important;
+    background: #FFFFFF !important;
+    font-size: 16px !important;
+}
+
+.widget-accordion .block .acc-btn.active {
+    border-color: #405FF2 !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.widget-accordion .block .acc-btn .icon {
+    height: 32px !important;
+    line-height: 32px !important;
+    top: 50% !important;
+    right: 20px !important;
+    transform: translateY(-50%) !important;
+}
+
+.widget-accordion .block .acc-btn.active .icon {
+    transform: translateY(-50%) rotate(180deg) !important;
+}
+
+.widget-accordion .block .acc-content .content .text {
+    text-transform: none !important;
+}
+
+/* About CTA Spacing - Ensure clean clearance before footer */
+.boxcar-cta-about {
+    margin-top: 30px;
+    margin-bottom: 20px;
 }
 
 

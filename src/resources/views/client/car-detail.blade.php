@@ -184,7 +184,7 @@
     $defaultEmail = old('email', auth()->user()->email ?? '');
 @endphp
 
-<section class="inventory-section pb-0 layout-radius">
+<section class="inventory-section pb-0">
     <div class="boxcar-container">
         <div class="boxcar-title-three">
             <ul class="breadcrumb">

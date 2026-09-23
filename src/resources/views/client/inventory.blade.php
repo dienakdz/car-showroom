@@ -199,7 +199,7 @@
 <div id="inventory-app">
 <div class="inventory-loading-live" role="status" aria-live="polite"></div>
 <div id="inventory-content">
-<section class="cars-section-four v1 layout-radius">
+<section class="cars-section-four v1">
     <div class="boxcar-container">
         <div class="boxcar-title-three wow fadeInUp">
             <ul class="breadcrumb">

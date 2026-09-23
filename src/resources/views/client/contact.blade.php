@@ -473,7 +473,7 @@
     $contextRequired = $source !== 'contact';
 @endphp
 
-<section class="client-contact-flow layout-radius">
+<section class="client-contact-flow">
     <div class="boxcar-container">
         <div class="flow-header">
             <ul class="breadcrumb">

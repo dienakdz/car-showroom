@@ -10,7 +10,7 @@
     $showroomEmail = $showroom->email ?? 'contact@showroom.test';
 @endphp
 
-<section class="about-page-v2 layout-radius">
+<section class="about-page-v2">
     <div class="boxcar-container">
         <!-- 1. Header & Brand Story (Matches Mockup 2) -->
         <div class="about-header-intro wow fadeInUp">
@@ -151,47 +151,7 @@
             </div>
         </div>
 
-        <!-- 5. Pricing / Trade-in Section (Matches Home Page) -->
-        <div class="boxcar-pricing-section pb-0 pt-0" style="margin-bottom: 70px;">
-            <div class="large-container">
-                <div class="row g-0">
-                    <div class="image-column col-lg-6 col-md-12 col-sm-12">
-                        <div class="inner-column">
-                            <div class="image-box">
-                                <figure class="image"><a href="{{ route('tradein') }}"><img src="{{ asset('boxcar/images/resource/pricing1-1.jpg') }}" alt="Thu cũ đổi mới"></a></figure>
-                                <a href="https://www.youtube.com/watch?v=AC1cREPIw_o&amp;autoplay=1&amp;rel=0&amp;controls=0&amp;showinfo=0" class="play-now" data-fancybox="gallery" data-caption=""><i class="fa fa-play" aria-hidden="true"></i><span class="ripple"></span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-column col-lg-6 col-md-12 col-sm-12">
-                        <div class="inner-column">
-                            <div class="boxcar-title wow fadeInUp">
-                                <h2>Định giá xe công bằng, bán xe cho chúng tôi ngay hôm nay</h2>
-                                <div class="text">Quy trình thu cũ đổi mới minh bạch, thẩm định nhanh chóng và hỗ trợ khách hàng nâng cấp lên dòng xe mơ ước thuận tiện nhất tại showroom.</div>
-                            </div>
-                            <ul class="list-style-one wow fadeInUp" data-wow-delay="100ms">
-                                <li><i class="fa-solid fa-check"></i>Định giá chính xác theo tình trạng thực tế và giá trị thị trường</li>
-                                <li><i class="fa-solid fa-check"></i>Hỗ trợ thủ tục sang tên, giải chấp ngân hàng và hồ sơ vay nhanh gọn</li>
-                                <li><i class="fa-solid fa-check"></i>Đổi trực tiếp sang mọi mẫu xe mới hoặc xe lướt có sẵn tại showroom</li>
-                            </ul>
-                            <a href="{{ route('tradein') }}" class="read-more wow fadeInUp" data-wow-delay="200ms">
-                                Định giá xe ngay
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                    <g clip-path="url(#clip0_about_pricing)">
-                                        <path d="M13.6106 0H5.05509C4.84013 0 4.66619 0.173943 4.66619 0.388901C4.66619 0.603859 4.84013 0.777802 5.05509 0.777802H12.6719L0.113453 13.3362C-0.0384687 13.4881 -0.0384687 13.7342 0.113453 13.8861C0.189396 13.962 0.288927 14 0.388422 14C0.487917 14 0.587411 13.962 0.663391 13.8861L13.2218 1.3277V8.94447C13.2218 9.15943 13.3957 9.33337 13.6107 9.33337C13.8256 9.33337 13.9996 9.15943 13.9996 8.94447V0.388901C13.9995 0.173943 13.8256 0 13.6106 0Z" fill="white"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_about_pricing">
-                                            <rect width="14" height="14" fill="white"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- 6. Team Section -->
         <div class="boxcar-team-section-two pt-0" style="margin-bottom: 70px;">
@@ -263,7 +223,7 @@
             </div>
         </div>
 
-        <!-- 7. FAQs Section -->
+        <!-- 6. FAQs Section -->
         <div class="faqs-section pt-0" style="margin-bottom: 70px;">
             <div class="inner-container" style="max-width: 900px; margin: 0 auto;">
                 <div class="faq-column wow fadeInUp">
@@ -272,46 +232,50 @@
                             <h2 class="title">Câu hỏi thường gặp</h2>
                             <div class="text">Giải đáp các thắc mắc phổ biến nhất khi tìm hiểu và mua xe tại showroom</div>
                         </div>
-                        <ul class="widget-accordion wow fadeInUp">
-                            <li class="accordion block active-block">
-                                <div class="acc-btn active">Xe tại showroom có được bảo hành và kiểm định chất lượng không?<div class="icon fa fa-plus"></div></div>
-                                <div class="acc-content current">
-                                    <div class="content">
-                                        <div class="text">100% xe tại showroom đều trải qua quy trình kiểm định 160 bước nghiêm ngặt về khung gầm, máy móc, hộp số và lịch sử vận hành. Chúng tôi cam kết bảo hành động cơ và hộp số từ 12 đến 24 tháng hoặc 20.000 km, cùng chính sách cam kết bằng văn bản: xe không đâm đụng, không ngập nước, hồ sơ pháp lý minh bạch hoàn toàn.</div>
-                                    </div>
+                        <div class="about-faq-accordion wow fadeInUp">
+                            <div class="about-faq-item is-active">
+                                <div class="about-faq-header js-faq-item-toggle">
+                                    <h4 class="about-faq-title">Xe tại showroom có được bảo hành và kiểm định chất lượng không?</h4>
+                                    <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
                                 </div>
-                            </li>
-                            <li class="accordion block">
-                                <div class="acc-btn">Tôi có thể lái thử xe trước khi quyết định mua không?<div class="icon fa fa-plus"></div></div>
-                                <div class="acc-content">
-                                    <div class="content">
-                                        <div class="text">Hoàn toàn có thể. Chúng tôi luôn khuyến khích khách hàng trực tiếp trải nghiệm cảm giác lái và kiểm tra chi tiết các trang bị trước khi ra quyết định. Quý khách chỉ cần liên hệ hotline hoặc gửi yêu cầu hẹn trước, chuyên viên sẽ chuẩn bị xe chu đáo và đồng hành cùng quý khách lái thử trải nghiệm.</div>
-                                    </div>
+                                <div class="about-faq-body" style="display: block;">
+                                    <p>100% xe tại showroom đều trải qua quy trình kiểm định 160 bước nghiêm ngặt về khung gầm, máy móc, hộp số và lịch sử vận hành. Chúng tôi cam kết bảo hành động cơ và hộp số từ 12 đến 24 tháng hoặc 20.000 km, cùng chính sách cam kết bằng văn bản: xe không đâm đụng, không ngập nước, hồ sơ pháp lý minh bạch hoàn toàn.</p>
                                 </div>
-                            </li>
-                            <li class="accordion block">
-                                <div class="acc-btn">Thủ tục mua xe trả góp qua ngân hàng cần chuẩn bị những gì?<div class="icon fa fa-plus"></div></div>
-                                <div class="acc-content">
-                                    <div class="content">
-                                        <div class="text">Thủ tục trả góp tại showroom rất đơn giản và nhanh gọn. Quý khách chỉ cần chuẩn bị CCCD gắn chip và giấy tờ chứng minh thu nhập cơ bản. Đội ngũ chuyên viên tài chính của chúng tôi sẽ liên hệ đối tác ngân hàng uy tín, hỗ trợ duyệt gói vay lên tới 80% giá trị xe với lãi suất ưu đãi chỉ trong vòng 24 giờ.</div>
-                                    </div>
+                            </div>
+                            <div class="about-faq-item">
+                                <div class="about-faq-header js-faq-item-toggle">
+                                    <h4 class="about-faq-title">Tôi có thể lái thử xe trước khi quyết định mua không?</h4>
+                                    <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
                                 </div>
-                            </li>
-                            <li class="accordion block">
-                                <div class="acc-btn">Showroom có hỗ trợ thu mua xe cũ và dịch vụ thu cũ đổi mới không?<div class="icon fa fa-plus"></div></div>
-                                <div class="acc-content">
-                                    <div class="content">
-                                        <div class="text">Có, chúng tôi cung cấp dịch vụ Trade-in (Thu cũ đổi mới) chuyên nghiệp. Kỹ thuật viên của showroom sẽ thẩm định thực tế chiếc xe của bạn theo giá trị thị trường tốt nhất và hỗ trợ thủ tục bù trừ trực tiếp để bạn nâng cấp sang dòng xe mới một cách tiện lợi, nhanh chóng nhất trong ngày.</div>
-                                    </div>
+                                <div class="about-faq-body">
+                                    <p>Hoàn toàn có thể. Chúng tôi luôn khuyến khích khách hàng trực tiếp trải nghiệm cảm giác lái và kiểm tra chi tiết các trang bị trước khi ra quyết định. Quý khách chỉ cần liên hệ hotline hoặc gửi yêu cầu hẹn trước, chuyên viên sẽ chuẩn bị xe chu đáo và đồng hành cùng quý khách lái thử trải nghiệm.</p>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                            <div class="about-faq-item">
+                                <div class="about-faq-header js-faq-item-toggle">
+                                    <h4 class="about-faq-title">Thủ tục mua xe trả góp qua ngân hàng cần chuẩn bị những gì?</h4>
+                                    <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
+                                </div>
+                                <div class="about-faq-body">
+                                    <p>Thủ tục trả góp tại showroom rất đơn giản và nhanh gọn. Quý khách chỉ cần chuẩn bị CCCD gắn chip và giấy tờ chứng minh thu nhập cơ bản. Đội ngũ chuyên viên tài chính của chúng tôi sẽ liên hệ đối tác ngân hàng uy tín, hỗ trợ duyệt gói vay lên tới 80% giá trị xe với lãi suất ưu đãi chỉ trong vòng 24 giờ.</p>
+                                </div>
+                            </div>
+                            <div class="about-faq-item">
+                                <div class="about-faq-header js-faq-item-toggle">
+                                    <h4 class="about-faq-title">Showroom có hỗ trợ thu mua xe cũ và dịch vụ thu cũ đổi mới không?</h4>
+                                    <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
+                                </div>
+                                <div class="about-faq-body">
+                                    <p>Có, chúng tôi cung cấp dịch vụ Trade-in (Thu cũ đổi mới) chuyên nghiệp. Kỹ thuật viên của showroom sẽ thẩm định thực tế chiếc xe của bạn theo giá trị thị trường tốt nhất và hỗ trợ thủ tục bù trừ trực tiếp để bạn nâng cấp sang dòng xe mới một cách tiện lợi, nhanh chóng nhất trong ngày.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 8. Call to Action Banner (Matches Mockup 1 & 2 CTA) -->
+        <!-- 7. Call to Action Banner (Matches Mockup 1 & 2 CTA) -->
         <div class="boxcar-cta-about wow fadeInUp">
             <div class="inner-box" style="background: #050B20; border-radius: 20px; padding: 50px 36px; text-align: center; color: #fff; box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);">
                 <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 24px; text-transform: uppercase; letter-spacing: -0.01em;">BẠN ĐÃ SẴN SÀNG CHO HÀNH TRÌNH MỚI CÙNG BOXCAR?</h2>
@@ -324,3 +288,27 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $('.js-faq-item-toggle').on('click', function () {
+            const item = $(this).closest('.about-faq-item');
+            const body = item.find('.about-faq-body');
+            const isActive = item.hasClass('is-active');
+
+            if (isActive) {
+                body.slideUp(250, function () {
+                    item.removeClass('is-active');
+                });
+            } else {
+                $('.about-faq-item.is-active').find('.about-faq-body').slideUp(250, function () {
+                    $(this).closest('.about-faq-item').removeClass('is-active');
+                });
+                item.addClass('is-active');
+                body.slideDown(250);
+            }
+        });
+    });
+</script>
+@endpush
