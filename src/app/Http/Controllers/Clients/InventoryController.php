@@ -88,11 +88,29 @@ class InventoryController extends ClientBaseController
         if ($request->filled('max_mileage')) {
             $query->where('car_units.mileage', '<=', (int) $request->query('max_mileage'));
         }
+        if ($request->filled('price_range')) {
+            match ((string) $request->query('price_range')) {
+                'under_800' => $query->where('car_units.price', '<=', 800000000),
+                '800_1500' => $query->whereBetween('car_units.price', [800000000, 1500000000]),
+                '1500_2500' => $query->whereBetween('car_units.price', [1500000000, 2500000000]),
+                'over_2500' => $query->where('car_units.price', '>=', 2500000000),
+                default => null,
+            };
+        }
+
         if ($request->filled('min_price')) {
-            $query->where('car_units.price', '>=', (int) $request->query('min_price'));
+            $minPrice = (int) $request->query('min_price');
+            if ($minPrice > 0 && $minPrice < 100000) {
+                $minPrice *= 1000000;
+            }
+            $query->where('car_units.price', '>=', $minPrice);
         }
         if ($request->filled('max_price')) {
-            $query->where('car_units.price', '<=', (int) $request->query('max_price'));
+            $maxPrice = (int) $request->query('max_price');
+            if ($maxPrice > 0 && $maxPrice < 100000) {
+                $maxPrice *= 1000000;
+            }
+            $query->where('car_units.price', '<=', $maxPrice);
         }
 
         $sort = $request->query('sort', 'newest');
@@ -124,15 +142,23 @@ class InventoryController extends ClientBaseController
         $cars->getCollection()->transform(fn (object $car) => $this->decorateCar($car));
 
         $pageTitle = match ($effectiveCondition) {
-            'new' => 'Xe moi',
-            'used' => 'Xe cu',
-            'cpo' => 'Xe CPO',
-            default => 'Kho xe',
+            'new' => 'Xe Mới 100%',
+            'used' => 'Xe Siêu Lướt',
+            'cpo' => 'Xe CPO Kiểm Định',
+            default => 'Kho Xe Chính Hãng',
+        };
+
+        $pageSubtitle = match ($effectiveCondition) {
+            'new' => 'Danh mục các mẫu xe mới 100% nguyên bản, đầy đủ sổ bảo hành chính hãng cùng nhiều ưu đãi đặc quyền.',
+            'used' => 'Bộ sưu tập xe lướt tuyển chọn, lịch sử bảo dưỡng rõ ràng, cam kết không đâm đụng, không ngập nước.',
+            'cpo' => 'Xe chứng nhận chính hãng (Certified Pre-Owned) đạt tiêu chuẩn 160 điểm kiểm định kỹ thuật khắt khe.',
+            default => 'Hơn 100+ mẫu xe tuyển chọn khắt khe qua 160 bước kiểm định nghiêm ngặt. Cam kết pháp lý minh bạch và hỗ trợ trả góp tối đa 80%.',
         };
 
         return $this->viewWithSharedData('client.inventory', [
             'cars' => $cars,
             'pageTitle' => $pageTitle,
+            'pageSubtitle' => $pageSubtitle,
             'currentCondition' => $effectiveCondition,
             'filters' => $this->loadInventoryFilters(),
         ]);
@@ -143,6 +169,7 @@ class InventoryController extends ClientBaseController
         return [
             'makes' => Make::query()->orderBy('name')->get(['slug', 'name']),
             'models' => CarModel::query()
+                ->toBase()
                 ->select([
                     'models.slug',
                     'models.name',
@@ -152,11 +179,12 @@ class InventoryController extends ClientBaseController
                 ->orderBy('makes.name')
                 ->orderBy('models.name')
                 ->get()
-                ->map(fn (CarModel $model): object => (object) [
+                ->map(fn (object $model): object => (object) [
                     'slug' => $model->slug,
                     'name' => $model->make_name . ' ' . $model->name,
                 ]),
             'trims' => Trim::query()
+                ->toBase()
                 ->select([
                     'trims.slug',
                     'trims.name',
@@ -169,7 +197,7 @@ class InventoryController extends ClientBaseController
                 ->orderBy('models.name')
                 ->orderBy('trims.name')
                 ->get()
-                ->map(fn (Trim $trim): object => (object) [
+                ->map(fn (object $trim): object => (object) [
                     'slug' => $trim->slug,
                     'name' => $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name,
                 ]),
