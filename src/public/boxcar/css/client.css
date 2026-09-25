@@ -3857,6 +3857,8 @@ input, button, select, textarea {
    OPTION 2: TOP HORIZONTAL FILTER BAR & 4-COLUMN INVENTORY
    ========================================================================== */
 .inventory-top-filter-bar {
+    position: relative !important;
+    z-index: 60 !important;
     background: #FFFFFF;
     border: 1px solid #EEF1F6;
     border-radius: 20px;
@@ -3866,6 +3868,8 @@ input, button, select, textarea {
 }
 
 .top-filter-grid {
+    position: relative !important;
+    z-index: 2 !important;
     display: grid;
     grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr auto;
     gap: 12px;
@@ -3951,6 +3955,11 @@ input, button, select, textarea {
     box-shadow: 0 0 0 3px rgba(64, 95, 242, 0.08) !important;
 }
 
+.top-filter-grid .form_boxes .drop-menu.active {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
 .top-filter-grid .form_boxes .drop-menu .select span {
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -3962,20 +3971,78 @@ input, button, select, textarea {
 
 .top-filter-grid .form_boxes .drop-menu .dropdown {
     position: absolute !important;
-    top: calc(100% + 4px) !important;
+    top: calc(100% + 6px) !important;
     left: 0 !important;
     min-width: 100% !important;
     width: max-content !important;
     max-width: 280px !important;
     border-radius: 12px !important;
     border: 1px solid #E2E8F0 !important;
-    box-shadow: 0 12px 30px rgba(5, 11, 32, 0.14) !important;
+    box-shadow: 0 12px 32px rgba(5, 11, 32, 0.12), 0 2px 6px rgba(5, 11, 32, 0.04) !important;
     background: #FFFFFF !important;
     z-index: 1000 !important;
     max-height: 260px !important;
     overflow-y: auto !important;
-    padding: 6px 0 !important;
+    padding: 6px !important;
+    margin: 0 !important;
     list-style: none !important;
+    box-sizing: border-box !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown li {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    padding: 9px 16px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
+    font-family: var(--text-font) !important;
+    color: #334155 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    border: none !important;
+    border-bottom: none !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown li:hover {
+    background: #F1F5F9 !important;
+    color: #405FF2 !important;
+    font-weight: 600 !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown li.active {
+    background: #EEF2FF !important;
+    color: #405FF2 !important;
+    font-weight: 600 !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown li:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown li:first-child {
+    margin-top: 0 !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown::-webkit-scrollbar {
+    width: 5px !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown::-webkit-scrollbar-thumb {
+    background: #E2E8F0 !important;
+    border-radius: 10px !important;
+}
+
+.top-filter-grid .form_boxes .drop-menu .dropdown::-webkit-scrollbar-thumb:hover {
+    background: #CBD5E1 !important;
 }
 
 .top-filter-actions-group {
@@ -4046,6 +4113,8 @@ input, button, select, textarea {
 
 /* Quick Chips Row */
 .top-quick-chips-row {
+    position: relative !important;
+    z-index: 1 !important;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -4376,16 +4445,17 @@ input, button, select, textarea {
     top: calc(100% + 4px) !important;
     left: 0 !important;
     width: 100% !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     box-shadow: 0 10px 25px rgba(5, 11, 32, 0.12) !important;
     border: 1px solid #E2E8F0 !important;
     max-height: 220px !important;
     overflow-y: auto !important;
     background: #FFFFFF !important;
     z-index: 1000 !important;
-    padding: 6px 0 !important;
+    padding: 6px !important;
     margin: 0 !important;
     list-style: none !important;
+    box-sizing: border-box !important;
 }
 
 .inventory-sidebar-box .form_boxes .drop-menu .dropdown li,
@@ -4394,18 +4464,32 @@ input, button, select, textarea {
     font-size: 13.5px !important;
     text-transform: none !important;
     padding: 8px 14px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
     font-family: var(--text-font) !important;
     color: #334155 !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
+    border: none !important;
     border-bottom: none !important;
     line-height: 1.4 !important;
+    box-sizing: border-box !important;
 }
 
 .inventory-sidebar-box .form_boxes .drop-menu .dropdown li:hover,
+.drawer-filter-form .form_boxes .drop-menu .dropdown li:hover,
 .mobile-filter-form .form_boxes .drop-menu .dropdown li:hover {
     background: #F1F5F9 !important;
     color: #405FF2 !important;
+    font-weight: 600 !important;
+}
+
+.inventory-sidebar-box .form_boxes .drop-menu .dropdown li.active,
+.drawer-filter-form .form_boxes .drop-menu .dropdown li.active,
+.mobile-filter-form .form_boxes .drop-menu .dropdown li.active {
+    background: #EEF2FF !important;
+    color: #405FF2 !important;
+    font-weight: 600 !important;
 }
 
 /* Price Presets Grid */
@@ -4633,7 +4717,7 @@ input, button, select, textarea {
     flex-wrap: wrap;
     gap: 14px;
     position: relative !important;
-    z-index: 50 !important;
+    z-index: 10 !important;
 }
 
 .inventory-results-count {
@@ -4675,6 +4759,11 @@ input, button, select, textarea {
     height: 42px !important;
     min-height: 42px !important;
     position: relative !important;
+}
+
+.inventory-sort-box .drop-menu.active {
+    position: relative !important;
+    z-index: 30 !important;
 }
 
 .inventory-sort-box .drop-menu .select {
@@ -4726,7 +4815,7 @@ input, button, select, textarea {
 
 .inventory-sort-box .drop-menu .dropdown {
     position: absolute !important;
-    top: calc(100% + 4px) !important;
+    top: calc(100% + 6px) !important;
     right: 0 !important;
     left: auto !important;
     width: 200px !important;
@@ -4738,21 +4827,26 @@ input, button, select, textarea {
     border: 1px solid #E2E8F0 !important;
     background: #FFFFFF !important;
     z-index: 9999 !important;
-    padding: 6px 0 !important;
+    padding: 6px !important;
     margin: 0 !important;
     list-style: none !important;
+    box-sizing: border-box !important;
 }
 
 .inventory-sort-box .drop-menu .dropdown li {
     font-size: 13px !important;
     text-transform: none !important;
     padding: 9px 16px !important;
+    margin: 2px 0 !important;
+    border-radius: 8px !important;
     font-family: var(--text-font) !important;
     color: #334155 !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
     border: none !important;
+    border-bottom: none !important;
     line-height: 1.4 !important;
+    box-sizing: border-box !important;
 }
 
 .inventory-sort-box .drop-menu .dropdown li:hover {
@@ -4998,6 +5092,8 @@ input, button, select, textarea {
 
 /* Active Filter Chips */
 .inventory-active-chips {
+    position: relative !important;
+    z-index: 15 !important;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -5471,6 +5567,137 @@ body.drawer-open {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* ==========================================================================
+   CLIENT PAGINATION - LUXURY MODERN BOXCAR OVERHAUL
+   ========================================================================== */
+.pagination-sec {
+    margin-top: 48px !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.pagination-sec nav {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+.pagination-sec .pagination {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    flex-wrap: wrap !important;
+}
+
+.pagination-sec .page-item {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    display: inline-flex !important;
+}
+
+.pagination-sec .page-item .page-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    border: 1px solid #E2E8F0 !important;
+    background: #FFFFFF !important;
+    color: #050B20 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    font-family: var(--text-font) !important;
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03) !important;
+    line-height: normal !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+.pagination-sec .page-item a.page-link:hover {
+    background: #F8FAFC !important;
+    border-color: #405FF2 !important;
+    color: #405FF2 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(64, 95, 242, 0.15) !important;
+}
+
+/* Active Page State */
+.pagination-sec .page-item.active .page-link {
+    background: #405FF2 !important;
+    border-color: #405FF2 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(64, 95, 242, 0.35) !important;
+    transform: translateY(-1px) !important;
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+/* Disabled State (Previous on Page 1, Next on Last Page) */
+.pagination-sec .page-item.disabled .page-link {
+    background: #F8FAFC !important;
+    border-color: #E2E8F0 !important;
+    color: #94A3B8 !important;
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* Ellipsis "..." */
+.pagination-sec .page-item.ellipsis .page-link {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #94A3B8 !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    cursor: default !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px !important;
+}
+
+/* Icon alignment inside prev / next */
+.pagination-sec .page-item .page-link svg {
+    width: 12px !important;
+    height: 12px !important;
+    transition: transform 0.2s ease !important;
+}
+
+.pagination-sec .page-item a.page-link:hover svg path {
+    fill: #405FF2 !important;
+}
+
+/* Bottom Pagination Info */
+.pagination-sec .pagination-info {
+    font-size: 13.5px !important;
+    color: #64748B !important;
+    margin-top: 16px !important;
+    font-family: var(--text-font) !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+}
+
+.pagination-sec .pagination-info strong {
+    color: #050B20 !important;
+    font-weight: 700 !important;
 }
 
 

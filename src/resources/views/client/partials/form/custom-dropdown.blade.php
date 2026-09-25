@@ -19,10 +19,11 @@
     <input type="hidden" name="{{ $name }}" value="{{ $selectedValue }}">
     <ul class="dropdown" style="display: none;">
         @if ($includeEmptyOption)
-            <li data-value="">{{ $emptyLabel }}</li>
+            <li data-value="" class="{{ $selectedValue === '' ? 'active' : '' }}">{{ $emptyLabel }}</li>
         @endif
         @foreach ($options as $option)
-            <li data-value="{{ data_get($option, $valueField) }}">{{ data_get($option, $labelField) }}</li>
+            @php $optVal = (string) data_get($option, $valueField); @endphp
+            <li data-value="{{ $optVal }}" class="{{ $selectedValue !== '' && $selectedValue === $optVal ? 'active' : '' }}">{{ data_get($option, $labelField) }}</li>
         @endforeach
     </ul>
 </div>

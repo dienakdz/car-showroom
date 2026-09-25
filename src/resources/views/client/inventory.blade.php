@@ -394,7 +394,6 @@
                         <!-- Pagination -->
                         @include('client.partials.boxcar-pagination', [
                             'paginator' => $cars,
-                            'window' => \Illuminate\Pagination\UrlWindow::make($cars),
                         ])
                     </div>
                 </div>
