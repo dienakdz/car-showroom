@@ -256,8 +256,28 @@ class InventoryController extends ClientBaseController
             ->where('car_units.trim_id', $car->trim_id)
             ->where('car_units.stock_code', '!=', $car->stock_code)
             ->limit(4)
-            ->get()
-            ->map(fn (object $related) => $this->decorateCar($related));
+            ->get();
+
+        if ($relatedCars->count() < 4) {
+            $excludeStockCodes = $relatedCars->pluck('stock_code')->push($car->stock_code)->all();
+            $moreCars = $this->publicVisibleCarQuery()
+                ->where('makes.slug', $car->make_slug)
+                ->whereNotIn('car_units.stock_code', $excludeStockCodes)
+                ->limit(4 - $relatedCars->count())
+                ->get();
+            $relatedCars = $relatedCars->concat($moreCars);
+        }
+
+        if ($relatedCars->count() < 4) {
+            $excludeStockCodes = $relatedCars->pluck('stock_code')->push($car->stock_code)->all();
+            $fallbackCars = $this->publicVisibleCarQuery()
+                ->whereNotIn('car_units.stock_code', $excludeStockCodes)
+                ->limit(4 - $relatedCars->count())
+                ->get();
+            $relatedCars = $relatedCars->concat($fallbackCars);
+        }
+
+        $relatedCars = $relatedCars->map(fn (object $related) => $this->decorateCar($related));
 
         return $this->viewWithSharedData('client.car-detail', [
             'car' => $car,

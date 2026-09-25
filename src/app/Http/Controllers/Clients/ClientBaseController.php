@@ -104,29 +104,30 @@ abstract class ClientBaseController extends Controller
     protected function decorateCar(object $car): object
     {
         $car->image_url = $this->resolveMediaPath($car->cover_media ?? null);
+        $currencyLabel = strtoupper((string) $car->currency) === 'VND' || strtoupper((string) $car->currency) === 'USD' ? 'VNĐ' : $car->currency;
         $car->formatted_price = $car->price === null
             ? 'Liên hệ'
-            : number_format((float) $car->price, 0, ',', '.') . ' ' . $car->currency;
+            : number_format((float) $car->price, 0, ',', '.') . ' ' . $currencyLabel;
 
         $car->condition_label = match ($car->condition) {
-            'new' => 'Mới',
-            'used' => 'Đã qua sử dụng',
-            'cpo' => 'Xe lướt CPO',
+            'new' => 'Xe mới 100%',
+            'used' => 'Xe siêu lướt',
+            'cpo' => 'Xe CPO kiểm định',
             default => strtoupper((string) $car->condition),
         };
 
         $car->fuel_label = match (strtolower((string) ($car->fuel_type_name ?? ''))) {
-            'gasoline' => 'Xăng',
+            'gasoline' => 'Xăng cao cấp',
             'diesel' => 'Dầu (Diesel)',
-            'hybrid' => 'Hybrid',
-            'electric' => 'Điện',
+            'hybrid' => 'Xăng lai Điện (Hybrid)',
+            'electric' => 'Thuần điện (EV)',
             default => $car->fuel_type_name ?? 'Đang cập nhật',
         };
 
         $car->transmission_label = match (strtolower((string) ($car->transmission_name ?? ''))) {
             'automatic' => 'Tự động',
             'manual' => 'Số sàn',
-            'cvt' => 'CVT',
+            'cvt' => 'Vô cấp (CVT)',
             default => $car->transmission_name ?? 'Đang cập nhật',
         };
 

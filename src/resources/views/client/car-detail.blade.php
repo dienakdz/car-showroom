@@ -1,136 +1,6 @@
 @extends('client.layouts.page')
 
-@section('title', $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name)
-
-@push('styles')
-<style>
-    .car-detail-trim-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        border: 1px solid rgba(64, 95, 242, 0.18);
-        background: rgba(64, 95, 242, 0.08);
-        color: #2543d1;
-        font-weight: 700;
-        line-height: 1.3;
-        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .car-detail-trim-link:hover {
-        background: #405ff2;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 12px 24px rgba(64, 95, 242, 0.18);
-    }
-
-    .car-detail-trim-link__hint {
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        opacity: 0.82;
-    }
-
-    .car-detail-trim-cta {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .car-detail-trim-cta::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        background: linear-gradient(135deg, rgba(64, 95, 242, 0.12) 0%, rgba(64, 95, 242, 0.04) 55%, rgba(5, 11, 32, 0.02) 100%);
-        border: 1px solid rgba(64, 95, 242, 0.14);
-        pointer-events: none;
-    }
-
-    .description-sec .des-list li.car-detail-trim-cta {
-        padding: 0;
-        border: 0;
-        background: transparent;
-    }
-
-    .car-detail-trim-cta__link {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        width: 100%;
-        min-height: 84px;
-        padding: 18px 22px;
-        color: #050b20;
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
-    }
-
-    .car-detail-trim-cta__link:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
-    }
-
-    .car-detail-trim-cta__content {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        min-width: 0;
-    }
-
-    .car-detail-trim-cta__eyebrow {
-        color: #405ff2;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .car-detail-trim-cta__title {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        color: #050b20;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 1.4;
-    }
-
-    .car-detail-trim-cta__title img {
-        width: 18px;
-        height: 18px;
-    }
-
-    .car-detail-trim-cta__note {
-        color: #5f6980;
-        font-size: 13px;
-        line-height: 1.6;
-    }
-
-    .car-detail-trim-cta__arrow {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 44px;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: #405ff2;
-        color: #ffffff;
-        font-size: 18px;
-        box-shadow: 0 12px 24px rgba(64, 95, 242, 0.22);
-    }
-
-    @media (max-width: 767.98px) {
-        .car-detail-trim-cta__link {
-            align-items: flex-start;
-            padding: 16px 18px;
-        }
-    }
-</style>
-@endpush
+@section('title', $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' - ' . $car->year)
 
 @section('content')
 @php
@@ -140,522 +10,908 @@
         $imageMedia = collect([(object) ['url' => $car->image_url]]);
     }
 
+    $firstImageUrl = $imageMedia->first()->url ?? $car->image_url;
+
     $description = trim((string) ($car->trim_description ?? ''));
-    $descriptionLead = $description !== '' ? \Illuminate\Support\Str::limit($description, 220, '...') : 'Showroom dang cap nhat mo ta chi tiet cho phien ban nay.';
-    $descriptionTail = $description !== '' && \Illuminate\Support\Str::length($description) > 220
-        ? \Illuminate\Support\Str::substr($description, 220)
-        : 'Lien he showroom de nhan them thong tin, bao gia moi nhat va lich xem xe truc tiep.';
+    $descriptionLead = $description !== ''
+        ? \Illuminate\Support\Str::limit($description, 260, '...')
+        : 'Chiếc ' . $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' ' . $car->year . ' được tuyển chọn khắt khe qua quy trình kiểm định 160 bước kỹ thuật chuẩn quốc tế. Xe sở hữu ngoại hình sang trọng, nội thất tiện nghi cao cấp cùng khối động cơ vận hành bền bỉ và tiết kiệm.';
+    $descriptionTail = $description !== '' && \Illuminate\Support\Str::length($description) > 260
+        ? \Illuminate\Support\Str::substr($description, 260)
+        : 'Xe đầy đủ hồ sơ pháp lý, sẵn sàng sang tên bấm biển trong ngày. Showroom hỗ trợ trả góp qua ngân hàng tối đa 80% giá trị xe với lãi suất ưu đãi đặc quyền, thủ tục duyệt nhanh chóng. Quý khách vui lòng liên hệ trực tiếp để nhận báo giá lăn bánh tốt nhất và đăng ký trải nghiệm lái thử.';
 
     $attributeColumns = $attributes->isNotEmpty()
         ? $attributes->chunk((int) ceil($attributes->count() / 2))
         : collect();
 
-    $mapsQuery = rawurlencode((string) ($navShowroom->address ?? 'Ho Chi Minh City'));
+    $showroomName = $navShowroom->name ?? 'Minh Dien Auto Showroom';
+    $showroomAddress = $navShowroom->address ?? 'TP. Hồ Chí Minh';
+    $showroomPhone = $navShowroom->phone ?? '0900 000 000';
+    $showroomEmail = $navShowroom->email ?? null;
+
+    $phoneDigits = preg_replace('/\D+/', '', (string) $showroomPhone);
+    $zaloUrl = $phoneDigits !== '' ? 'https://zalo.me/' . $phoneDigits : '#booking-consultation-section';
+
+    $mapsQuery = rawurlencode($showroomAddress);
     $mapsDirectionsUrl = 'https://www.google.com/maps/search/?api=1&query=' . $mapsQuery;
     $mapsEmbedUrl = 'https://maps.google.com/maps?width=100%25&height=600&hl=vi&q=' . $mapsQuery . '&t=&z=14&ie=UTF8&iwloc=B&output=embed';
+
     $shareUrl = route('car.show', $car->stock_code);
     $shareFacebookUrl = 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($shareUrl);
-    $phoneDigits = preg_replace('/\D+/', '', (string) ($navShowroom->phone ?? ''));
-    $whatsappDigits = $phoneDigits;
-
-    if ($whatsappDigits !== '' && str_starts_with($whatsappDigits, '0')) {
-        $whatsappDigits = '84' . substr($whatsappDigits, 1);
-    }
 
     $reviewAverage = $reviewSummary && $reviewSummary->avg_rating !== null
         ? number_format((float) $reviewSummary->avg_rating, 1)
-        : null;
+        : '5.0';
 
-    $reviewMetrics = collect([
-        ['label' => 'Tong diem', 'value' => $reviewAverage ? $reviewAverage . '/5' : 'Chua co', 'note' => $reviewAverage ? 'Danh gia tong quan' : 'Dang cap nhat'],
-        ['label' => 'Luot danh gia', 'value' => (string) ($reviewSummary->total ?? 0), 'note' => 'Da duyet'],
-        ['label' => 'Tinh trang', 'value' => $car->condition_label, 'note' => 'Tinh trang xe'],
-        ['label' => 'Trang thai', 'value' => strtoupper((string) $car->status), 'note' => 'Tinh trang giao dich'],
-        ['label' => 'Kieu dang', 'value' => $car->body_type_name ?? 'Dang cap nhat', 'note' => 'Phan khuc'],
-        ['label' => 'Nhien lieu', 'value' => $car->fuel_type_name ?? 'Dang cap nhat', 'note' => 'Loai dong co'],
-    ]);
-
-    $reviewMetricColumns = $reviewMetrics->chunk(3);
-    $showroomName = $navShowroom->name ?? 'Showroom';
-    $showroomAddress = $navShowroom->address ?? 'Lien he de nhan dia chi showroom';
-    $showroomEmail = $navShowroom->email ?? null;
     $defaultName = old('name', auth()->user()->name ?? '');
     $defaultPhone = old('phone', auth()->user()->phone ?? '');
     $defaultEmail = old('email', auth()->user()->email ?? '');
+
+    $rawPrice = (float) ($car->price ?? 0);
+    $estimatedMonthly = $rawPrice > 0 ? number_format(($rawPrice * 0.7 * 0.012), 0, ',', '.') : '15.000.000';
+
+    $displayTitle = str_starts_with(strtolower((string) $car->trim_name), strtolower((string) $car->model_name))
+        ? $car->make_name . ' ' . $car->trim_name
+        : $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name;
 @endphp
 
-<section class="inventory-section pb-0">
+<section class="car-detail-page-wrap">
     <div class="boxcar-container">
-        <div class="boxcar-title-three">
-            <ul class="breadcrumb">
-                <li><a href="{{ route('home') }}">Trang chu</a></li>
+        <!-- 1. Header & Breadcrumb -->
+        <div class="car-detail-header-intro">
+            <ul class="car-detail-breadcrumb">
+                <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                <li><span>/</span></li>
                 <li><a href="{{ route('inventory.index') }}">Kho xe</a></li>
-                <li><span>{{ $car->stock_code }}</span></li>
+                <li><span>/</span></li>
+                <li><a href="{{ route('inventory.index', ['make' => $car->make_slug]) }}">{{ $car->make_name }}</a></li>
+                <li><span>/</span></li>
+                <li class="active">{{ $displayTitle }}</li>
             </ul>
-            <h2>{{ $car->make_name }} {{ $car->model_name }}</h2>
-            <div class="text">{{ $car->year }} {{ $car->trim_name }} | Stock: {{ $car->stock_code }} | VIN: {{ $car->vin ?? 'Dang cap nhat' }}</div>
-            <ul class="spectes-list">
-                <li><span><img src="{{ asset('boxcar/images/resource/spec1-1.svg') }}" alt="year">{{ $car->year }}</span></li>
-                <li><span><img src="{{ asset('boxcar/images/resource/spec1-2.svg') }}" alt="mileage">{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Odo thap' }}</span></li>
-                <li><span><img src="{{ asset('boxcar/images/resource/spec1-3.svg') }}" alt="transmission">{{ $car->transmission_name ?? 'Dang cap nhat' }}</span></li>
-                <li><span><img src="{{ asset('boxcar/images/resource/spec1-4.svg') }}" alt="fuel">{{ $car->fuel_type_name ?? 'Dang cap nhat' }}</span></li>
-            </ul>
-            <div class="content-box">
-                <div class="btn-box v2">
-                    <div class="share-btn">
-                        <span>Chia se</span>
-                        <a href="{{ $shareFacebookUrl }}" class="share" target="_blank" rel="noopener"><img src="{{ asset('boxcar/images/resource/share.svg') }}" alt="share"></a>
+
+            <div class="car-detail-header-main">
+                <div class="car-detail-title-col">
+                    <h1 class="car-detail-main-title">{{ $displayTitle }}</h1>
+
+                    <div class="car-detail-meta-bar">
+                        @if ($car->condition === 'new')
+                            <span class="car-badge-item car-badge-condition-new">
+                                <i class="fa-solid fa-circle-check"></i> {{ $car->condition_label }}
+                            </span>
+                        @elseif ($car->condition === 'cpo')
+                            <span class="car-badge-item car-badge-condition-cpo">
+                                <i class="fa-solid fa-shield-halved"></i> {{ $car->condition_label }}
+                            </span>
+                        @else
+                            <span class="car-badge-item car-badge-condition-used">
+                                <i class="fa-solid fa-car"></i> {{ $car->condition_label }}
+                            </span>
+                        @endif
+
+                        <span class="car-badge-item car-badge-stock">Mã kho: {{ $car->stock_code }}</span>
+                        <span class="car-badge-item car-badge-vin">VIN: {{ $car->vin ?? 'Đang cập nhật' }}</span>
                     </div>
-                    <div class="share-btn">
-                        <span>Kho xe</span>
-                        <a href="{{ route('inventory.index', ['make' => $car->make_slug]) }}" class="share"><img src="{{ asset('boxcar/images/resource/share1-1.svg') }}" alt="inventory"></a>
-                    </div>
+
+                    <ul class="car-quick-specs-list">
+                        <li>
+                            <img src="{{ asset('boxcar/images/resource/spec1-1.svg') }}" alt="Năm sản xuất">
+                            <span>Năm {{ $car->year }}</span>
+                        </li>
+                        <li>
+                            <img src="{{ asset('boxcar/images/resource/spec1-2.svg') }}" alt="Số Odo">
+                            <span>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Odo siêu lướt' }}</span>
+                        </li>
+                        <li>
+                            <img src="{{ asset('boxcar/images/resource/spec1-3.svg') }}" alt="Hộp số">
+                            <span>{{ $car->transmission_label }}</span>
+                        </li>
+                        <li>
+                            <img src="{{ asset('boxcar/images/resource/spec1-4.svg') }}" alt="Nhiên liệu">
+                            <span>{{ $car->fuel_label }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="car-detail-actions">
+                    <a href="{{ $shareFacebookUrl }}" target="_blank" rel="noopener" class="car-action-btn" title="Chia sẻ Facebook">
+                        <img src="{{ asset('boxcar/images/resource/share.svg') }}" alt="Share">
+                        <span>Chia sẻ</span>
+                    </a>
+                    <button type="button" class="car-action-btn" onclick="copyCurrentCarLink(this)" title="Sao chép liên kết">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copy Link</span>
+                    </button>
+                    <a href="{{ route('inventory.index', ['make' => $car->make_slug]) }}" class="car-action-btn" title="Xem thêm xe cùng hãng">
+                        <img src="{{ asset('boxcar/images/resource/share1-1.svg') }}" alt="Kho xe">
+                        <span>Cùng hãng</span>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="inspection-column v2 col-xl-8 col-lg-12 col-md-12 col-sm-12">
-                <div class="inner-column">
-                    <div class="gallery-sec">
-                        <div class="image-column wrap-gallery-box">
-                            <div class="inner-column inventry-slider-two">
-                                @foreach ($imageMedia as $image)
-                                    <div class="image-box">
-                                        <figure class="image">
-                                            <a href="{{ $image->url }}" data-fancybox="gallery"><img src="{{ $image->url }}" alt="{{ $car->make_name }} {{ $car->model_name }}"></a>
-                                        </figure>
+        <!-- 2. Main 2-Column Layout -->
+        <div class="car-detail-layout-grid">
+            <!-- Left Column: Details & Interactive Sections -->
+            <div class="car-detail-main-col">
+                <!-- Gallery Section -->
+                <div class="car-detail-card p-0 overflow-hidden">
+                    <div class="car-gallery-box">
+                        <div class="car-gallery-featured" id="main-preview-container">
+                            <div class="car-gallery-badge-overlay">
+                                <span class="car-badge-item car-badge-condition-{{ $car->condition === 'new' ? 'new' : ($car->condition === 'cpo' ? 'cpo' : 'used') }} bg-white">
+                                    {{ $car->condition_label }}
+                                </span>
+                            </div>
+
+                            <a href="{{ $firstImageUrl }}" data-fancybox="car-gallery-lightbox" id="main-preview-link" title="Xem ảnh lớn">
+                                <img src="{{ $firstImageUrl }}" id="main-preview-img" alt="{{ $car->make_name }} {{ $car->model_name }} {{ $car->trim_name }}">
+                            </a>
+
+                            <div class="car-gallery-action-overlay">
+                                <a href="#booking-consultation-section" class="car-gallery-btn">
+                                    <i class="fa-regular fa-calendar-check"></i> Đặt lịch lái thử
+                                </a>
+                                <a href="{{ $firstImageUrl }}" data-fancybox="car-gallery-lightbox" class="car-gallery-btn">
+                                    <i class="fa-regular fa-images"></i> Toàn bộ {{ $imageMedia->count() }} ảnh
+                                </a>
+                            </div>
+                        </div>
+
+                        @if ($imageMedia->count() > 1)
+                            <div class="car-gallery-thumbs" id="car-gallery-thumbs">
+                                @foreach ($imageMedia as $index => $img)
+                                    <div class="car-gallery-thumb-item {{ $index === 0 ? 'active' : '' }}" onclick="switchMainImage('{{ $img->url }}', this)">
+                                        <img src="{{ $img->url }}" alt="{{ $car->stock_code }} - Ảnh {{ $index + 1 }}">
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="content-box">
-                                <ul class="video-list">
-                                    <li><a href="#dealer-booking"><img src="{{ asset('boxcar/images/resource/video1-2.svg') }}" alt="contact">Dat lich xem xe</a></li>
-                                    <li><a href="{{ $imageMedia->first()->url }}" data-fancybox="gallery"><img src="{{ asset('boxcar/images/resource/video1-4.svg') }}" alt="photos">Tat ca hinh anh</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="overview-sec v2">
-                        <h4 class="title">Tong quan xe</h4>
-                        <div class="row">
-                            <div class="content-column col-lg-6 col-md-12 col-sm-12">
-                                <div class="inner-column">
-                                    <ul class="list">
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-1.svg') }}" alt="body">Kieu dang</span>{{ $car->body_type_name ?? 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-2.svg') }}" alt="mileage">So km</span>{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-3.svg') }}" alt="fuel">Nhien lieu</span>{{ $car->fuel_type_name ?? 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-4.svg') }}" alt="year">Nam sx</span>{{ $car->year }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-5.svg') }}" alt="transmission">Hop so</span>{{ $car->transmission_name ?? 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-6.svg') }}" alt="drive">Dan dong</span>{{ $car->drivetrain_name ?? 'Dang cap nhat' }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="content-column col-lg-6 col-md-12 col-sm-12">
-                                <div class="inner-column">
-                                    <ul class="list">
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-7.svg') }}" alt="condition">Tinh trang</span>{{ $car->condition_label }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-8.svg') }}" alt="exterior">Mau ngoai that</span>{{ $car->exterior_color_name ?? 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-9.svg') }}" alt="interior">Mau noi that</span>{{ $car->interior_color_name ?? 'Dang cap nhat' }}</li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-10.svg') }}" alt="stock">Ma xe</span>{{ $car->stock_code }}</li>
-                                        <li>
-                                            <span><img src="{{ asset('boxcar/images/resource/insep1-11.svg') }}" alt="trim">Phien ban</span>
-                                            <a href="{{ route('trim.show', $car->trim_slug) }}" class="car-detail-trim-link">
-                                                {{ $car->trim_name }}
-                                                <small class="car-detail-trim-link__hint">Mo trang trim</small>
-                                            </a>
-                                        </li>
-                                        <li><span><img src="{{ asset('boxcar/images/resource/insep1-12.svg') }}" alt="vin">VIN</span>{{ $car->vin ?? 'Dang cap nhat' }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="description-sec">
-                        <h4 class="title">Mo ta</h4>
-                        <div class="text two">{{ $descriptionLead }}</div>
-                        <div class="text">{{ $descriptionTail }}</div>
-                        <ul class="des-list">
-                            <li class="two car-detail-trim-cta">
-                                <a href="{{ route('trim.show', $car->trim_slug) }}" class="car-detail-trim-cta__link">
-                                    <span class="car-detail-trim-cta__content">
-                                        <span class="car-detail-trim-cta__title">
-                                            <img src="{{ asset('boxcar/images/resource/book1-2.svg') }}" alt="trim">
-                                            Xem thong tin phien ban
-                                        </span>
-                                        <small class="car-detail-trim-cta__note">Mo trang trim de xem thong so chung, trang bi, review va xe cung phien ban.</small>
-                                    </span>
-                                    <span class="car-detail-trim-cta__arrow" aria-hidden="true">></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="features-sec">
-                        <h4 class="title">Trang bi noi bat</h4>
-                        <div class="row">
-                            @forelse ($features as $groupName => $groupFeatures)
-                                <div class="list-column col-lg-3 col-md-6 col-sm-12">
-                                    <div class="inner-column">
-                                        <h6 class="title">{{ $groupName }}</h6>
-                                        <ul class="feature-list">
-                                            @foreach ($groupFeatures as $feature)
-                                                <li><i class="fa-solid fa-check"></i>{{ $feature->name }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12">
-                                    <div class="alert alert-light">Chua co du lieu trang bi cho phien ban nay.</div>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <div class="faqs-section pt-0">
-                        <div class="inner-container">
-                            <h4 class="title">Thong so ky thuat</h4>
-                            <div class="faq-column wow fadeInUp" data-wow-delay="400ms">
-                                <div class="inner-column">
-                                    <ul class="widget-accordion wow fadeInUp">
-                                        <li class="accordion block active-block">
-                                            <div class="acc-btn active">Thong so chinh<div class="icon fa fa-angle-down"></div></div>
-                                            <div class="acc-content current">
-                                                <div class="content">
-                                                    <div class="row">
-                                                        @forelse ($attributeColumns as $attributeColumn)
-                                                            <div class="list-column col-lg-6 col-md-6 col-sm-12">
-                                                                <div class="inner-column">
-                                                                    <ul class="spects-list">
-                                                                        @foreach ($attributeColumn as $attribute)
-                                                                            <li><span>{{ $attribute->label }}</span>{{ $attribute->display_value ?? 'Dang cap nhat' }}</li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        @empty
-                                                            <div class="col-12">
-                                                                <div class="alert alert-light">Chua co thong so ky thuat cho phien ban nay.</div>
-                                                            </div>
-                                                        @endforelse
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="location-box">
-                        <h4 class="title">Vi tri showroom</h4>
-                        <div class="text">
-                            {{ $showroomAddress }}
-                            <br>
-                            Lien he truoc de dat lich xem xe va tu van chi tiet.
-                        </div>
-                        <a href="{{ $mapsDirectionsUrl }}" class="brand-btn" target="_blank" rel="noopener">
-                            Chi duong
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
-                                <g clip-path="url(#clip0_detail_map_arrow)">
-                                    <path d="M14.1111 0H5.55558C5.34062 0 5.16668 0.173943 5.16668 0.388901C5.16668 0.603859 5.34062 0.777802 5.55558 0.777802H13.1723L0.613941 13.3362C0.46202 13.4881 0.46202 13.7342 0.613941 13.8861C0.689884 13.962 0.789415 14 0.88891 14C0.988405 14 1.0879 13.962 1.16388 13.8861L13.7222 1.3277V8.94447C13.7222 9.15943 13.8962 9.33337 14.1111 9.33337C14.3261 9.33337 14.5 9.15943 14.5 8.94447V0.388901C14.5 0.173943 14.3261 0 14.1111 0Z" fill="#405FF2"/>
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_detail_map_arrow">
-                                        <rect width="14" height="14" fill="white" transform="translate(0.5)"/>
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </a>
-                        <div class="goole-iframe">
-                            <iframe src="{{ $mapsEmbedUrl }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        </div>
-                    </div>
-
-                    <div class="form-box" id="dealer-contact">
-                        <h4 class="title">Dat lich xem xe va nhan bao gia</h4>
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">{{ $errors->first() }}</div>
                         @endif
+                    </div>
+                </div>
 
-                        <form class="row" method="POST" action="{{ route('lead.store') }}">
-                            @csrf
-                            <input type="hidden" name="source" value="unit_detail">
-                            <input type="hidden" name="car_unit_id" value="{{ $car->id }}">
-                            <input type="hidden" name="trim_id" value="{{ $car->trim_id }}">
-
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Ho va ten</label>
-                                    <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>So dien thoai</label>
-                                    <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Email</label>
-                                    <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Nhu cau</label>
-                                    <input type="text" value="Nhan bao gia / dat lich xem xe" readonly>
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form_boxes v2">
-                                    <label>Noi dung</label>
-                                    <textarea name="message" placeholder="Toi muon xem xe vao cuoi tuan nay">{{ old('message') }}</textarea>
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-submit">
-                                    <button type="submit" class="theme-btn">Gui yeu cau<img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
-                                </div>
-                            </div>
-                        </form>
-
-                        <ul class="form-list">
-                            <li><span>Muc gia tham khao</span>{{ $car->formatted_price }}</li>
-                            <li><span>Tinh trang</span>{{ $car->condition_label }}</li>
-                            <li><span>Showroom</span>{{ $showroomName }}</li>
-                        </ul>
+                <!-- Car Overview Grid -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-list-check text-primary me-2"></i> Tổng Quan Thông Số Xe</span>
+                        <span class="title-accent">Mã xe: {{ $car->stock_code }}</span>
                     </div>
 
-                    <div class="form-box" id="dealer-booking">
-                        <h4 class="title">Dat lich xem xe / lai thu</h4>
-                        <form class="row" method="POST" action="{{ route('appointments.store') }}">
-                            @csrf
-                            <input type="hidden" name="source" value="unit_detail">
-                            <input type="hidden" name="car_unit_id" value="{{ $car->id }}">
-                            <input type="hidden" name="trim_id" value="{{ $car->trim_id }}">
+                    <div class="car-overview-grid">
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-1.svg') }}" alt="Kiểu dáng">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Kiểu dáng</span>
+                                <span class="car-overview-val">{{ $car->body_type_name ?? 'Đang cập nhật' }}</span>
+                            </div>
+                        </div>
 
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Ho va ten</label>
-                                    <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
-                                </div>
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-2.svg') }}" alt="Số km">
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>So dien thoai</label>
-                                    <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
-                                </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Số km đã đi</span>
+                                <span class="car-overview-val">{{ $car->mileage ? number_format((float) $car->mileage, 0, ',', '.') . ' km' : 'Odo lướt' }}</span>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Email</label>
-                                    <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
-                                </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-3.svg') }}" alt="Nhiên liệu">
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form_boxes">
-                                    <label>Thoi gian mong muon</label>
-                                    <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" min="{{ now()->addHour()->format('Y-m-d\\TH:i') }}" required>
-                                </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Nhiên liệu</span>
+                                <span class="car-overview-val">{{ $car->fuel_label }}</span>
                             </div>
-                            <div class="col-lg-12">
-                                <div class="form_boxes v2">
-                                    <label>Ghi chu</label>
-                                    <textarea name="message" placeholder="Toi muon xem xe va lai thu vao cuoi tuan nay">{{ old('message') }}</textarea>
-                                </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-4.svg') }}" alt="Năm sản xuất">
                             </div>
-                            <div class="col-lg-12">
-                                <div class="form-submit">
-                                    <button type="submit" class="theme-btn">Dat lich xem xe<img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
-                                </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Năm sản xuất</span>
+                                <span class="car-overview-val">{{ $car->year }}</span>
                             </div>
-                        </form>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-5.svg') }}" alt="Hộp số">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Hộp số</span>
+                                <span class="car-overview-val">{{ $car->transmission_label }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-6.svg') }}" alt="Hệ dẫn động">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Hệ dẫn động</span>
+                                <span class="car-overview-val">{{ $car->drivetrain_name ?? 'Đang cập nhật' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-7.svg') }}" alt="Tình trạng">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Tình trạng kiểm định</span>
+                                <span class="car-overview-val">{{ $car->condition_label }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-8.svg') }}" alt="Màu ngoại thất">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Màu ngoại thất</span>
+                                <span class="car-overview-val">{{ $car->exterior_color_name ?? 'Đang cập nhật' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-9.svg') }}" alt="Màu nội thất">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Màu nội thất</span>
+                                <span class="car-overview-val">{{ $car->interior_color_name ?? 'Đang cập nhật' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-10.svg') }}" alt="Mã kho">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Mã kho lưu trữ</span>
+                                <span class="car-overview-val">{{ $car->stock_code }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-11.svg') }}" alt="Phiên bản">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Phiên bản</span>
+                                <span class="car-overview-val">{{ $car->trim_name }}</span>
+                            </div>
+                        </div>
+
+                        <div class="car-overview-item">
+                            <div class="car-overview-icon">
+                                <img src="{{ asset('boxcar/images/resource/insep1-12.svg') }}" alt="Số VIN">
+                            </div>
+                            <div class="car-overview-text">
+                                <span class="car-overview-label">Số khung VIN</span>
+                                <span class="car-overview-val font-monospace">{{ $car->vin ?? 'Đang cập nhật' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description & Trim CTA -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-align-left text-primary me-2"></i> Giới Thiệu & Mô Tả Chi Tiết</span>
                     </div>
 
-                    <div class="review-sec">
-                        <h4 class="title">Danh gia khach hang</h4>
-                        <div class="review-box">
-                            <div class="rating-box">
-                                <div class="content-box">
-                                    <span>Diem trung binh</span>
-                                    <h3 class="title">{{ $reviewAverage ?? 'N/A' }}</h3>
-                                    <small>{{ $reviewSummary->total ?? 0 }} danh gia</small>
-                                </div>
-                            </div>
-                            @foreach ($reviewMetricColumns as $metricColumn)
-                                <ul class="review-list{{ $loop->first ? ' two' : '' }}">
-                                    @foreach ($metricColumn as $metric)
-                                        <li>
-                                            <div class="review-title">
-                                                <span>{{ $metric['label'] }}</span>
-                                                <small>{{ $metric['note'] }}</small>
-                                            </div>
-                                            <sub>{{ $metric['value'] }}</sub>
-                                        </li>
+                    <div style="font-size: 14.5px; color: #334155; line-height: 1.75; margin-bottom: 16px;">
+                        <p style="margin-bottom: 12px; font-weight: 500;">{{ $descriptionLead }}</p>
+                        <p style="margin: 0; color: #64748B;">{{ $descriptionTail }}</p>
+                    </div>
+
+                    <a href="{{ route('trim.show', $car->trim_slug) }}" class="car-trim-banner">
+                        <div class="car-trim-banner-content">
+                            <h5>Xem Hồ Sơ Chi Tiết Phiên Bản {{ $car->trim_name }}</h5>
+                            <p>Khám phá toàn bộ thông số nền tảng, bài đánh giá chuyên sâu và so sánh các xe cùng phiên bản.</p>
+                        </div>
+                        <div class="car-trim-banner-btn">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Features & Amenities -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i> Trang Bị & Tiện Nghi Nổi Bật</span>
+                    </div>
+
+                    <div class="car-features-grid">
+                        @forelse ($features as $groupName => $groupFeatures)
+                            <div class="feature-group-box">
+                                <h6 class="feature-group-title">
+                                    <i class="fa-solid fa-layer-group"></i> {{ $groupName }}
+                                </h6>
+                                <ul class="feature-item-list">
+                                    @foreach ($groupFeatures as $feature)
+                                        <li><i class="fa-solid fa-circle-check"></i> <span>{{ $feature->name }}</span></li>
                                     @endforeach
                                 </ul>
-                            @endforeach
+                            </div>
+                        @empty
+                            <div class="col-12">
+                                <div class="alert alert-light border text-muted">
+                                    Thông tin trang bị chi tiết đang được chuyên viên cập nhật theo danh mục phụ kiện thực tế của xe.
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Technical Specifications Table -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-gauge-high text-primary me-2"></i> Bảng Thông Số Kỹ Thuật Chi Tiết</span>
+                    </div>
+
+                    <div class="car-specs-table-wrap">
+                        <table class="car-specs-table">
+                            <tbody>
+                                @forelse ($attributes as $attribute)
+                                    <tr>
+                                        <td class="spec-prop">{{ $attribute->label }}</td>
+                                        <td class="spec-val">{{ $attribute->display_value ?? 'Đang cập nhật' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-4">
+                                            Hồ sơ thông số kỹ thuật tiêu chuẩn đang được cập nhật từ nhà sản xuất.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Interactive Loan Financing Calculator Widget -->
+                <div class="car-detail-card car-calc-widget" id="car-financing-calculator">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-calculator text-primary me-2"></i> Bảng Tính Dự Toán Vay Trả Góp</span>
+                        <span class="title-accent"><i class="fa-solid fa-bolt"></i> Tính toán thời gian thực</span>
+                    </div>
+
+                    <div class="car-calc-layout">
+                        <!-- Controls -->
+                        <div class="car-calc-controls">
+                            <div class="calc-field-group">
+                                <label for="calc-car-price">
+                                    Giá xe tham khảo
+                                    <span id="label-calc-price">{{ $car->formatted_price }}</span>
+                                </label>
+                                <div class="calc-input-wrap">
+                                    <input type="number" id="calc-car-price" value="{{ $rawPrice > 0 ? $rawPrice : 1500000000 }}" step="10000000" oninput="calculateLoanPayment()">
+                                    <span class="calc-input-suffix">VNĐ</span>
+                                </div>
+                            </div>
+
+                            <div class="calc-field-group">
+                                <label for="calc-down-payment">
+                                    Tỷ lệ trả trước (%)
+                                    <span id="label-down-payment">20% (300.000.000 VNĐ)</span>
+                                </label>
+                                <div class="calc-input-wrap">
+                                    <select id="calc-down-payment" onchange="calculateLoanPayment()">
+                                        <option value="15">15% - Mức vốn đối ứng tối thiểu</option>
+                                        <option value="20" selected>20% - Gói phổ biến nhất</option>
+                                        <option value="30">30% - Cân bằng tài chính</option>
+                                        <option value="40">40% - Giảm áp lực trả lãi</option>
+                                        <option value="50">50% - Trả trước một nửa</option>
+                                        <option value="70">70% - Khoản vay thấp nhất</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="calc-field-group">
+                                <label for="calc-loan-period">
+                                    Thời hạn vay (Kỳ hạn)
+                                    <span id="label-loan-period">60 tháng (5 năm)</span>
+                                </label>
+                                <div class="calc-input-wrap">
+                                    <select id="calc-loan-period" onchange="calculateLoanPayment()">
+                                        <option value="12">12 tháng (1 năm)</option>
+                                        <option value="24">24 tháng (2 năm)</option>
+                                        <option value="36">36 tháng (3 năm)</option>
+                                        <option value="48">48 tháng (4 năm)</option>
+                                        <option value="60" selected>60 tháng (5 năm) - Ưu đãi nhất</option>
+                                        <option value="72">72 tháng (6 năm)</option>
+                                        <option value="84">84 tháng (7 năm) - Tối đa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="calc-field-group">
+                                <label for="calc-interest-rate">
+                                    Lãi suất vay ưu đãi (%/năm)
+                                    <span id="label-interest-rate">8.5%/năm</span>
+                                </label>
+                                <div class="calc-input-wrap">
+                                    <input type="number" id="calc-interest-rate" value="8.5" step="0.1" min="5" max="18" oninput="calculateLoanPayment()">
+                                    <span class="calc-input-suffix">%/năm</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Card -->
+                        <div class="car-calc-result-card">
+                            <div>
+                                <div class="calc-result-header">
+                                    <span>Số tiền ước tính trả hàng tháng</span>
+                                    <div class="calc-monthly-number" id="calc-monthly-result">-- VNĐ</div>
+                                    <div class="calc-monthly-unit">(Bao gồm gốc + lãi dự tính)</div>
+                                </div>
+
+                                <ul class="calc-result-details">
+                                    <li>
+                                        <span>Số tiền cần trả trước:</span>
+                                        <strong id="calc-down-amount">--</strong>
+                                    </li>
+                                    <li>
+                                        <span>Số tiền ngân hàng tài trợ:</span>
+                                        <strong id="calc-loan-amount">--</strong>
+                                    </li>
+                                    <li>
+                                        <span>Tổng tiền lãi trong kỳ:</span>
+                                        <strong id="calc-total-interest">--</strong>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <a href="#booking-consultation-section" onclick="prefillBookingInquiry('Vay mua xe tra gop')" class="calc-cta-btn">
+                                <i class="fa-solid fa-file-invoice-dollar me-1"></i> Đăng Ký Tư Vấn Gói Vay Ưu Đãi
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single Unified Booking & Consultation Form -->
+                <div class="car-detail-card" id="booking-consultation-section">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-calendar-check text-primary me-2"></i> Đăng Ký Trải Nghiệm & Nhận Báo Giá</span>
+                        <span class="title-accent"><i class="fa-regular fa-clock"></i> Xác nhận trong 15 phút</span>
+                    </div>
+
+                    <!-- Booking Purpose Tabs -->
+                    <div class="car-booking-tabs">
+                        <button type="button" class="car-booking-tab-btn active" id="tab-btn-drive" onclick="switchBookingType('drive')">
+                            <i class="fa-solid fa-steering-wheel"></i> 1. Đặt Lịch Lái Thử & Xem Xe
+                        </button>
+                        <button type="button" class="car-booking-tab-btn" id="tab-btn-quote" onclick="switchBookingType('quote')">
+                            <i class="fa-solid fa-tag"></i> 2. Nhận Báo Giá Lăn Bánh & Trả Góp
+                        </button>
+                    </div>
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger mb-4">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i> {{ $errors->first() }}
+                        </div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success mb-4">
+                            <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <!-- Drive Appointment Form (Default) -->
+                    <form method="POST" action="{{ route('appointments.store') }}" id="form-drive-booking">
+                        @csrf
+                        <input type="hidden" name="source" value="unit_detail">
+                        <input type="hidden" name="car_unit_id" value="{{ $car->id }}">
+                        <input type="hidden" name="trim_id" value="{{ $car->trim_id }}">
+
+                        <div class="booking-form-grid">
+                            <div class="booking-input-group">
+                                <label>Họ và tên quý khách <span class="text-danger">*</span></label>
+                                <input type="text" name="name" value="{{ $defaultName }}" placeholder="Ví dụ: Nguyễn Văn An" required>
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Số điện thoại liên hệ <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="0901 234 567" required>
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Hòm thư điện tử (Email)</label>
+                                <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Thời gian mong muốn trải nghiệm <span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" min="{{ now()->addHour()->format('Y-m-d\\TH:i') }}" required>
+                            </div>
+
+                            <div class="booking-input-group full-col">
+                                <label>Nhu cầu hoặc ghi chú đặc biệt</label>
+                                <textarea name="message" placeholder="Ví dụ: Tôi muốn lái thử xe vào chiều thứ 7 tuần này tại showroom, tư vấn thêm màu sắc nội thất...">{{ old('message') }}</textarea>
+                            </div>
+
+                            <div class="full-col text-end pt-2">
+                                <button type="submit" class="booking-submit-btn w-100 w-md-auto">
+                                    <span>Xác Nhận Đặt Lịch Lái Thử Ngay</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Quote Inquiry Form (Hidden by default) -->
+                    <form method="POST" action="{{ route('lead.store') }}" id="form-quote-inquiry" style="display: none;">
+                        @csrf
+                        <input type="hidden" name="source" value="unit_detail">
+                        <input type="hidden" name="car_unit_id" value="{{ $car->id }}">
+                        <input type="hidden" name="trim_id" value="{{ $car->trim_id }}">
+
+                        <div class="booking-form-grid">
+                            <div class="booking-input-group">
+                                <label>Họ và tên quý khách <span class="text-danger">*</span></label>
+                                <input type="text" name="name" value="{{ $defaultName }}" placeholder="Ví dụ: Trần Thị Mai" required>
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Số điện thoại nhận báo giá <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="0901 234 567" required>
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Địa chỉ Email nhận bảng dự toán</label>
+                                <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
+                            </div>
+
+                            <div class="booking-input-group">
+                                <label>Tỉnh / Thành phố đăng ký biển số</label>
+                                <input type="text" placeholder="Ví dụ: TP. Hồ Chí Minh, Hà Nội, Bình Dương...">
+                            </div>
+
+                            <div class="booking-input-group full-col">
+                                <label>Nội dung cần chuyên viên hỗ trợ</label>
+                                <textarea name="message" id="quote-message-textarea" placeholder="Ví dụ: Vui lòng gửi dự toán chi phí lăn bánh, mức trả góp tối ưu và chương trình khuyến mãi tháng này.">{{ old('message') }}</textarea>
+                            </div>
+
+                            <div class="full-col text-end pt-2">
+                                <button type="submit" class="booking-submit-btn w-100 w-md-auto">
+                                    <span>Gửi Yêu Cầu Nhận Báo Giá Lăn Bánh</span>
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Showroom Location & Map -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-location-dot text-primary me-2"></i> Địa Điểm Trưng Bày & Trải Nghiệm Xe</span>
+                        <a href="{{ $mapsDirectionsUrl }}" target="_blank" rel="noopener" class="title-accent">
+                            <i class="fa-solid fa-diamond-turn-right"></i> Xem chỉ đường Google Maps
+                        </a>
+                    </div>
+
+                    <div style="font-size: 14px; color: #475569; margin-bottom: 18px;">
+                        <strong class="text-dark font-semibold d-block mb-1">{{ $showroomName }}</strong>
+                        <p class="mb-2"><i class="fa-solid fa-map-pin text-danger me-1"></i> {{ $showroomAddress }}</p>
+                        <p class="mb-0 text-muted"><i class="fa-regular fa-clock me-1 text-success"></i> Giờ mở cửa: 08:00 - 20:00 (Tất cả các ngày trong tuần, kể cả Thứ 7 & Chủ Nhật)</p>
+                    </div>
+
+                    <div style="border-radius: 14px; overflow: hidden; height: 280px; border: 1px solid #E2E8F0;">
+                        <iframe src="{{ $mapsEmbedUrl }}" width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+
+                <!-- Customer Reviews Section -->
+                <div class="car-detail-card">
+                    <div class="car-detail-card-title">
+                        <span><i class="fa-solid fa-star text-warning me-2"></i> Đánh Giá Từ Khách Hàng Đã Trải Nghiệm</span>
+                        <span class="title-accent">{{ $reviews->count() }} nhận xét đã kiểm duyệt</span>
+                    </div>
+
+                    <div class="car-review-rating-box">
+                        <div class="rating-score-badge">
+                            <strong>{{ $reviewAverage }}</strong>
+                            <span>Trên thang điểm 5.0</span>
+                            <div class="rating-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+
+                        <div style="flex: 1; border-left: 1px solid #E2E8F0; padding-left: 20px;">
+                            <h6 style="font-size: 14px; font-weight: 700; color: #050B20; margin-bottom: 4px;">Độ hài lòng chung tuyệt đối</h6>
+                            <p style="font-size: 13px; color: #64748B; margin: 0;">100% đánh giá đến từ khách hàng đã trực tiếp mua xe hoặc trải nghiệm dịch vụ lái thử tại hệ thống showroom.</p>
                         </div>
                     </div>
 
-                    <div class="reviews">
+                    <div class="car-reviews-list">
                         @forelse ($reviews as $review)
-                            <div class="content-box{{ $loop->index === 1 ? ' two' : '' }}">
-                                <div class="auther-name">
-                                    <span>{{ strtoupper(substr($review->user_name, 0, 1)) }}</span>
-                                    <h6 class="name">{{ $review->user_name }}</h6>
-                                    <small>{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</small>
-                                </div>
-                                <div class="rating-list">
-                                    <ul class="list">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <li><i class="fa {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o' }}"></i></li>
-                                        @endfor
-                                    </ul>
-                                    <span>{{ \Illuminate\Support\Str::limit(strip_tags((string) $review->comment), 42, '...') ?: 'Nhan xet tu khach hang' }}</span>
-                                </div>
-                                <div class="text">{{ $review->comment }}</div>
-                                @if ($loop->first)
-                                    <div class="image-box">
-                                        @foreach ($imageMedia->take(3) as $image)
-                                            <img src="{{ $image->url }}" alt="{{ $car->stock_code }}">
-                                        @endforeach
+                            <div class="review-item-card">
+                                <div class="review-author-row">
+                                    <div class="review-author-info">
+                                        <div class="review-avatar">
+                                            {{ strtoupper(substr($review->user_name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <div class="review-author-name">
+                                                {{ $review->user_name }}
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle ms-2" style="font-size: 11px;">
+                                                    <i class="fa-solid fa-check-circle"></i> Đã mua xe
+                                                </span>
+                                            </div>
+                                            <div class="review-date">{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</div>
+                                        </div>
                                     </div>
-                                @endif
-                                <div class="btn-box">
-                                    <a href="#dealer-contact" class="like-btn"><i class="fa-solid fa-thumbs-up"></i>Yeu cau tu van</a>
-                                    <a href="{{ route('inventory.index', ['model' => $car->model_slug]) }}" class="like-btn"><i class="fa-solid fa-thumbs-down"></i>Xem xe tuong tu</a>
+
+                                    <div style="color: #F59E0B; font-size: 13px;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="fa-solid {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o text-muted' }}"></i>
+                                        @endfor
+                                    </div>
                                 </div>
-                                @if ($loop->last && $reviews->count() >= 6)
-                                    <a href="#dealer-contact" class="review">
-                                        Nhan them tu van
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
-                                            <g clip-path="url(#clip0_detail_review_arrow)">
-                                                <path d="M14.1106 0H5.55509C5.34013 0 5.16619 0.173943 5.16619 0.388901C5.16619 0.603859 5.34013 0.777802 5.55509 0.777802H13.1719L0.613453 13.3362C0.461531 13.4881 0.461531 13.7342 0.613453 13.8861C0.689396 13.962 0.788927 14 0.888422 14C0.987917 14 1.08741 13.962 1.16339 13.8861L13.7218 1.3277V8.94447C13.7218 9.15943 13.8957 9.33337 14.1107 9.33337C14.3256 9.33337 14.4996 9.15943 14.4996 8.94447V0.388901C14.4995 0.173943 14.3256 0 14.1106 0Z" fill="#405FF2"/>
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_detail_review_arrow">
-                                                    <rect width="14" height="14" fill="white" transform="translate(0.5)"/>
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </a>
-                                @endif
+
+                                <div class="review-text-content">
+                                    {{ $review->comment }}
+                                </div>
                             </div>
                         @empty
-                            <div class="alert alert-light">Chua co danh gia duoc duyet cho xe nay.</div>
+                            <div class="p-4 rounded-xl border border-dashed text-center text-muted">
+                                <i class="fa-regular fa-comment-dots fs-3 d-block mb-2 text-secondary"></i>
+                                <span>Chưa có đánh giá công khai cho phiên bản này. Quý khách hãy đặt lịch lái thử để trở thành người đầu tiên cảm nhận chất lượng!</span>
+                            </div>
                         @endforelse
                     </div>
                 </div>
             </div>
 
-            <div class="side-bar-column v2 col-xl-4 col-lg-12 col-md-12 col-sm-12">
-                <div class="inner-column">
-                    <div class="contact-box-two">
-                        <span>Gia ban</span>
-                        <h3 class="title">{{ $car->formatted_price }}</h3>
-                        <small>{{ $car->condition_label }} | {{ strtoupper((string) $car->status) }}</small>
-                        <div class="btn-box">
-                            <a href="#dealer-contact" class="side-btn"><img src="{{ asset('boxcar/images/resource/tag.svg') }}" alt="offer">Nhan bao gia</a>
-                            <a href="#dealer-booking" class="side-btn two"><img src="{{ asset('boxcar/images/resource/tag1-1.svg') }}" alt="test-drive">Dat lich xem xe</a>
+            <!-- Right Column: Sticky Transaction & Conversion Hub -->
+            <div class="car-detail-sidebar-col">
+                <div class="car-detail-sticky-wrap">
+                    <!-- Pricing & CTA Card -->
+                    <div class="car-price-card">
+                        <div class="car-price-eyebrow">
+                            <span class="car-price-label">Giá bán niêm yết</span>
+                            @if ($car->status === 'available')
+                                <span class="car-status-pill"><i class="fa-solid fa-circle-check"></i> Sẵn sàng giao</span>
+                            @else
+                                <span class="car-status-pill on-hold"><i class="fa-regular fa-clock"></i> Đang giữ chỗ</span>
+                            @endif
+                        </div>
+
+                        <div class="car-main-price">{{ $car->formatted_price }}</div>
+                        <div class="car-price-note">Đã bao gồm thuế VAT • Hỗ trợ hoàn tất hồ sơ đăng ký sang tên trọn gói.</div>
+
+                        @if ($rawPrice > 0)
+                            <div class="car-installment-hint">
+                                <i class="fa-solid fa-calculator"></i>
+                                <span>Trả trước từ ~{{ number_format($rawPrice * 0.2, 0, ',', '.') }} VNĐ (góp từ ~{{ $estimatedMonthly }} VNĐ/tháng)</span>
+                            </div>
+                        @endif
+
+                        <div class="car-cta-group">
+                            <a href="#booking-consultation-section" onclick="switchBookingType('drive')" class="btn-cta-primary">
+                                <i class="fa-solid fa-steering-wheel"></i>
+                                <span>Đặt Lịch Lái Thử & Xem Xe</span>
+                            </a>
+                            <a href="#booking-consultation-section" onclick="switchBookingType('quote')" class="btn-cta-secondary">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                <span>Nhận Báo Giá Lăn Bánh</span>
+                            </a>
+                        </div>
+
+                        <div class="car-quick-contact-grid">
+                            <a href="tel:{{ $phoneDigits }}" class="btn-quick-call">
+                                <i class="fa-solid fa-phone-volume text-primary"></i>
+                                <span>{{ $showroomPhone }}</span>
+                            </a>
+                            <a href="{{ $zaloUrl }}" target="_blank" rel="noopener" class="btn-quick-zalo">
+                                <i class="fa-solid fa-comment-dots"></i>
+                                <span>Chat Zalo 24/7</span>
+                            </a>
                         </div>
                     </div>
 
-                    <div class="contact-box">
-                        <div class="icon-box">
-                            <img src="{{ $car->image_url }}" alt="{{ $showroomName }}">
-                        </div>
-                        <div class="content-box">
-                            <h6 class="title">{{ $showroomName }}</h6>
-                            <div class="text">{{ $showroomAddress }}</div>
-                            <ul class="contact-list">
-                                <li><a href="{{ $mapsDirectionsUrl }}" target="_blank" rel="noopener"><div class="image-box"><img src="{{ asset('boxcar/images/resource/phone1-1.svg') }}" alt="map"></div>Chi duong</a></li>
-                                <li><a href="{{ $phoneDigits !== '' ? 'tel:' . $phoneDigits : '#dealer-contact' }}"><div class="image-box"><img src="{{ asset('boxcar/images/resource/phone1-2.svg') }}" alt="phone"></div>{{ $navShowroom->phone ?? 'Lien he showroom' }}</a></li>
-                            </ul>
-                            <div class="btn-box">
-                                <a href="{{ $showroomEmail ? 'mailto:' . $showroomEmail : '#dealer-contact' }}" class="side-btn">
-                                    Nhan email tu van
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <g clip-path="url(#clip0_detail_email_arrow)">
-                                            <path d="M13.6111 0H5.05558C4.84062 0 4.66668 0.173943 4.66668 0.388901C4.66668 0.603859 4.84062 0.777802 5.05558 0.777802H12.6723L0.113941 13.3362C-0.0379805 13.4881 -0.0379805 13.7342 0.113941 13.8861C0.189884 13.962 0.289415 14 0.38891 14C0.488405 14 0.5879 13.962 0.663879 13.8861L13.2222 1.3277V8.94447C13.2222 9.15943 13.3962 9.33337 13.6111 9.33337C13.8261 9.33337 14 9.15943 14 8.94447V0.388901C14 0.173943 13.8261 0 13.6111 0Z" fill="white"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_detail_email_arrow">
-                                                <rect width="14" height="14" fill="white"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </a>
-                                <a href="{{ $whatsappDigits !== '' ? 'https://wa.me/' . $whatsappDigits : '#dealer-contact' }}" class="side-btn two" @if ($whatsappDigits !== '') target="_blank" rel="noopener" @endif>
-                                    Chat Zalo/WhatsApp
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <g clip-path="url(#clip0_detail_whatsapp_arrow)">
-                                            <path d="M13.6111 0H5.05558C4.84062 0 4.66668 0.173943 4.66668 0.388901C4.66668 0.603859 4.84062 0.777802 5.05558 0.777802H12.6723L0.113941 13.3362C-0.0379805 13.4881 -0.0379805 13.7342 0.113941 13.8861C0.189884 13.962 0.289415 14 0.38891 14C0.488405 14 0.5879 13.962 0.663879 13.8861L13.2222 1.3277V8.94447C13.2222 9.15943 13.3962 9.33337 13.6111 9.33337C13.8261 9.33337 14 9.15943 14 8.94447V0.388901C14 0.173943 13.8261 0 13.6111 0Z" fill="#60C961"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_detail_whatsapp_arrow">
-                                                <rect width="14" height="14" fill="white"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </a>
-                                <a href="{{ route('inventory.index') }}" class="side-btn-three">
-                                    Xem toan bo kho xe
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <g clip-path="url(#clip0_detail_stock_arrow)">
-                                            <path d="M13.6111 0H5.05558C4.84062 0 4.66668 0.173943 4.66668 0.388901C4.66668 0.603859 4.84062 0.777802 5.05558 0.777802H12.6723L0.113941 13.3362C-0.0379805 13.4881 -0.0379805 13.7342 0.113941 13.8861C0.189884 13.962 0.289415 14 0.38891 14C0.488405 14 0.5879 13.962 0.663879 13.8861L13.2222 1.3277V8.94447C13.2222 9.15943 13.3962 9.33337 13.6111 9.33337C13.8261 9.33337 14 9.15943 14 8.94447V0.388901C14 0.173943 13.8261 0 13.6111 0Z" fill="#050B20"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_detail_stock_arrow">
-                                                <rect width="14" height="14" fill="white"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </a>
+
+                    <!-- Showroom Direct Info -->
+                    <div class="car-sidebar-showroom-box">
+                        <div class="car-showroom-header">
+                            <div class="car-showroom-avatar">
+                                <i class="fa-solid fa-car-rear"></i>
+                            </div>
+                            <div>
+                                <h6 class="car-showroom-name">{{ $showroomName }}</h6>
+                                <span class="car-showroom-hours"><i class="fa-solid fa-circle-dot text-success me-1"></i> Mở cửa 08:00 - 20:00</span>
                             </div>
                         </div>
+
+                        <div class="car-showroom-address">
+                            <i class="fa-solid fa-location-dot me-1 text-muted"></i> {{ $showroomAddress }}
+                        </div>
+
+                        <a href="{{ $mapsDirectionsUrl }}" target="_blank" rel="noopener" class="car-showroom-map-link">
+                            <i class="fa-solid fa-location-arrow"></i> Xem chỉ đường Google Maps <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size: 11px;"></i>
+                        </a>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 3. Related Vehicles Section -->
+        <div class="car-related-section">
+            <div class="car-related-header">
+                <div>
+                    <h3>Xe Cùng Phân Khúc Đang Có Sẵn Tại Kho</h3>
+                    <p class="text-muted mb-0 mt-1" style="font-size: 14px;">Gợi ý các mẫu xe tuyển chọn tương đồng về tầm giá và đẳng cấp vận hành.</p>
+                </div>
+                <a href="{{ route('inventory.index', ['make' => $car->make_slug]) }}">
+                    <span>Xem tất cả kho xe {{ $car->make_name }}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="row car-slider-three" data-preview="4">
+                @forelse ($relatedCars as $related)
+                    @include('client.partials.related-car-card', ['car' => $related])
+                @empty
+                    <div class="col-12">
+                        <div class="alert alert-light border text-center py-4 text-muted">
+                            Hiện kho xe chưa có xe cùng phân khúc. Quý khách vui lòng tham khảo các mẫu xe khác trong danh mục.
+                        </div>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
 </section>
 
-<div class="cars-section-three">
-    <div class="boxcar-container">
-        <div class="boxcar-title wow fadeInUp">
-            <h2>Xe lien quan</h2>
-            <a href="{{ route('inventory.index', ['model' => $car->model_slug]) }}" class="btn-title">
-                Xem them
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <g clip-path="url(#clip0_detail_related_arrow)">
-                        <path d="M13.6109 0H5.05533C4.84037 0 4.66643 0.173943 4.66643 0.388901C4.66643 0.603859 4.84037 0.777802 5.05533 0.777802H12.6721L0.113697 13.3362C-0.0382246 13.4881 -0.0382246 13.7342 0.113697 13.8861C0.18964 13.962 0.289171 14 0.388666 14C0.488161 14 0.587656 13.962 0.663635 13.8861L13.222 1.3277V8.94447C13.222 9.15943 13.3959 9.33337 13.6109 9.33337C13.8259 9.33337 13.9998 9.15943 13.9998 8.94447V0.388901C13.9998 0.173943 13.8258 0 13.6109 0Z" fill="#050B20"/>
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_detail_related_arrow">
-                            <rect width="14" height="14" fill="white"/>
-                        </clipPath>
-                    </defs>
-                </svg>
-            </a>
-        </div>
+@push('scripts')
+<script>
+    // Gallery Image Switcher
+    function switchMainImage(url, thumbElement) {
+        const previewImg = document.getElementById('main-preview-img');
+        const previewLink = document.getElementById('main-preview-link');
+        if (previewImg && previewLink) {
+            previewImg.src = url;
+            previewLink.href = url;
+        }
 
-        <div class="row car-slider-three" data-preview="4">
-            @forelse ($relatedCars as $related)
-                @include('client.partials.related-car-card', ['car' => $related])
-            @empty
-                <div class="col-12">
-                    <div class="alert alert-light">Hien chua co xe lien quan trong kho.</div>
-                </div>
-            @endforelse
-        </div>
-    </div>
-</div>
+        const thumbs = document.querySelectorAll('.car-gallery-thumb-item');
+        thumbs.forEach(t => t.classList.remove('active'));
+        if (thumbElement) {
+            thumbElement.classList.add('active');
+        }
+    }
+
+    // Copy link helper
+    function copyCurrentCarLink(btn) {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check text-success"></i> <span>Đã chép!</span>';
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+            }, 2000);
+        }).catch(() => {
+            alert('Đã sao chép liên kết vào bộ nhớ tạm: ' + url);
+        });
+    }
+
+    // Booking Type Switcher
+    function switchBookingType(type) {
+        const btnDrive = document.getElementById('tab-btn-drive');
+        const btnQuote = document.getElementById('tab-btn-quote');
+        const formDrive = document.getElementById('form-drive-booking');
+        const formQuote = document.getElementById('form-quote-inquiry');
+
+        if (type === 'drive') {
+            btnDrive.classList.add('active');
+            btnQuote.classList.remove('active');
+            formDrive.style.display = 'block';
+            formQuote.style.display = 'none';
+        } else {
+            btnQuote.classList.add('active');
+            btnDrive.classList.remove('active');
+            formQuote.style.display = 'block';
+            formDrive.style.display = 'none';
+        }
+    }
+
+    function prefillBookingInquiry(topic) {
+        switchBookingType('quote');
+        const textarea = document.getElementById('quote-message-textarea');
+        if (textarea) {
+            textarea.value = 'Tôi quan tâm đến gói ' + topic + ' cho chiếc {{ $car->make_name }} {{ $car->model_name }} (Mã xe: {{ $car->stock_code }}). Vui lòng gửi bảng dự toán chi tiết.';
+        }
+    }
+
+    // Loan Financing Calculator Logic
+    function calculateLoanPayment() {
+        const priceInput = document.getElementById('calc-car-price');
+        const downPercentSelect = document.getElementById('calc-down-payment');
+        const periodSelect = document.getElementById('calc-loan-period');
+        const interestInput = document.getElementById('calc-interest-rate');
+
+        if (!priceInput || !downPercentSelect || !periodSelect || !interestInput) return;
+
+        const carPrice = parseFloat(priceInput.value) || 0;
+        const downPercent = parseFloat(downPercentSelect.value) || 20;
+        const loanMonths = parseInt(periodSelect.value) || 60;
+        const annualRate = parseFloat(interestInput.value) || 8.5;
+
+        const downPaymentAmount = carPrice * (downPercent / 100);
+        const loanAmount = carPrice - downPaymentAmount;
+
+        // Monthly interest rate
+        const monthlyRate = (annualRate / 100) / 12;
+
+        let monthlyPayment = 0;
+        let totalInterest = 0;
+
+        if (loanAmount > 0 && monthlyRate > 0 && loanMonths > 0) {
+            // Amortization formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+            const factor = Math.pow(1 + monthlyRate, loanMonths);
+            monthlyPayment = loanAmount * (monthlyRate * factor) / (factor - 1);
+            totalInterest = (monthlyPayment * loanMonths) - loanAmount;
+        }
+
+        // Update labels and outputs
+        const labelDown = document.getElementById('label-down-payment');
+        if (labelDown) {
+            labelDown.textContent = downPercent + '% (' + formatVND(downPaymentAmount) + ')';
+        }
+
+        const labelPeriod = document.getElementById('label-loan-period');
+        if (labelPeriod) {
+            const years = (loanMonths / 12).toFixed(loanMonths % 12 === 0 ? 0 : 1);
+            labelPeriod.textContent = loanMonths + ' tháng (' + years + ' năm)';
+        }
+
+        const labelRate = document.getElementById('label-interest-rate');
+        if (labelRate) {
+            labelRate.textContent = annualRate.toFixed(1) + '%/năm';
+        }
+
+        const monthlyResult = document.getElementById('calc-monthly-result');
+        if (monthlyResult) {
+            monthlyResult.textContent = formatVND(monthlyPayment) + '/tháng';
+        }
+
+        const downAmountEl = document.getElementById('calc-down-amount');
+        if (downAmountEl) {
+            downAmountEl.textContent = formatVND(downPaymentAmount);
+        }
+
+        const loanAmountEl = document.getElementById('calc-loan-amount');
+        if (loanAmountEl) {
+            loanAmountEl.textContent = formatVND(loanAmount);
+        }
+
+        const totalInterestEl = document.getElementById('calc-total-interest');
+        if (totalInterestEl) {
+            totalInterestEl.textContent = formatVND(totalInterest);
+        }
+    }
+
+    function formatVND(num) {
+        if (!num || isNaN(num) || num < 0) return '0 VNĐ';
+        return Math.round(num).toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    // Run once on DOM loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        calculateLoanPayment();
+    });
+</script>
+@endpush
 @endsection
