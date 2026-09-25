@@ -5875,16 +5875,44 @@ body.drawer-open {
     height: 15px;
 }
 
-/* 2-Column Main Layout */
-.car-detail-layout-grid {
+/* Hero 2-Column Grid (Gallery + Transaction Hub) */
+.car-detail-hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 390px;
+    grid-template-columns: minmax(0, 1.45fr) 400px;
     gap: 28px;
-    align-items: start;
+    align-items: stretch;
+    margin-bottom: 28px;
 }
 
 @media (max-width: 1199.98px) {
-    .car-detail-layout-grid {
+    .car-detail-hero-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.car-hero-transaction-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 2-Column Balanced Sections (Description + Features, Map + Reviews) */
+.car-desc-feature-grid,
+.car-map-reviews-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 28px;
+    align-items: stretch;
+    margin-bottom: 28px;
+}
+
+.car-map-reviews-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 991.98px) {
+    .car-desc-feature-grid,
+    .car-map-reviews-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -6026,13 +6054,25 @@ body.drawer-open {
 /* 12-Item Specs Overview Grid */
 .car-overview-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+}
+
+@media (max-width: 1199.98px) {
+    .car-overview-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 767.98px) {
     .car-overview-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .car-overview-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -6250,7 +6290,7 @@ body.drawer-open {
 
 .car-calc-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 380px;
     gap: 24px;
     align-items: stretch;
 }
@@ -6443,8 +6483,14 @@ body.drawer-open {
 
 .booking-form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+}
+
+@media (max-width: 991.98px) {
+    .booking-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 767.98px) {
