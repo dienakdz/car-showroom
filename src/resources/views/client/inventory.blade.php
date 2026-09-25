@@ -430,23 +430,35 @@
         </button>
 
         <!-- 7. Offcanvas Slide-out Drawer for Deep Filters -->
-        <div class="wrap-fixed-sidebar">
-            <div class="sidebar-backdrop"></div>
+        <div class="wrap-fixed-sidebar" id="inventoryDrawerModal">
+            <div class="sidebar-backdrop" title="Đóng bộ lọc"></div>
             <div class="widget-sidebar-filter">
                 <div class="fixed-sidebar-title">
                     <h3>Bộ lọc chi tiết</h3>
-                    <a href="#" title="Đóng bộ lọc" class="close-filters"><i class="fa-solid fa-xmark"></i></a>
+                    <button type="button" class="close-filters" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="inventory-sidebar">
                     <form method="GET" action="{{ $inventoryAction }}" class="drawer-filter-form" id="inventoryDrawerFilterForm">
                         <input type="hidden" name="sort" value="{{ request('sort', 'newest') }}">
                         @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
-                        @if(request('condition')) <input type="hidden" name="condition" value="{{ request('condition') }}"> @endif
-                        @if(request('make')) <input type="hidden" name="make" value="{{ request('make') }}"> @endif
-                        @if(request('body_type')) <input type="hidden" name="body_type" value="{{ request('body_type') }}"> @endif
                         @if(request('price_range')) <input type="hidden" name="price_range" value="{{ request('price_range') }}"> @endif
 
-                        <!-- Dòng xe -->
+                        <!-- 1. Hãng xe (Make) -->
+                        <div class="inventory-filter-group">
+                            <label class="inventory-filter-label">Hãng xe</label>
+                            <div class="form_boxes mb-0">
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'make',
+                                    'options' => $filters['makes'],
+                                    'selectedValue' => request('make', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tất cả hãng xe',
+                                ])
+                            </div>
+                        </div>
+
+                        <!-- 2. Dòng xe (Model) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Dòng xe</label>
                             <div class="form_boxes mb-0">
@@ -461,7 +473,7 @@
                             </div>
                         </div>
 
-                        <!-- Phiên bản xe -->
+                        <!-- 3. Phiên bản xe (Trim) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Phiên bản xe</label>
                             <div class="form_boxes mb-0">
@@ -476,7 +488,38 @@
                             </div>
                         </div>
 
-                        <!-- Năm sản xuất -->
+                        <!-- 4. Tình trạng xe (Condition) -->
+                        <div class="inventory-filter-group">
+                            <label class="inventory-filter-label">Tình trạng xe</label>
+                            <div class="form_boxes mb-0">
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'condition',
+                                    'options' => $conditionOptions,
+                                    'selectedValue' => request('condition', ''),
+                                    'valueField' => 'value',
+                                    'labelField' => 'label',
+                                    'emptyLabel' => 'Tất cả tình trạng',
+                                    'includeEmptyOption' => false,
+                                ])
+                            </div>
+                        </div>
+
+                        <!-- 5. Kiểu dáng xe (Body Type) -->
+                        <div class="inventory-filter-group">
+                            <label class="inventory-filter-label">Kiểu dáng xe</label>
+                            <div class="form_boxes mb-0">
+                                @include('client.partials.form.custom-dropdown', [
+                                    'name' => 'body_type',
+                                    'options' => $filters['bodyTypes'],
+                                    'selectedValue' => request('body_type', ''),
+                                    'valueField' => 'slug',
+                                    'labelField' => 'name',
+                                    'emptyLabel' => 'Tất cả kiểu dáng',
+                                ])
+                            </div>
+                        </div>
+
+                        <!-- 6. Năm sản xuất (min_year, max_year) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Năm sản xuất</label>
                             <div class="row g-2">
@@ -507,7 +550,17 @@
                             </div>
                         </div>
 
-                        <!-- Loại nhiên liệu -->
+                        <!-- 7. Khoảng giá tùy chỉnh (min_price, max_price) -->
+                        <div class="inventory-filter-group">
+                            <label class="inventory-filter-label">Khoảng giá tùy chỉnh (VNĐ)</label>
+                            <div class="inventory-price-range-inputs">
+                                <input type="number" name="min_price" value="{{ request('min_price', '') }}" placeholder="Từ (triệu / VNĐ)">
+                                <span class="range-sep">-</span>
+                                <input type="number" name="max_price" value="{{ request('max_price', '') }}" placeholder="Đến (triệu / VNĐ)">
+                            </div>
+                        </div>
+
+                        <!-- 8. Loại nhiên liệu (fuel_type) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Loại nhiên liệu</label>
                             <div class="form_boxes mb-0">
@@ -522,7 +575,7 @@
                             </div>
                         </div>
 
-                        <!-- Hộp số -->
+                        <!-- 9. Hộp số (transmission) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Hộp số</label>
                             <div class="form_boxes mb-0">
@@ -537,7 +590,7 @@
                             </div>
                         </div>
 
-                        <!-- Hệ dẫn động -->
+                        <!-- 10. Hệ dẫn động (drivetrain) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Hệ dẫn động</label>
                             <div class="form_boxes mb-0">
@@ -552,17 +605,7 @@
                             </div>
                         </div>
 
-                        <!-- Khoảng giá chi tiết -->
-                        <div class="inventory-filter-group">
-                            <label class="inventory-filter-label">Khoảng giá tùy chỉnh (VNĐ)</label>
-                            <div class="inventory-price-range-inputs">
-                                <input type="number" name="min_price" value="{{ request('min_price', '') }}" placeholder="Từ (triệu/VNĐ)">
-                                <span class="range-sep">-</span>
-                                <input type="number" name="max_price" value="{{ request('max_price', '') }}" placeholder="Đến (triệu/VNĐ)">
-                            </div>
-                        </div>
-
-                        <!-- Số Km đã đi (Odo) -->
+                        <!-- 11. Số Km đã đi (Odo) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Số Km đã đi (Odo)</label>
                             <div class="inventory-price-range-inputs">
@@ -572,7 +615,7 @@
                             </div>
                         </div>
 
-                        <!-- Màu ngoại thất -->
+                        <!-- 12. Màu ngoại thất (exterior_color) -->
                         <div class="inventory-filter-group">
                             <label class="inventory-filter-label">Màu ngoại thất</label>
                             <div class="form_boxes mb-0">
@@ -588,15 +631,15 @@
                         </div>
 
                         <!-- Action Buttons Drawer -->
-                        <div class="inventory-filter-actions">
-                            <button type="submit" class="inventory-apply-btn">
+                        <div class="drawer-filter-actions">
+                            <button type="submit" class="drawer-apply-btn">
                                 <i class="fa-solid fa-filter"></i>
                                 <span>Áp dụng bộ lọc</span>
                             </button>
                             @if ($activeChipsCount > 0)
-                                <a href="{{ route('inventory.index') }}" class="inventory-reset-full-btn reset-filters-link">
+                                <a href="{{ route('inventory.index') }}" class="drawer-reset-btn reset-filters-link">
                                     <i class="fa-solid fa-rotate-left"></i>
-                                    <span>Đặt lại bộ lọc</span>
+                                    <span>Đặt lại tất cả bộ lọc</span>
                                 </a>
                             @endif
                         </div>
@@ -636,39 +679,8 @@
         };
 
         var closeInventorySidebar = function () {
-            $inventoryContent.find('.wrap-fixed-sidebar').removeClass('active');
-        };
-
-        var bindInventoryDropdownOptions = function () {
-            $inventoryContent.find('.drop-menu .dropdown li').off('click');
-            $inventoryContent.find('.drop-menu .dropdown li').off('click.inventoryOption');
-
-            $inventoryContent.find('.drop-menu .dropdown li').on('click.inventoryOption', function (event) {
-                var $option = $(this);
-                var $menu = $option.closest('.drop-menu');
-                var $form = $menu.closest('form');
-                var optionValue = $option.data('value');
-                var submitOnSelect = $menu.data('auto-submit') === true || $menu.data('auto-submit') === 'true';
-
-                if (typeof optionValue === 'undefined') {
-                    optionValue = $option.attr('id');
-                }
-
-                $menu.children('.select').find('span').first().text($option.text()).addClass('selected');
-                $menu.find('input').first().val(optionValue === undefined ? '' : optionValue).attr('value', optionValue === undefined ? '' : optionValue);
-                $menu.removeClass('active');
-                $menu.children('.dropdown').stop(true, true).slideUp(150);
-
-                if ($form.length && submitOnSelect) {
-                    window.setTimeout(function () {
-                        $form.trigger('submit');
-                    }, 0);
-                }
-
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                return false;
-            });
+            $('.wrap-fixed-sidebar').removeClass('active');
+            $('body').removeClass('drawer-open');
         };
 
         var buildInventoryUrlFromForm = function ($form) {
@@ -723,8 +735,7 @@
 
             closeInventorySidebar();
             $('.drop-menu').removeClass('active');
-            $('.form_boxes .dropdown').hide();
-            bindInventoryDropdownOptions();
+            $('.drop-menu .dropdown').hide();
 
             if (options.scrollToResults) {
                 var $listingSection = $inventoryContent.find('.inventory-results-stage').first();
@@ -785,7 +796,62 @@
                 });
         };
 
-        // Quick Filter Chips, Active Chips, & Reset Links via AJAX
+        // 1. Toggled Custom Dropdowns (Top bar + Drawer + Everywhere)
+        $(document).on('click', '#inventory-app .drop-menu .select', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var $select = $(this);
+            var $menu = $select.closest('.drop-menu');
+            var $dropdown = $menu.children('.dropdown');
+            var isAlreadyOpen = $menu.hasClass('active') && $dropdown.is(':visible');
+
+            // Close other dropdowns
+            $('#inventory-app .drop-menu').not($menu).removeClass('active').children('.dropdown').hide();
+
+            if (isAlreadyOpen) {
+                $menu.removeClass('active');
+                $dropdown.hide();
+            } else {
+                $menu.addClass('active');
+                $dropdown.show();
+            }
+        });
+
+        // 2. Dropdown Item Selection
+        $(document).on('click', '#inventory-app .drop-menu .dropdown li', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var $option = $(this);
+            var $menu = $option.closest('.drop-menu');
+            var $dropdown = $menu.children('.dropdown');
+            var $form = $menu.closest('form');
+            var optionValue = $option.data('value');
+            var submitOnSelect = $menu.data('auto-submit') === true || $menu.data('auto-submit') === 'true';
+
+            if (typeof optionValue === 'undefined') {
+                optionValue = $option.attr('id');
+            }
+
+            $menu.children('.select').find('span').first().text($option.text()).addClass('selected');
+            $menu.find('input').first().val(optionValue === undefined ? '' : optionValue).attr('value', optionValue === undefined ? '' : optionValue);
+            $menu.removeClass('active');
+            $dropdown.hide();
+
+            if ($form.length && submitOnSelect) {
+                window.setTimeout(function () {
+                    $form.trigger('submit');
+                }, 0);
+            }
+        });
+
+        // 3. Close Dropdowns on Click Outside
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('#inventory-app .drop-menu').length) {
+                $('#inventory-app .drop-menu').removeClass('active').children('.dropdown').hide();
+            }
+        });
+
+        // 4. Quick Filter Chips, Active Chips, & Reset Links via AJAX
         $(document).on('click.inventoryAjax', '#inventory-content .quick-chip, #inventory-content .inventory-chip, #inventory-content .reset-filters-link', function (event) {
             if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || this.target === '_blank') {
                 return;
@@ -799,19 +865,29 @@
             });
         });
 
-        // Open Drawer Filters
-        $(document).on('click.inventoryAjax', '#inventory-content .filter-popup', function (event) {
+        // 5. Open Drawer Filters (Both Desktop and Mobile buttons)
+        $(document).on('click.inventoryAjax', '.filter-popup', function (event) {
             event.preventDefault();
-            $inventoryContent.find('.wrap-fixed-sidebar').addClass('active');
+            event.stopPropagation();
+            $('.wrap-fixed-sidebar').addClass('active');
+            $('body').addClass('drawer-open');
         });
 
-        // Close Drawer Filters
-        $(document).on('click.inventoryAjax', '#inventory-content .close-filters, #inventory-content .sidebar-backdrop', function (event) {
+        // 6. Close Drawer Filters (Close button or Backdrop click)
+        $(document).on('click.inventoryAjax', '.close-filters, .sidebar-backdrop', function (event) {
             event.preventDefault();
+            event.stopPropagation();
             closeInventorySidebar();
         });
 
-        // Form Submit
+        // 7. Close on Escape Key
+        $(document).on('keydown', function (event) {
+            if (event.key === 'Escape' || event.keyCode === 27) {
+                closeInventorySidebar();
+            }
+        });
+
+        // 8. Form Submit (Top Form or Drawer Form)
         $(document).on('submit.inventoryAjax', '#inventory-content form', function (event) {
             if ((this.method || 'get').toLowerCase() !== 'get') {
                 return;
@@ -828,7 +904,7 @@
             });
         });
 
-        // Pagination Click
+        // 9. Pagination Click
         $(document).on('click.inventoryAjax', '#inventory-content .pagination-sec a.page-link', function (event) {
             if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || this.target === '_blank') {
                 return;
@@ -852,8 +928,6 @@
                 scrollToResults: false,
             });
         });
-
-        bindInventoryDropdownOptions();
     })(window.jQuery);
 </script>
 @endpush
