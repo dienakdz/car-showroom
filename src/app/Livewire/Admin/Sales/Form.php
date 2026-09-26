@@ -168,7 +168,7 @@ class Form extends AdminPageComponent
             'buyers' => User::query()->select(['id', 'name', 'phone', 'email'])->orderBy('name')->limit(100)->get(),
             'leads' => Lead::query()
                 ->select(['id', 'name', 'phone', 'user_id', 'car_unit_id'])
-                ->whereIn('status', ['new', 'contacted', 'qualified', 'negotiating'])
+                ->whereIn('status', ['new', 'contacted', 'qualified', 'booked'])
                 ->latest()
                 ->limit(100)
                 ->get(),

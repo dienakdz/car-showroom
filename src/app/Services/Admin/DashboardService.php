@@ -434,6 +434,7 @@ class DashboardService
             'new' => 'Mới',
             'contacted' => 'Đã liên hệ',
             'qualified' => 'Tiềm năng',
+            'booked' => 'Lịch hẹn',
             'closed' => 'Đã chốt',
             'lost' => 'Đã hủy',
             default => mb_strtoupper($status),
@@ -446,6 +447,7 @@ class DashboardService
             'new' => 'blue',
             'contacted' => 'cyan',
             'qualified' => 'green',
+            'booked' => 'amber',
             'closed' => 'indigo',
             'lost' => 'red',
             default => 'gray',
@@ -457,7 +459,7 @@ class DashboardService
         return match ($status) {
             'pending' => 'Chờ duyệt',
             'confirmed' => 'Đã duyệt',
-            'completed' => 'Hoàn tất',
+            'done' => 'Hoàn tất',
             'cancelled' => 'Đã hủy',
             default => mb_strtoupper($status),
         };
@@ -468,7 +470,7 @@ class DashboardService
         return match ($status) {
             'pending' => 'amber',
             'confirmed' => 'blue',
-            'completed' => 'green',
+            'done' => 'green',
             'cancelled' => 'red',
             default => 'gray',
         };
