@@ -70,7 +70,7 @@ class PagesController extends ClientBaseController
     }
 
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, \stdClass>
      */
     protected function getAvailableCarsForSelector(): Collection
     {
@@ -87,7 +87,7 @@ class PagesController extends ClientBaseController
     }
 
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, \stdClass>
      */
     protected function getTrimsForSelector(): Collection
     {

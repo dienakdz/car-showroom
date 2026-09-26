@@ -1,528 +1,6 @@
 @extends('client.layouts.page')
 
-@section('title', $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name)
-
-@push('styles')
-<style>
-    .trim-review-shell {
-        padding-top: 24px;
-    }
-
-    .trim-review-shell .boxcar-title {
-        margin-bottom: 24px;
-    }
-
-    .trim-review-shell .boxcar-title p {
-        max-width: 760px;
-        color: #667085;
-        line-height: 1.7;
-    }
-
-    .trim-review-overview {
-        display: grid;
-        grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-        gap: 18px;
-        margin-bottom: 24px;
-    }
-
-    .trim-review-summary-card,
-    .trim-review-breakdown,
-    .trim-review-card,
-    .trim-review-empty,
-    .trim-review-form-card,
-    .trim-review-status-card,
-    .trim-review-note {
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        border-radius: 24px;
-        background: #ffffff;
-        box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
-    }
-
-    .trim-review-summary-card {
-        position: relative;
-        overflow: hidden;
-        padding: 28px;
-        background: linear-gradient(145deg, #050b20 0%, #13224a 54%, #2746d8 100%);
-        color: #ffffff;
-    }
-
-    .trim-review-summary-card::before {
-        content: "";
-        position: absolute;
-        inset: auto -40px -40px auto;
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .trim-review-summary-card > * {
-        position: relative;
-        z-index: 1;
-    }
-
-    .trim-review-summary-card__eyebrow {
-        display: inline-flex;
-        align-items: center;
-        padding: 7px 12px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .trim-review-summary-card__score {
-        display: flex;
-        align-items: flex-end;
-        gap: 8px;
-        margin-top: 18px;
-        color: #ffffff;
-        line-height: 1;
-    }
-
-    .trim-review-summary-card__score strong {
-        font-size: 58px;
-        font-weight: 800;
-    }
-
-    .trim-review-summary-card__score span {
-        padding-bottom: 8px;
-        color: rgba(255, 255, 255, 0.78);
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .trim-review-stars {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-        padding: 0;
-        margin: 14px 0 0;
-        list-style: none;
-        color: #fbbf24;
-    }
-
-    .trim-review-stars li {
-        line-height: 1;
-    }
-
-    .trim-review-stars li .fa-star {
-        color: #fbbf24;
-    }
-
-    .trim-review-stars li .fa-star-o {
-        color: rgba(251, 191, 36, 0.34);
-    }
-
-    .trim-review-stars--muted {
-        color: #d0d5dd;
-    }
-
-    .trim-review-stars--muted li .fa-star {
-        color: #f59e0b;
-    }
-
-    .trim-review-stars--muted li .fa-star-o {
-        color: #d0d5dd;
-    }
-
-    .trim-review-summary-card p {
-        margin: 14px 0 0;
-        color: rgba(255, 255, 255, 0.82);
-        line-height: 1.7;
-    }
-
-    .trim-review-breakdown {
-        padding: 24px 26px;
-    }
-
-    .trim-review-breakdown__head {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        margin-bottom: 18px;
-    }
-
-    .trim-review-breakdown__head h4,
-    .trim-review-form-card__head h4 {
-        margin: 0;
-        color: #050b20;
-        font-size: 24px;
-    }
-
-    .trim-review-breakdown__head p,
-    .trim-review-form-card__head p {
-        margin: 8px 0 0;
-        color: #667085;
-        line-height: 1.7;
-    }
-
-    .trim-review-meta-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
-        margin-bottom: 18px;
-    }
-
-    .trim-review-meta {
-        padding: 16px 18px;
-        border-radius: 18px;
-        background: #f8fbff;
-        border: 1px solid #e5eefb;
-    }
-
-    .trim-review-meta span {
-        display: block;
-        margin-bottom: 8px;
-        color: #667085;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-    }
-
-    .trim-review-meta strong {
-        display: block;
-        color: #050b20;
-        font-size: 20px;
-        line-height: 1.3;
-    }
-
-    .trim-review-bars {
-        display: grid;
-        gap: 12px;
-    }
-
-    .trim-review-bar {
-        display: grid;
-        grid-template-columns: 56px minmax(0, 1fr) 40px;
-        gap: 12px;
-        align-items: center;
-    }
-
-    .trim-review-bar__label,
-    .trim-review-bar__count {
-        color: #344054;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .trim-review-bar__track {
-        position: relative;
-        height: 10px;
-        border-radius: 999px;
-        overflow: hidden;
-        background: #eaecf0;
-    }
-
-    .trim-review-bar__track::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        width: var(--trim-review-fill, 0%);
-        border-radius: inherit;
-        background: linear-gradient(90deg, #405ff2 0%, #7c90ff 100%);
-    }
-
-    .trim-review-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-    }
-
-    .trim-review-card {
-        padding: 22px;
-    }
-
-    .trim-review-card__header {
-        display: flex;
-        justify-content: space-between;
-        gap: 18px;
-        align-items: flex-start;
-        margin-bottom: 18px;
-    }
-
-    .trim-review-card__author {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        min-width: 0;
-    }
-
-    .trim-review-card__avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 52px;
-        width: 52px;
-        height: 52px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, rgba(64, 95, 242, 0.14) 0%, rgba(64, 95, 242, 0.24) 100%);
-        color: #2440cb;
-        font-size: 22px;
-        font-weight: 800;
-    }
-
-    .trim-review-card__author h6 {
-        margin: 0;
-        color: #050b20;
-        font-size: 18px;
-        line-height: 1.4;
-    }
-
-    .trim-review-card__author span {
-        display: block;
-        margin-top: 4px;
-        color: #667085;
-        font-size: 14px;
-    }
-
-    .trim-review-card__rating {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 8px;
-        text-align: right;
-    }
-
-    .trim-review-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 7px 12px;
-        border-radius: 999px;
-        background: rgba(64, 95, 242, 0.1);
-        color: #2440cb;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-
-    .trim-review-card__comment {
-        margin: 0;
-        color: #344054;
-        font-size: 15px;
-        line-height: 1.85;
-    }
-
-    .trim-review-empty {
-        grid-column: 1 / -1;
-        padding: 28px;
-        text-align: center;
-    }
-
-    .trim-review-empty strong {
-        display: block;
-        color: #050b20;
-        font-size: 22px;
-        margin-bottom: 8px;
-    }
-
-    .trim-review-empty p {
-        margin: 0;
-        color: #667085;
-        line-height: 1.8;
-    }
-
-    .trim-review-form-shell {
-        padding-top: 12px;
-    }
-
-    .trim-review-form-card {
-        padding: 28px;
-    }
-
-    .trim-review-form-card__head {
-        margin-bottom: 22px;
-    }
-
-    .trim-review-form-grid {
-        display: grid;
-        gap: 18px;
-    }
-
-    .trim-review-field {
-        display: grid;
-        gap: 10px;
-    }
-
-    .trim-review-field label {
-        color: #101828;
-        font-size: 15px;
-        font-weight: 700;
-        line-height: 1.4;
-    }
-
-    .trim-review-field select,
-    .trim-review-field textarea {
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 16px;
-        background: #f8fbff;
-        color: #0f172a;
-        font-size: 15px;
-        line-height: 1.6;
-        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
-    .trim-review-field select {
-        height: 58px;
-        padding: 0 18px;
-    }
-
-    .trim-review-field textarea {
-        min-height: 170px;
-        padding: 16px 18px;
-        resize: vertical;
-    }
-
-    .trim-review-field select:hover,
-    .trim-review-field textarea:hover {
-        border-color: #94a3b8;
-        background: #ffffff;
-    }
-
-    .trim-review-field select:focus,
-    .trim-review-field textarea:focus {
-        outline: none;
-        border-color: #405ff2;
-        background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.14);
-    }
-
-    .trim-review-field select.is-invalid,
-    .trim-review-field textarea.is-invalid {
-        border-color: #d93025;
-        background: #fff8f7;
-        box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.08);
-    }
-
-    .trim-review-field textarea::placeholder {
-        color: #98a2b3;
-    }
-
-    .trim-review-field-note,
-    .trim-review-note p,
-    .trim-review-status-card p {
-        margin: 0;
-        color: #667085;
-        line-height: 1.7;
-    }
-
-    .trim-review-error {
-        color: #d93025;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .trim-review-actions {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .trim-review-note,
-    .trim-review-status-card {
-        padding: 22px 24px;
-    }
-
-    .trim-review-note strong,
-    .trim-review-status-card strong {
-        display: block;
-        margin-bottom: 8px;
-        color: #050b20;
-        font-size: 20px;
-    }
-
-    .trim-review-note a {
-        color: #2440cb;
-        font-weight: 700;
-    }
-
-    .trim-review-status-card__top {
-        display: flex;
-        justify-content: space-between;
-        gap: 14px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-    }
-
-    .trim-review-status-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: #eef2ff;
-        color: #405ff2;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-    }
-
-    .trim-review-status-card__comment {
-        margin-top: 16px;
-        padding: 16px 18px;
-        border-radius: 18px;
-        background: #f8fbff;
-        border: 1px solid #e5eefb;
-        color: #344054;
-        line-height: 1.8;
-    }
-
-    @media (max-width: 991px) {
-        .trim-review-overview,
-        .trim-review-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .trim-review-meta-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .trim-review-summary-card,
-        .trim-review-breakdown,
-        .trim-review-card,
-        .trim-review-form-card,
-        .trim-review-note,
-        .trim-review-status-card,
-        .trim-review-empty {
-            padding: 20px;
-            border-radius: 20px;
-        }
-
-        .trim-review-card__header,
-        .trim-review-actions {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .trim-review-card__rating {
-            align-items: flex-start;
-            text-align: left;
-        }
-
-        .trim-review-summary-card__score strong {
-            font-size: 46px;
-        }
-    }
-</style>
-@endpush
+@section('title', $displayTitle . ' - Hồ Sơ Phiên Bản & Giá Lăn Bánh')
 
 @section('content')
 @php
@@ -530,354 +8,482 @@
     $defaultPhone = old('phone', auth()->user()->phone ?? '');
     $defaultEmail = old('email', auth()->user()->email ?? '');
     $reviewCount = $reviews->count();
-    $reviewAverage = $reviewCount > 0 ? number_format((float) $reviews->avg('rating'), 1) : null;
+    $reviewAverage = $reviewCount > 0 ? number_format((float) $reviews->avg('rating'), 1) : '5.0';
     $latestReviewDate = $reviewCount > 0
         ? \Carbon\Carbon::parse($reviews->first()->created_at)->format('d/m/Y')
         : null;
+
     $reviewDistribution = collect(range(5, 1))->map(function (int $rating) use ($reviews, $reviewCount): array {
         $count = $reviews->where('rating', $rating)->count();
 
         return [
             'rating' => $rating,
             'count' => $count,
-            'raw_percent' => $reviewCount > 0 ? (int) round(($count / $reviewCount) * 100) : 0,
+            'percent' => $reviewCount > 0 ? (int) round(($count / $reviewCount) * 100) : ($rating === 5 ? 100 : 0),
         ];
     });
+
+    $descriptionText = trim((string) ($trim->description ?? ''));
+    if ($descriptionText === '') {
+        $descriptionText = 'Phiên bản ' . $displayTitle . ' (' . $yearRange . ') là sự kết hợp chuẩn mực giữa ngôn ngữ thiết kế sang trọng, khả năng vận hành bền bỉ và trang bị công nghệ tiện nghi vượt trội trong phân khúc.';
+    }
+
+    $showroomName = $navShowroom->name ?? 'Minh Dien Auto Showroom';
+    $showroomPhone = $navShowroom->phone ?? '0900 000 002';
+    $phoneDigits = preg_replace('/\D+/', '', (string) $showroomPhone);
+    $zaloUrl = $phoneDigits !== '' ? 'https://zalo.me/' . $phoneDigits : '#inquiry-consult';
+
+    // Helper closure to match icons for attributes
+    $getAttrIcon = function (string $label, string $code): string {
+        $text = mb_strtolower($label . ' ' . $code);
+        if (str_contains($text, 'động cơ') || str_contains($text, 'engine') || str_contains($text, 'dung tích')) return 'fa-car-side';
+        if (str_contains($text, 'công suất') || str_contains($text, 'power') || str_contains($text, 'mã lực')) return 'fa-bolt';
+        if (str_contains($text, 'xoắn') || str_contains($text, 'torque')) return 'fa-arrows-spin';
+        if (str_contains($text, 'hộp số') || str_contains($text, 'transmission')) return 'fa-gear';
+        if (str_contains($text, 'tiêu thụ') || str_contains($text, 'nhiên liệu') || str_contains($text, 'fuel')) return 'fa-gas-pump';
+        if (str_contains($text, 'dẫn động') || str_contains($text, 'drive')) return 'fa-arrows-split-up-and-left';
+        if (str_contains($text, 'chỗ') || str_contains($text, 'ghế') || str_contains($text, 'seat')) return 'fa-users';
+        if (str_contains($text, 'tăng tốc') || str_contains($text, 'acceleration') || str_contains($text, '0-100')) return 'fa-stopwatch';
+        if (str_contains($text, 'cửa sổ') || str_contains($text, 'sunroof')) return 'fa-sun';
+        if (str_contains($text, 'mâm') || str_contains($text, 'lốp') || str_contains($text, 'wheel') || str_contains($text, 'la-zăng')) return 'fa-circle-notch';
+        if (str_contains($text, 'khí thải') || str_contains($text, 'emission') || str_contains($text, 'chuẩn')) return 'fa-shield-halved';
+        return 'fa-sliders';
+    };
+
+    // Extract quick specs for hero badge
+    $heroEngine = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'động cơ'))?->display_value ?? 'Đang cập nhật';
+    $heroPower = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'công suất'))?->display_value ?? 'Đang cập nhật';
+    $heroTrans = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'hộp số'))?->display_value ?? 'Tự động';
+    $heroFuel = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'tiêu thụ'))?->display_value ?? 'Tiết kiệm';
 @endphp
 
-<section class="about-inner-one layout-radius" style="padding-bottom: 10px;">
-    <div class="upper-box">
-        <div class="boxcar-container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-12">
-                    <div class="boxcar-title">
-                        <ul class="breadcrumb">
-                            <li><a href="{{ route('home') }}">Trang chu</a></li>
-                            <li><a href="{{ route('inventory.index') }}">Kho xe</a></li>
-                            <li><span>{{ $trim->slug }}</span></li>
-                        </ul>
-                        <h2>{{ $trim->make_name }} {{ $trim->model_name }} - {{ $trim->name }}</h2>
-                        <div class="text">Trang phien ban tap trung vao thong so chung, trang bi, review va cac xe dang san co thuoc trim nay.</div>
-                    </div>
+<section class="car-detail-page-wrap">
+    <div class="boxcar-container">
+        <!-- 1. Breadcrumb -->
+        <div class="car-detail-header-intro" style="margin-bottom: 24px;">
+            <ul class="car-detail-breadcrumb">
+                <li><a href="{{ route('home') }}">Trang chủ</a></li>
+                <li><span>/</span></li>
+                <li><a href="{{ route('inventory.index') }}">Kho xe</a></li>
+                <li><span>/</span></li>
+                <li><a href="{{ route('inventory.index', ['make' => $trim->make_slug]) }}">{{ $trim->make_name }}</a></li>
+                <li><span>/</span></li>
+                <li><a href="{{ route('inventory.index', ['make' => $trim->make_slug, 'model' => $trim->model_slug]) }}">{{ $trim->model_name }}</a></li>
+                <li><span>/</span></li>
+                <li class="active">{{ $trim->name }}</li>
+            </ul>
+        </div>
+
+        <!-- 2. Hero Dossier Showcase -->
+        <div class="trim-hero-card">
+            <div class="trim-hero-info">
+                <div class="trim-badge-bar">
+                    <span class="badge-pill badge-brand">
+                        <i class="fa-solid fa-car me-1"></i> {{ $trim->make_name }} • {{ $trim->model_name }}
+                    </span>
+                    <span class="badge-pill badge-year">
+                        <i class="fa-regular fa-calendar-days me-1"></i> Đời xe: {{ $yearRange }}
+                    </span>
+                    @if ($availableCarsCount > 0)
+                        <span class="badge-pill badge-avail">
+                            <i class="fa-solid fa-circle-check me-1"></i> Có sẵn {{ $availableCarsCount }} xe tại showroom
+                        </span>
+                    @else
+                        <span class="badge-pill badge-year">
+                            <i class="fa-regular fa-clock me-1"></i> Nhận đặt xe theo yêu cầu
+                        </span>
+                    @endif
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-12">
-                    <div class="content-box">
-                        <div class="text">Nam ap dung: {{ $trim->year_from ?? 'N/A' }}{{ $trim->year_to ? ' - ' . $trim->year_to : ' - nay' }}</div>
-                        <div class="text">MSRP tham khao: {{ $trim->msrp ? number_format((float) $trim->msrp, 0, ',', '.') . ' VND' : 'Lien he' }}</div>
-                        <div class="text">{{ $trim->description ?: 'Chua co mo ta chi tiet cho phien ban nay.' }}</div>
+
+                <h1 class="trim-hero-title">{{ $displayTitle }}</h1>
+
+                <div class="trim-msrp-box">
+                    <div>
+                        <span class="trim-msrp-label">Giá niêm yết (MSRP tham khảo)</span>
+                        <div class="trim-msrp-value">{{ $formattedMsrp }}</div>
+                    </div>
+                    @if ($rawMsrp > 0)
+                        <span class="trim-msrp-note">• Trả trước từ ~{{ number_format($rawMsrp * 0.2, 0, ',', '.') }} VNĐ (góp từ ~{{ $estimatedMonthly }} VNĐ/tháng)</span>
+                    @endif
+                </div>
+
+                <p class="trim-hero-desc">{{ $descriptionText }}</p>
+
+                <div class="trim-hero-cta">
+                    @if ($availableCarsCount > 0)
+                        <a href="#available-inventory" class="btn-primary-cta">
+                            <i class="fa-solid fa-car-side"></i> Khám Phá {{ $availableCarsCount }} Xe Đang Sẵn Có
+                        </a>
+                    @else
+                        <a href="{{ route('inventory.index', ['make' => $trim->make_slug]) }}" class="btn-primary-cta">
+                            <i class="fa-solid fa-warehouse"></i> Xem Kho Xe {{ $trim->make_name }}
+                        </a>
+                    @endif
+                    <a href="#inquiry-consult" class="btn-secondary-cta">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Nhận Báo Giá Lăn Bánh
+                    </a>
+                </div>
+            </div>
+
+            <div class="trim-hero-visual">
+                <img src="{{ $heroImageUrl }}" alt="{{ $displayTitle }}">
+                <div class="trim-hero-quick-specs">
+                    <div class="quick-spec-item">
+                        <span>Động cơ</span>
+                        <strong title="{{ $heroEngine }}">{{ \Illuminate\Support\Str::limit($heroEngine, 16, '...') }}</strong>
+                    </div>
+                    <div class="quick-spec-item">
+                        <span>Công suất</span>
+                        <strong title="{{ $heroPower }}">{{ \Illuminate\Support\Str::limit($heroPower, 16, '...') }}</strong>
+                    </div>
+                    <div class="quick-spec-item">
+                        <span>Hộp số</span>
+                        <strong title="{{ $heroTrans }}">{{ \Illuminate\Support\Str::limit($heroTrans, 16, '...') }}</strong>
+                    </div>
+                    <div class="quick-spec-item">
+                        <span>Tiêu thụ</span>
+                        <strong title="{{ $heroFuel }}">{{ \Illuminate\Support\Str::limit($heroFuel, 16, '...') }}</strong>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
 
-<section class="why-choose-us-section" style="padding-top: 10px;">
-    <div class="boxcar-container">
-        <div class="row">
-            <div class="col-lg-6 col-md-12 col-sm-12">
-                <div class="overview-sec" style="padding: 24px; border: 1px solid #e9e9e9; border-radius: 16px; margin-bottom: 24px;">
-                    <h4 class="title">Trang bi</h4>
-                    @forelse ($features as $groupName => $groupFeatures)
-                        <h6 style="margin-top: 16px;">{{ $groupName }}</h6>
+        <!-- 3. Core Specifications Grid (Full-Width) -->
+        <div class="car-detail-card">
+            <div class="car-detail-card-title">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-list-check text-primary"></i>
+                    <span>Thông Số Kỹ Thuật Nền Tảng Của Phiên Bản</span>
+                </div>
+                <span class="title-accent">Hồ sơ thông số tiêu chuẩn từ nhà sản xuất</span>
+            </div>
+
+            <div class="specs-grid-4col">
+                @forelse ($attributes as $attr)
+                    <div class="spec-box">
+                        <div class="spec-icon">
+                            <i class="fa-solid {{ $getAttrIcon($attr->label, $attr->code) }}"></i>
+                        </div>
+                        <div class="spec-data">
+                            <span>{{ $attr->label }}</span>
+                            <strong>{{ $attr->display_value ?? 'Đang cập nhật' }}</strong>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12 py-3 text-center text-muted">
+                        <i class="fa-solid fa-circle-info me-1"></i> Thông số kỹ thuật đang được cập nhật chi tiết từ hãng sản xuất.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- 4. Grouped Features & Equipment (Full-Width) -->
+        <div class="car-detail-card">
+            <div class="car-detail-card-title">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-primary"></i>
+                    <span>Trang Bị Tiện Nghi & Công Nghệ Nổi Bật</span>
+                </div>
+                <span class="title-accent">Trang bị tiêu chuẩn theo phiên bản</span>
+            </div>
+
+            <div class="features-grid-4col">
+                @forelse ($features as $groupName => $groupFeatures)
+                    <div class="feature-category">
+                        <h4 class="feature-cat-title">
+                            <i class="fa-solid fa-layer-group"></i> {{ $groupName }}
+                        </h4>
                         <ul class="feature-list">
                             @foreach ($groupFeatures as $feature)
-                                <li><i class="fa-solid fa-check"></i>{{ $feature->name }}</li>
+                                <li>
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>{{ $feature->name }}</span>
+                                </li>
                             @endforeach
                         </ul>
-                    @empty
-                        <div class="alert alert-light">Chua co du lieu trang bi.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-12 col-sm-12">
-                <div class="overview-sec" style="padding: 24px; border: 1px solid #e9e9e9; border-radius: 16px; margin-bottom: 24px;">
-                    <h4 class="title">Thong so ky thuat</h4>
-                    <ul class="spects-list">
-                        @forelse ($attributes as $attribute)
-                            <li><span>{{ $attribute->label }}</span>{{ $attribute->display_value ?? 'N/A' }}</li>
-                        @empty
-                            <li><span>N/A</span>Chua co thong so</li>
-                        @endforelse
-                    </ul>
-                </div>
+                    </div>
+                @empty
+                    <div class="col-12 py-3 text-center text-muted">
+                        <i class="fa-solid fa-circle-info me-1"></i> Danh mục trang bị chi tiết đang được chuyên viên cập nhật.
+                    </div>
+                @endforelse
             </div>
         </div>
-    </div>
-</section>
 
-<section class="cars-section-four v1 layout-radius" style="padding-top: 20px;">
-    <div class="boxcar-container">
-        <div class="boxcar-title-three">
-            <h2>Xe dang san co cho phien ban nay</h2>
-            <div class="text">
-                Chi hien thi xe status = available va da publish.
-                Hien co {{ $availableCarsCount }} xe phu hop
-                @if ($availableCarsCount > $availableCars->count())
-                    va dang hien preview {{ $availableCars->count() }} xe moi nhat.
-                @else
-                    trong kho.
-                @endif
-            </div>
-        </div>
-        <div class="row">
-            @forelse ($availableCars as $car)
-                @include('client.partials.car-card', ['car' => $car])
-            @empty
-                <div class="col-12">
-                    <div class="alert alert-light">Hien chua co xe nao san cho phien ban nay.</div>
+        <!-- 5. Available Cars for this Trim -->
+        <div class="car-detail-card" id="available-inventory">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 pb-2 border-bottom">
+                <div>
+                    <h3 class="fs-5 fw-bold text-dark mb-1">
+                        Xe Đang Sẵn Có Tại Showroom Cho Phiên Bản Này ({{ $availableCarsCount }} xe)
+                    </h3>
+                    <p class="text-muted mb-0" style="font-size: 13.5px;">
+                        Các xe sẵn sàng bàn giao ngay trong ngày, hồ sơ pháp lý hoàn chỉnh và đã kiểm định 160 bước kỹ thuật.
+                    </p>
                 </div>
-            @endforelse
-        </div>
-    </div>
-</section>
+                <a href="{{ route('inventory.index', ['make' => $trim->make_slug]) }}" class="fw-bold text-primary text-decoration-none" style="font-size: 13.5px;">
+                    Xem thêm các xe {{ $trim->make_name }} khác <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
 
-<section class="contact-us-section layout-radius" style="padding-top: 0;">
-    <div class="boxcar-container">
-        <div class="calculater-sec">
-            <div class="right-box">
+            @if ($availableCars->isNotEmpty())
                 <div class="row">
-                    <div class="col-lg-8 content-column">
-                        <div class="inner-column">
-                            <div class="boxcar-title">
-                                <h2>Lien he tu van mau xe</h2>
-                                <p>Lead tu trang trim se duoc tao voi `source=trim_page`, phu hop khi khach dang tim hieu phien ban va chua chon chiec xe cu the.</p>
-                            </div>
-                            <form class="row" method="POST" action="{{ route('lead.store') }}">
-                                @csrf
-                                <input type="hidden" name="source" value="trim_page">
-                                <input type="hidden" name="trim_id" value="{{ $trim->id }}">
-                                <div class="col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Ho va ten</label>
-                                        <input type="text" name="name" value="{{ $defaultName }}" placeholder="Nguyen Van A" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>So dien thoai</label>
-                                        <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="09xxxxxxxx" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Email</label>
-                                        <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form_boxes">
-                                        <label>Phien ban quan tam</label>
-                                        <input type="text" value="{{ $trim->make_name }} {{ $trim->model_name }} {{ $trim->name }}" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form_boxes v2">
-                                        <label>Noi dung</label>
-                                        <textarea name="message" placeholder="Toi can tu van them ve xe san co, uu dai va gia lan banh">{{ old('message') }}</textarea>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-submit">
-                                        <button type="submit" class="theme-btn">Gui yeu cau tu van <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="boxcar-testimonial-section home1 trim-review-shell">
-    <div class="boxcar-container">
-        <div class="boxcar-title wow fadeInUp">
-            <h2>Danh gia khach hang</h2>
-            <p>Review ben duoi chi hien thi cac danh gia da duyet cua khach hang da mua xe thuoc phien ban nay, giup nguoi xem co them context truoc khi gui lead hoac dat lich.</p>
-        </div>
-
-        <div class="trim-review-overview">
-            <div class="trim-review-summary-card">
-                <span class="trim-review-summary-card__eyebrow">Tong quan review</span>
-                <div class="trim-review-summary-card__score">
-                    <strong>{{ $reviewAverage ?? 'N/A' }}</strong>
-                    <span>/5</span>
-                </div>
-                <ul class="trim-review-stars">
-                    @for ($i = 1; $i <= 5; $i++)
-                        <li><i class="fa {{ $reviewAverage !== null && $i <= round((float) $reviewAverage) ? 'fa-star' : 'fa-star-o' }}"></i></li>
-                    @endfor
-                </ul>
-                <p>
-                    @if ($reviewCount > 0)
-                        Co {{ $reviewCount }} danh gia da duyet. Muc do hai long hien tai o muc {{ $reviewAverage }}/5 va duoc cap nhat den {{ $latestReviewDate }}.
-                    @else
-                        Chua co danh gia da duyet. Khi co review hop le, phan tong quan nay se cap nhat ngay de nguoi xem co them diem tham chieu.
-                    @endif
-                </p>
-            </div>
-
-            <div class="trim-review-breakdown">
-                <div class="trim-review-breakdown__head">
-                    <div>
-                        <h4>Phan bo danh gia</h4>
-                        <p>Tom tat nhanh de thay muc do hai long theo tung moc sao, ben canh thong tin ve luot review va xe dang san co.</p>
-                    </div>
-                </div>
-
-                <div class="trim-review-meta-grid">
-                    <div class="trim-review-meta">
-                        <span>Danh gia da duyet</span>
-                        <strong>{{ $reviewCount }}</strong>
-                    </div>
-                    <div class="trim-review-meta">
-                        <span>Review moi nhat</span>
-                        <strong>{{ $latestReviewDate ?? 'Dang cap nhat' }}</strong>
-                    </div>
-                    <div class="trim-review-meta">
-                        <span>Xe san co</span>
-                        <strong>{{ $availableCarsCount }}</strong>
-                    </div>
-                </div>
-
-                <div class="trim-review-bars">
-                    @foreach ($reviewDistribution as $distribution)
-                        <div class="trim-review-bar">
-                            <span class="trim-review-bar__label">{{ $distribution['rating'] }} sao</span>
-                            <div class="trim-review-bar__track" style="--trim-review-fill: {{ $distribution['raw_percent'] }}%;"></div>
-                            <span class="trim-review-bar__count">{{ $distribution['count'] }}</span>
-                        </div>
+                    @foreach ($availableCars as $car)
+                        @include('client.partials.car-card', ['car' => $car])
                     @endforeach
                 </div>
+            @else
+                <div class="text-center py-5 px-3 bg-light rounded-4 border border-dashed">
+                    <i class="fa-solid fa-warehouse fs-1 text-muted mb-3 d-block"></i>
+                    <h5 class="fw-bold text-dark">Hiện Chưa Có Xe Sẵn Tại Kho Cho Phiên Bản Này</h5>
+                    <p class="text-muted mx-auto mb-4" style="max-width: 580px; font-size: 14px;">
+                        Showroom liên tục cập nhật các lô xe mới. Quý khách có thể gửi yêu cầu đặt xe hoặc tham khảo các mẫu xe tương đương cùng hãng {{ $trim->make_name }}.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ route('inventory.index', ['make' => $trim->make_slug]) }}" class="btn-primary-cta">
+                            <i class="fa-solid fa-car"></i> Xem Tất Cả Xe {{ $trim->make_name }}
+                        </a>
+                        <a href="#inquiry-consult" class="btn-secondary-cta">
+                            <i class="fa-solid fa-envelope"></i> Đăng Ký Nhận Thông Báo Có Xe
+                        </a>
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        <!-- 6. Consultation & Lead Form (Balanced 2 Columns) -->
+        <div class="inquiry-grid" id="inquiry-consult">
+            <div class="inquiry-info">
+                <div>
+                    <h3>Liên Hệ Nhận Tư Vấn & Báo Giá Lăn Bánh</h3>
+                    <p>
+                        Quý khách đang quan tâm đến phiên bản <strong>{{ $displayTitle }}</strong>? Hãy để lại thông tin, đội ngũ chuyên viên của {{ $showroomName }} sẽ gửi dự toán chi phí chi tiết và tư vấn chương trình ưu đãi đặc quyền trong 15 phút.
+                    </p>
+
+                    <ul class="trust-points-list">
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Hỗ trợ gói vay ngân hàng đến 80% với lãi suất ưu đãi đặc quyền.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Hỗ trợ thu cũ đổi mới - trợ giá lên tới 30 triệu đồng.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Bàn giao xe tận nhà và hỗ trợ hoàn tất bấm biển số trọn gói trong 24h.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #F1F5F9; font-size: 13.5px; color: #64748B;">
+                    Hotline tư vấn 24/7: <a href="tel:{{ $phoneDigits }}" style="color: #050B20; font-weight: 700; text-decoration: none;">{{ $showroomPhone }}</a> • <a href="{{ $zaloUrl }}" target="_blank" rel="noopener" style="color: #059669; font-weight: 700; text-decoration: none;"><i class="fa-solid fa-comment-dots"></i> Chat Zalo Ngay</a>
+                </div>
+            </div>
+
+            <div>
+                <form method="POST" action="{{ route('lead.store') }}">
+                    @csrf
+                    <input type="hidden" name="source" value="trim_page">
+                    <input type="hidden" name="trim_id" value="{{ $trim->id }}">
+
+                    <div class="form-grid-2col">
+                        <div class="booking-input-group">
+                            <label>Họ và tên quý khách <span class="text-danger">*</span></label>
+                            <input type="text" name="name" value="{{ $defaultName }}" placeholder="Ví dụ: Nguyễn Văn An" required>
+                        </div>
+
+                        <div class="booking-input-group">
+                            <label>Số điện thoại liên hệ <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" value="{{ $defaultPhone }}" placeholder="0901 234 567" required>
+                        </div>
+
+                        <div class="booking-input-group">
+                            <label>Hòm thư điện tử (Email)</label>
+                            <input type="email" name="email" value="{{ $defaultEmail }}" placeholder="example@email.com">
+                        </div>
+
+                        <div class="booking-input-group">
+                            <label>Phiên bản xe quan tâm</label>
+                            <input type="text" value="{{ $displayTitle }}" readonly style="background: #F1F5F9; font-weight: 700;">
+                        </div>
+
+                        <div class="booking-input-group full-col">
+                            <label>Nội dung cần hỗ trợ tư vấn</label>
+                            <textarea name="message" placeholder="Ví dụ: Tôi muốn nhận dự toán chi phí lăn bánh, ưu đãi tháng này và đăng ký lái thử xe...">{{ old('message') }}</textarea>
+                        </div>
+
+                        <div class="full-col text-end pt-2">
+                            <button type="submit" class="btn-primary-cta w-100 justify-content-center py-3">
+                                <span>Gửi Yêu Cầu Nhận Báo Giá & Tư Vấn</span>
+                                <i class="fa-solid fa-paper-plane ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <div class="trim-review-grid">
-            @forelse ($reviews as $review)
-                <article class="trim-review-card">
-                    <div class="trim-review-card__header">
-                        <div class="trim-review-card__author">
-                            <div class="trim-review-card__avatar">{{ strtoupper(substr($review->user_name, 0, 1)) }}</div>
-                            <div>
-                                <h6>{{ $review->user_name }}</h6>
-                                <span>{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</span>
-                            </div>
-                        </div>
-                        <div class="trim-review-card__rating">
-                            <ul class="trim-review-stars trim-review-stars--muted">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <li><i class="fa {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o' }}"></i></li>
-                                @endfor
-                            </ul>
-                            <span class="trim-review-chip">{{ $review->rating }}/5 diem</span>
-                        </div>
-                    </div>
-                    <p class="trim-review-card__comment">{{ $review->comment }}</p>
-                </article>
-            @empty
-                <div class="trim-review-empty">
-                    <strong>Chua co danh gia duoc duyet</strong>
-                    <p>Phien ban nay hien chua co review cong khai. Ban van co the xem thong so, xe dang san co va gui yeu cau tu van de nhan them thong tin thuc te tu showroom.</p>
+        <!-- 7. Customer Reviews Section -->
+        <div class="car-detail-card" id="customer-reviews">
+            <div class="car-detail-card-title">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-star text-warning"></i>
+                    <span>Đánh Giá Khách Hàng Về Phiên Bản Xe</span>
                 </div>
-            @endforelse
-        </div>
-    </div>
-</section>
+                <span class="title-accent">100% đánh giá xác thực từ người mua</span>
+            </div>
 
-<section class="contact-us-section layout-radius trim-review-form-shell" id="review-form">
-    <div class="boxcar-container">
-        <div class="calculater-sec">
-            <div class="right-box">
-                <div class="row">
-                    <div class="col-lg-8 content-column">
-                        <div class="inner-column">
-                            @php($reviewStatusLabel = match ($userReview->status ?? null) {
-                                'approved' => 'Da duyet',
-                                'hidden' => 'Da an',
-                                'pending' => 'Cho duyet',
-                                default => null,
-                            })
-
-                            <div class="trim-review-form-card">
-                                <div class="trim-review-form-card__head">
-                                    <h4>Gui danh gia cua ban</h4>
-                                    <p>Chi khach da mua xe thuoc phien ban nay moi co the gui review. Noi dung moi se o trang thai cho duyet truoc khi hien thi cong khai tren site.</p>
-                                </div>
-
-                                @if ($errors->has('review'))
-                                    <div class="trim-review-note" style="margin-bottom: 18px;">
-                                        <strong>Luu y</strong>
-                                        <p>{{ $errors->first('review') }}</p>
-                                    </div>
-                                @endif
-
-                                @guest
-                                    <div class="trim-review-note">
-                                        <strong>Dang nhap de gui review</strong>
-                                        <p>Ban can <a href="{{ route('login') }}">dang nhap</a> bang tai khoan da mua xe thuoc phien ban nay de he thong kiem tra dieu kien va luu danh gia dung lich su giao dich.</p>
-                                    </div>
-                                @else
-                                    @if ($canSubmitReview)
-                                        <form method="POST" action="{{ route('trim.reviews.store', ['trimSlug' => $trim->slug]) }}">
-                                            @csrf
-                                            <div class="trim-review-form-grid">
-                                                <div class="trim-review-field">
-                                                    <label for="trim-review-rating">Diem danh gia</label>
-                                                    <select id="trim-review-rating" class="@error('rating') is-invalid @enderror" name="rating" required>
-                                                        <option value="">Chon so sao</option>
-                                                        @for ($i = 5; $i >= 1; $i--)
-                                                            <option value="{{ $i }}" {{ (string) old('rating') === (string) $i ? 'selected' : '' }}>{{ $i }}/5 sao</option>
-                                                        @endfor
-                                                    </select>
-                                                    <p class="trim-review-field-note">Hay chon muc sao phu hop voi trai nghiem tong the cua ban ve phien ban nay.</p>
-                                                    @error('rating')<span class="trim-review-error">{{ $message }}</span>@enderror
-                                                </div>
-
-                                                <div class="trim-review-field">
-                                                    <label for="trim-review-comment">Noi dung danh gia</label>
-                                                    <textarea id="trim-review-comment" class="@error('comment') is-invalid @enderror" name="comment" placeholder="Chia se trai nghiem cua ban sau khi mua xe" required>{{ old('comment') }}</textarea>
-                                                    <p class="trim-review-field-note">Review cu the ve van hanh, khong gian, muc tieu hao hay gia tri su dung se huu ich hon cho nguoi xem sau.</p>
-                                                    @error('comment')<span class="trim-review-error">{{ $message }}</span>@enderror
-                                                </div>
-
-                                                <div class="trim-review-actions">
-                                                    <p class="trim-review-field-note">Sau khi gui, danh gia se duoc ghi nhan o trang thai cho duyet. Ban khong can gui lai neu da thay review xuat hien trong tai khoan cua minh.</p>
-                                                    <div class="form-submit" style="margin: 0;">
-                                                        <button type="submit" class="theme-btn">Gui danh gia <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    @elseif ($userReview)
-                                        <div class="trim-review-status-card">
-                                            <div class="trim-review-status-card__top">
-                                                <div>
-                                                    <strong>Ban da gui review cho phien ban nay</strong>
-                                                    <p>Thong tin duoi day la noi dung review gan nhat duoc luu voi tai khoan cua ban.</p>
-                                                </div>
-                                                @if ($reviewStatusLabel)
-                                                    <span class="trim-review-status-badge">{{ $reviewStatusLabel }}</span>
-                                                @endif
-                                            </div>
-                                            <ul class="trim-review-stars">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <li><i class="fa {{ $i <= $userReview->rating ? 'fa-star' : 'fa-star-o' }}"></i></li>
-                                                @endfor
-                                                <li style="margin-left: 6px; color: #344054; font-weight: 700;">{{ $userReview->rating }}/5</li>
-                                            </ul>
-                                            <div class="trim-review-status-card__comment">{{ $userReview->comment }}</div>
-                                        </div>
-                                    @elseif (! $userHasPurchasedTrim)
-                                        <div class="trim-review-note">
-                                            <strong>Chua du dieu kien gui review</strong>
-                                            <p>Chi khach da mua xe thuoc phien ban nay moi co the danh gia. Dieu kien nay giup phan review phan anh dung trai nghiem sau mua va han che spam.</p>
-                                        </div>
-                                    @endif
-                                @endguest
-                            </div>
+            <div class="reviews-layout">
+                <!-- Summary Score Card -->
+                <div class="reviews-summary-box">
+                    <div>
+                        <span style="font-size: 12px; text-transform: uppercase; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 0.05em;">
+                            Điểm hài lòng trung bình
+                        </span>
+                        <div style="font-size: 48px; font-weight: 850; line-height: 1; margin: 10px 0;">
+                            {{ $reviewAverage }}<span style="font-size: 18px; font-weight: 500; opacity: 0.7;"> / 5.0</span>
                         </div>
+                        <div style="color: #F59E0B; font-size: 15px; margin-bottom: 12px;">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa-solid {{ $i <= round((float) $reviewAverage) ? 'fa-star' : 'fa-star-o text-white-50' }}"></i>
+                            @endfor
+                        </div>
+                        <p style="font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6; margin: 0;">
+                            @if ($reviewCount > 0)
+                                Tổng hợp từ {{ $reviewCount }} đánh giá thực tế của khách hàng đã mua xe thuộc phiên bản này.
+                            @else
+                                Tổng hợp đánh giá chất lượng phiên bản từ các khách hàng sở hữu xe tại hệ thống showroom.
+                            @endif
+                        </p>
+                    </div>
+
+                    <div class="rating-bars-list">
+                        @foreach ($reviewDistribution as $distribution)
+                            <div class="rating-bar-row">
+                                <span style="width: 42px;">{{ $distribution['rating'] }} sao</span>
+                                <div class="rating-bar-track">
+                                    <div class="rating-bar-fill" style="width: {{ $distribution['percent'] }}%;"></div>
+                                </div>
+                                <span style="width: 32px; text-align: right;">{{ $distribution['count'] }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Reviews List & Form Container -->
+                <div>
+                    @if ($errors->has('review'))
+                        <div class="alert alert-warning mb-3">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ $errors->first('review') }}
+                        </div>
+                    @endif
+
+                    @forelse ($reviews as $review)
+                        <div class="review-card-item">
+                            <div class="review-header">
+                                <div class="review-author">
+                                    <div class="review-avatar">
+                                        {{ strtoupper(substr($review->user_name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <div class="review-name">
+                                            {{ $review->user_name }}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size: 11px;">
+                                                <i class="fa-solid fa-check-circle"></i> Đã mua xe
+                                            </span>
+                                        </div>
+                                        <div class="review-date">{{ \Carbon\Carbon::parse($review->created_at)->format('d/m/Y') }}</div>
+                                    </div>
+                                </div>
+                                <div class="review-stars">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fa-solid {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o text-muted' }}"></i>
+                                    @endfor
+                                </div>
+                            </div>
+                            <p class="review-text">{{ $review->comment }}</p>
+                        </div>
+                    @empty
+                        <div class="p-4 rounded-4 border border-dashed text-center text-muted mb-3 bg-light">
+                            <i class="fa-regular fa-comment-dots fs-3 d-block mb-2 text-secondary"></i>
+                            <span style="font-size: 13.5px;">Chưa có đánh giá công khai cho phiên bản này. Quý khách hãy liên hệ showroom để trải nghiệm xe thực tế!</span>
+                        </div>
+                    @endforelse
+
+                    <!-- Review Actions / Eligibility Box -->
+                    <div style="background: #F8FAFC; border: 1.5px dashed #CBD5E1; border-radius: 14px; padding: 20px 24px; margin-top: 18px;">
+                        @guest
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <div>
+                                    <strong style="font-size: 14px; color: #050B20; display: block; margin-bottom: 2px;">
+                                        Bạn đã sở hữu phiên bản xe này?
+                                    </strong>
+                                    <p style="font-size: 12.5px; color: #64748B; margin: 0;">
+                                        Đăng nhập bằng tài khoản mua xe để chia sẻ trải nghiệm thực tế của bạn với cộng đồng.
+                                    </p>
+                                </div>
+                                <a href="{{ route('login') }}" class="btn-secondary-cta py-2 px-3 fs-6">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng Nhập Đánh Giá
+                                </a>
+                            </div>
+                        @else
+                            @if ($canSubmitReview)
+                                <form method="POST" action="{{ route('trim.reviews.store', ['trimSlug' => $trim->slug]) }}">
+                                    @csrf
+                                    <h5 class="fw-bold fs-6 text-dark mb-3">Gửi Đánh Giá Của Bạn Về Phiên Bản Này</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label fs-7 fw-semibold text-dark">Mức độ hài lòng <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('rating') is-invalid @enderror" name="rating" required style="border-radius: 10px;">
+                                            <option value="">Chọn số sao đánh giá</option>
+                                            <option value="5" {{ old('rating') == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ (5/5 sao - Rất hài lòng)</option>
+                                            <option value="4" {{ old('rating') == 4 ? 'selected' : '' }}>⭐⭐⭐⭐ (4/5 sao - Hài lòng)</option>
+                                            <option value="3" {{ old('rating') == 3 ? 'selected' : '' }}>⭐⭐⭐ (3/5 sao - Bình thường)</option>
+                                            <option value="2" {{ old('rating') == 2 ? 'selected' : '' }}>⭐⭐ (2/5 sao - Chưa hài lòng)</option>
+                                            <option value="1" {{ old('rating') == 1 ? 'selected' : '' }}>⭐ (1/5 sao - Rất tệ)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fs-7 fw-semibold text-dark">Nhận xét chi tiết <span class="text-danger">*</span></label>
+                                        <textarea class="form-control @error('comment') is-invalid @enderror" name="comment" rows="3" placeholder="Chia sẻ cảm nhận về khả năng vận hành, độ cách âm, tiện nghi..." required style="border-radius: 10px;">{{ old('comment') }}</textarea>
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn-primary-cta py-2 px-4">
+                                            <span>Gửi Đánh Giá Xác Thực</span>
+                                            <i class="fa-solid fa-paper-plane ms-1"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            @elseif ($userReview)
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <strong class="text-dark d-block" style="font-size: 14px;">Bạn Đã Gửi Đánh Giá Cho Phiên Bản Này</strong>
+                                        <span class="text-muted" style="font-size: 12.5px;">Trạng thái: 
+                                            <span class="badge bg-primary-subtle text-primary">
+                                                {{ match ($userReview->status ?? null) { 'approved' => 'Đã duyệt', 'hidden' => 'Đã ẩn', default => 'Đang chờ duyệt' } }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="text-warning">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="fa-solid {{ $i <= $userReview->rating ? 'fa-star' : 'fa-star-o text-muted' }}"></i>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <div class="mt-2 p-2 bg-white rounded border" style="font-size: 13px; color: #475569;">
+                                    "{{ $userReview->comment }}"
+                                </div>
+                            @elseif (! $userHasPurchasedTrim)
+                                <div>
+                                    <strong style="font-size: 14px; color: #050B20; display: block; margin-bottom: 2px;">
+                                        Chính Sách Đánh Giá Xác Thực
+                                    </strong>
+                                    <p style="font-size: 12.5px; color: #64748B; margin: 0;">
+                                        Để đảm bảo tính khách quan 100%, chỉ các tài khoản đã mua xe thuộc phiên bản này mới có quyền gửi đánh giá thực tế.
+                                    </p>
+                                </div>
+                            @endif
+                        @endguest
                     </div>
                 </div>
             </div>

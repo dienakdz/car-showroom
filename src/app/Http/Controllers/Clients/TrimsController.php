@@ -16,10 +16,15 @@ class TrimsController extends ClientBaseController
             ->where('slug', $trimSlug)
             ->firstOrFail();
 
-        $trim->model_name = $trim->model?->name;
-        $trim->model_slug = $trim->model?->slug;
-        $trim->make_name = $trim->model?->make?->name;
-        $trim->make_slug = $trim->model?->make?->slug;
+        /** @var \App\Models\CarModel|null $carModel */
+        $carModel = $trim->model;
+        /** @var \App\Models\Make|null $make */
+        $make = $carModel?->make;
+
+        $trim->model_name = $carModel?->name;
+        $trim->model_slug = $carModel?->slug;
+        $trim->make_name = $make?->name;
+        $trim->make_slug = $make?->slug;
 
         $features = $this->loadTrimFeatures($trim->id);
 
@@ -37,6 +42,23 @@ class TrimsController extends ClientBaseController
             ->get()
             ->map(fn (object $car) => $this->decorateCar($car));
 
+        // Format MSRP & display title without duplicate model name
+        $rawMsrp = (float) ($trim->msrp ?? 0);
+        $formattedMsrp = $rawMsrp > 0 ? number_format($rawMsrp, 0, ',', '.') . ' VNĐ' : 'Liên hệ nhận báo giá';
+        $estimatedMonthly = $rawMsrp > 0 ? number_format(($rawMsrp * 0.7 * 0.012), 0, ',', '.') : '10.000.000';
+
+        $displayTitle = str_starts_with(strtolower((string) $trim->name), strtolower((string) $trim->model_name))
+            ? $trim->make_name . ' ' . $trim->name
+            : $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name;
+
+        $yearRange = ($trim->year_from ?? '2024') . ($trim->year_to ? ' - ' . $trim->year_to : ' - Hiện tại');
+
+        $heroImageFallback = file_exists(public_path('seed-media/' . $trim->slug . '.jpg'))
+            ? asset('seed-media/' . $trim->slug . '.jpg')
+            : asset('seed-media/placeholder-car.jpg');
+
+        $heroImageUrl = $availableCars->first()->image_url ?? $heroImageFallback;
+
         $reviews = $this->loadApprovedTrimReviews($trim->id);
         $userHasPurchasedTrim = false;
         $userReview = null;
@@ -53,6 +75,12 @@ class TrimsController extends ClientBaseController
 
         return $this->viewWithSharedData('client.trim-detail', [
             'trim' => $trim,
+            'displayTitle' => $displayTitle,
+            'yearRange' => $yearRange,
+            'formattedMsrp' => $formattedMsrp,
+            'rawMsrp' => $rawMsrp,
+            'estimatedMonthly' => $estimatedMonthly,
+            'heroImageUrl' => $heroImageUrl,
             'features' => $features,
             'attributes' => $attributes,
             'availableCarsCount' => $availableCarsCount,

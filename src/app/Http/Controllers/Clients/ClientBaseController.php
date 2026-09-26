@@ -181,11 +181,14 @@ abstract class ClientBaseController extends Controller
             ->values();
 
         return $attributes->map(function (TrimAttributeValue $attributeValue): object {
+            /** @var \App\Models\CarAttribute|null $attr */
+            $attr = $attributeValue->attribute;
+
             $attribute = (object) [
-                'code' => $attributeValue->attribute->code,
-                'label' => $attributeValue->attribute->label,
-                'type' => $attributeValue->attribute->type,
-                'unit' => $attributeValue->attribute->unit,
+                'code' => $attr?->code,
+                'label' => $attr?->label,
+                'type' => $attr?->type,
+                'unit' => $attr?->unit,
                 'value_string' => $attributeValue->value_string,
                 'value_number' => $attributeValue->value_number,
                 'value_boolean' => $attributeValue->value_boolean,
@@ -210,7 +213,7 @@ abstract class ClientBaseController extends Controller
             }
 
             if ($attribute->type === 'boolean') {
-                $attribute->display_value = $attribute->value_boolean ? 'Co' : 'Khong';
+                $attribute->display_value = $attribute->value_boolean ? 'Có' : 'Không';
             }
 
             return $attribute;
@@ -255,7 +258,9 @@ abstract class ClientBaseController extends Controller
         }
 
         return $query->get()->map(function (TrimReview $review): object {
-            $review->user_name = $review->user?->name ?? 'Khách hàng';
+            /** @var \App\Models\User|null $user */
+            $user = $review->user;
+            $review->user_name = $user->name ?? 'Khách hàng';
 
             return $review;
         });

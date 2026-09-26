@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $label
+ * @property string $type
+ * @property string|null $unit
+ * @property int $sort_order
+ * @property bool $is_filterable
+ */
 class CarAttribute extends EloquentModel
 {
     use HasFactory;

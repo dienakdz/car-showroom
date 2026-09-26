@@ -8,6 +8,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property float|null $msrp
+ * @property int|null $year_from
+ * @property int|null $year_to
+ * @property string|null $description
+ * @property string|null $model_name
+ * @property string|null $model_slug
+ * @property string|null $make_name
+ * @property string|null $make_slug
+ * @property-read CarModel|null $model
+ */
 class Trim extends EloquentModel
 {
     use HasFactory;
