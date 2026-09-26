@@ -12,7 +12,7 @@
 <section class="client-page-wrap">
     <div class="boxcar-container">
         <!-- 1. Header & Breadcrumb -->
-        <div class="client-header-intro wow fadeInUp">
+        <div class="client-header-intro">
             <ul class="client-breadcrumb">
                 <li><a href="{{ route('home') }}">Trang chủ</a></li>
                 <li><span>/</span></li>
@@ -25,7 +25,7 @@
         </div>
 
         <!-- 2. Quy trình Thu Cũ Đổi Mới 4 Bước (Horizontal Stepper) -->
-        <div class="tradein-stepper wow fadeInUp" data-wow-delay="100ms">
+        <div class="tradein-stepper">
             <!-- Step 1 -->
             <div class="tradein-step-box">
                 <div class="tradein-step-badge">1</div>
@@ -56,15 +56,23 @@
         </div>
 
         <!-- 3. Form Thẩm Định & Đổi Xe 2 Chiều (Dual Valuation Form) -->
-        <div class="boxcar-white-card wow fadeInUp" data-wow-delay="200ms" style="margin-bottom: 50px;">
-            <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #EEF1F6;">
-                <h3 style="font-size: 20px; font-weight: 700; color: #050B20; margin-bottom: 6px;">Đăng Ký Định Giá Xe Cũ & Đổi Xe Mới</h3>
-                <p style="font-size: 14px; color: #64748B; margin: 0;">Điền thông tin xe hiện tại của quý khách và chọn mẫu xe muốn đổi sang để nhận báo giá bù trừ chính xác nhất.</p>
+        <div class="boxcar-white-card wow fadeInUp client-section-spacer" data-wow-delay="200ms">
+            <div class="client-card-heading-box">
+                <h3>Đăng Ký Định Giá Xe Cũ & Đổi Xe Mới</h3>
+                <p>Điền thông tin xe hiện tại của quý khách và chọn mẫu xe muốn đổi sang để nhận báo giá bù trừ chính xác nhất.</p>
             </div>
 
+            @if (session('success'))
+                <div class="client-alert-banner is-success wow fadeInUp">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             @if (isset($errors) && $errors->any())
-                <div style="margin-bottom: 20px; padding: 14px 18px; border-radius: 12px; background: #FEF2F2; border: 1px solid #FCA5A5; color: #B91C1C; font-size: 14px;">
-                    <ul style="margin: 0; padding-left: 18px;">
+                <div class="client-alert-banner is-error wow fadeInUp">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -92,7 +100,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="client-form-group">
-                                    <label for="old-car-make">Hãng sản xuất <span style="color: #EF4444;">*</span></label>
+                                    <label for="old-car-make">Hãng sản xuất <span class="text-danger">*</span></label>
                                     <select id="old-car-make" class="form-control" required>
                                         <option value="">-- Chọn thương hiệu xe --</option>
                                         @foreach ($popularMakes as $make)
@@ -104,7 +112,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="client-form-group">
-                                    <label for="old-car-model">Dòng xe & Phiên bản <span style="color: #EF4444;">*</span></label>
+                                    <label for="old-car-model">Dòng xe & Phiên bản <span class="text-danger">*</span></label>
                                     <input type="text" id="old-car-model" class="form-control" placeholder="Ví dụ: CX-5 2.0 Luxury" required>
                                 </div>
                             </div>
@@ -113,7 +121,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="client-form-group">
-                                    <label for="old-car-year">Năm sản xuất <span style="color: #EF4444;">*</span></label>
+                                    <label for="old-car-year">Năm sản xuất <span class="text-danger">*</span></label>
                                     <select id="old-car-year" class="form-control" required>
                                         @for ($year = (int) date('Y'); $year >= 2012; $year--)
                                             <option value="{{ $year }}" {{ $year == 2021 ? 'selected' : '' }}>Năm {{ $year }}</option>
@@ -154,7 +162,7 @@
 
                         <div class="client-form-group">
                             <label for="old-car-note">Tình trạng bảo dưỡng & mô tả thêm</label>
-                            <textarea id="old-car-note" class="form-control" style="min-height: 80px;" placeholder="Ví dụ: Xe đi giữ gìn một chủ từ đầu, bảo dưỡng định kỳ đầy đủ tại hãng, sơn zin 95%..."></textarea>
+                            <textarea id="old-car-note" class="form-control client-textarea-sm" placeholder="Ví dụ: Xe đi giữ gìn một chủ từ đầu, bảo dưỡng định kỳ đầy đủ tại hãng, sơn zin 95%..."></textarea>
                         </div>
                     </div>
 
@@ -171,7 +179,7 @@
                         </div>
 
                         <div class="client-form-group">
-                            <label for="tradein-target-car">Xe mục tiêu quý khách muốn đổi sang <span style="color: #EF4444;">*</span></label>
+                            <label for="tradein-target-car">Xe mục tiêu quý khách muốn đổi sang <span class="text-danger">*</span></label>
                             <select id="tradein-target-car" name="car_unit_id" class="form-control" required>
                                 @foreach ($availableCars as $car)
                                     <option value="{{ $car->id }}" {{ old('car_unit_id') == $car->id ? 'selected' : '' }}>
@@ -193,13 +201,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="client-form-group">
-                                    <label for="tradein-name">Họ và tên quý khách <span style="color: #EF4444;">*</span></label>
+                                    <label for="tradein-name">Họ và tên quý khách <span class="text-danger">*</span></label>
                                     <input type="text" id="tradein-name" name="name" class="form-control" placeholder="Ví dụ: Nguyễn Văn B" value="{{ old('name', auth()->user()->name ?? '') }}" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="client-form-group">
-                                    <label for="tradein-phone">Số điện thoại liên hệ <span style="color: #EF4444;">*</span></label>
+                                    <label for="tradein-phone">Số điện thoại liên hệ <span class="text-danger">*</span></label>
                                     <input type="tel" id="tradein-phone" name="phone" class="form-control" placeholder="Ví dụ: 0918 888 999" value="{{ old('phone', auth()->user()->phone ?? '') }}" required>
                                 </div>
                             </div>
@@ -212,18 +220,25 @@
 
                         <!-- Hidden compiled message that packs old car details for CRM -->
                         <input type="hidden" name="message" id="tradein-compiled-message" value="">
+                    </div>
+                </div>
 
-                        <button type="submit" class="client-submit-btn" style="margin-top: 10px;">
-                            YÊU CẦU ĐỊNH GIÁ & NHẬN ƯU ĐÃI ĐỔI XE
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
+                <!-- Balanced Submit Bar centered across full card width -->
+                <div class="tradein-submit-bar">
+                    <button type="submit" class="tradein-submit-btn">
+                        <span>YÊU CẦU ĐỊNH GIÁ & NHẬN ƯU ĐÃI ĐỔI XE</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div class="tradein-security-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Thông tin định giá được bảo mật tuyệt đối. Kỹ thuật viên sẽ liên hệ thẩm định trong vòng 30 phút.</span>
                     </div>
                 </div>
             </form>
         </div>
 
         <!-- 4. Cam kết Trade-in Vượt Trội -->
-        <div style="margin-bottom: 50px;">
+        <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
                 <h2>Cam Kết Dịch Vụ Thu Cũ Đổi Mới Tại BoxCar</h2>
                 <div class="text">Đồng hành cùng khách hàng nâng tầm đẳng cấp phương tiện một cách thuận lợi và an tâm nhất</div>
@@ -261,7 +276,7 @@
 
         <!-- 5. Gợi Ý Kho Xe Đang Có Sẵn Để Lên Đời -->
         @if ($availableCars->isNotEmpty())
-            <div style="margin-bottom: 50px;">
+            <div class="client-section-spacer">
                 <div class="client-section-heading wow fadeInUp">
                     <h2>Gợi Ý Xe Đổi Mới Đang Có Sẵn</h2>
                     <div class="text">Những mẫu xe tuyển chọn chất lượng cao nhất tại showroom đang chờ đón chủ nhân mới</div>
@@ -270,21 +285,28 @@
                 <div class="row">
                     @foreach ($availableCars->take(3) as $car)
                         <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="boxcar-white-card wow fadeInUp" @if ($loop->index > 0) data-wow-delay="{{ $loop->index * 100 }}ms" @endif style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-                                <div>
-                                    <div style="font-size: 12px; font-weight: 700; color: #405FF2; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
-                                        Mã xe: {{ $car->stock_code }}
-                                    </div>
-                                    <h4 style="font-size: 17px; font-weight: 700; color: #050B20; margin-bottom: 12px; line-height: 1.4;">
-                                        {{ $car->label }}
-                                    </h4>
-                                    <div style="font-size: 20px; font-weight: 800; color: #405FF2; margin-bottom: 16px;">
-                                        {{ number_format($car->price) }} {{ $car->currency ?? 'VNĐ' }}
-                                    </div>
+                            <div class="tradein-car-card wow fadeInUp" @if ($loop->index > 0) data-wow-delay="{{ $loop->index * 100 }}ms" @endif>
+                                <div class="tradein-car-thumb">
+                                    <img src="{{ $car->image_url }}" alt="{{ $car->label }}" loading="lazy">
+                                    <span class="tradein-car-badge">
+                                        <i class="fa-solid fa-check"></i> {{ $car->condition_label ?? 'Chính hãng' }}
+                                    </span>
                                 </div>
-                                <a href="#tradein-form" class="client-submit-btn js-pick-target-car" data-car-id="{{ $car->id }}" style="height: 44px; font-size: 14px; text-decoration: none;">
-                                    CHỌN ĐỔI SANG XE NÀY
-                                </a>
+                                <div class="tradein-car-body">
+                                    <div>
+                                        <div class="tradein-car-stock">Mã xe: {{ $car->stock_code }}</div>
+                                        <h4 class="tradein-car-title">{{ $car->label }}</h4>
+                                        <div class="tradein-car-specs">
+                                            <span><i class="fa-solid fa-calendar-days"></i> {{ $car->year ?? '2024' }}</span>
+                                            <span><i class="fa-solid fa-gas-pump"></i> {{ $car->fuel_label ?? 'Xăng' }}</span>
+                                            <span><i class="fa-solid fa-gear"></i> {{ $car->transmission_label ?? 'Tự động' }}</span>
+                                        </div>
+                                        <div class="tradein-car-price">{{ $car->formatted_price ?? number_format($car->price) . ' VNĐ' }}</div>
+                                    </div>
+                                    <a href="#tradein-form" class="tradein-pick-btn js-pick-target-car" data-car-id="{{ $car->id }}">
+                                        <i class="fa-solid fa-arrow-right-arrow-left"></i> CHỌN ĐỔI SANG XE NÀY
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -293,8 +315,8 @@
         @endif
 
         <!-- 6. FAQs Section -->
-        <div class="faqs-section pt-0" style="margin-bottom: 60px;">
-            <div class="inner-container" style="max-width: 900px; margin: 0 auto;">
+        <div class="faqs-section pt-0 client-section-spacer-lg">
+            <div class="inner-container client-inner-max-900">
                 <div class="client-section-heading wow fadeInUp">
                     <h2>Câu Hỏi Thường Gặp Về Thu Cũ Đổi Mới</h2>
                     <div class="text">Tất cả những điều quý khách cần biết khi thực hiện nâng cấp đổi xe tại BoxCar</div>
@@ -305,7 +327,7 @@
                             <h4 class="about-faq-title">Xe cũ của tôi đang vay ngân hàng thì có tham gia đổi xe được không?</h4>
                             <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
                         </div>
-                        <div class="about-faq-body" style="display: block;">
+                        <div class="about-faq-body">
                             <p>Hoàn toàn được. Showroom sẽ hỗ trợ ứng tiền giải chấp khoản vay tại ngân hàng của quý khách để lấy đăng ký xe gốc ra, sau đó tiến hành thủ tục sang tên đổi chủ và cấn trừ vào giá trị chiếc xe mới mà quý khách muốn đổi sang một cách minh bạch.</p>
                         </div>
                     </div>
@@ -333,11 +355,11 @@
 
         <!-- 7. Call to Action Banner -->
         <div class="boxcar-cta-about wow fadeInUp">
-            <div class="inner-box" style="background: #050B20; border-radius: 20px; padding: 48px 36px; text-align: center; color: #fff; box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);">
-                <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.01em;">SẴN SÀNG LÊN ĐỜI CHIẾC XE SANG TIẾP THEO CỦA BẠN?</h2>
-                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                    <a href="{{ route('inventory.index') }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s;">XEM KHO XE CÓ SẴN</a>
-                    <a href="tel:{{ $cleanPhone }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: #405FF2; color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(64, 95, 242, 0.4);">GỌI HOTLINE THẨM ĐỊNH XE</a>
+            <div class="client-cta-box-dark">
+                <h2>SẴN SÀNG LÊN ĐỜI CHIẾC XE SANG TIẾP THEO CỦA BẠN?</h2>
+                <div class="client-cta-btns-row">
+                    <a href="{{ route('inventory.index') }}" class="client-cta-btn-outline">XEM KHO XE CÓ SẴN</a>
+                    <a href="tel:{{ $cleanPhone }}" class="client-cta-btn-primary">GỌI HOTLINE THẨM ĐỊNH XE</a>
                 </div>
             </div>
         </div>

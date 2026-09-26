@@ -2994,6 +2994,14 @@ input, button, select, textarea {
     margin: 0 auto 36px;
 }
 
+/* Guarantee top-of-page elements are visible immediately without WOW.js delay */
+.client-header-intro.wow,
+.finance-calc-wrap.wow,
+.tradein-stepper.wow {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 .client-breadcrumb {
     display: inline-flex;
     align-items: center;
@@ -3641,6 +3649,402 @@ input, button, select, textarea {
     font-size: 14px;
     line-height: 1.65;
     color: #5F6980;
+    margin: 0;
+}
+
+/* Trade-in Form Submit Bar (Full Width & Centered) */
+.tradein-submit-bar {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #EEF1F6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.tradein-security-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: #64748B;
+    background: #F8FAFC;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+}
+
+.tradein-security-note i {
+    color: #10B981;
+    font-size: 14px;
+}
+
+.tradein-submit-btn {
+    width: 100%;
+    max-width: 580px;
+    height: 54px;
+    background: #405FF2;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(64, 95, 242, 0.28);
+    transition: all 0.3s ease;
+}
+
+.tradein-submit-btn:hover {
+    background: #2b48db;
+    box-shadow: 0 10px 28px rgba(64, 95, 242, 0.38);
+    transform: translateY(-2px);
+    color: #FFFFFF;
+}
+
+/* Suggested Trade-in Target Car Cards */
+.tradein-car-card {
+    background: #FFFFFF;
+    border: 1px solid #EEF1F6;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.tradein-car-card:hover {
+    transform: translateY(-4px);
+    border-color: #DCE3F1;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.tradein-car-thumb {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #0B132B;
+    overflow: hidden;
+}
+
+.tradein-car-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.tradein-car-card:hover .tradein-car-thumb img {
+    transform: scale(1.05);
+}
+
+.tradein-car-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(5, 11, 32, 0.78);
+    backdrop-filter: blur(8px);
+    color: #FFFFFF;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tradein-car-badge i {
+    color: #10B981;
+}
+
+.tradein-car-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.tradein-car-stock {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #405FF2;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.tradein-car-title {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #050B20;
+    margin: 0 0 10px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tradein-car-price {
+    font-size: 19px;
+    font-weight: 800;
+    color: #405FF2;
+    margin-bottom: 12px;
+}
+
+.tradein-car-specs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.tradein-car-specs span {
+    font-size: 12px;
+    color: #64748B;
+    background: #F1F5F9;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tradein-pick-btn {
+    width: 100%;
+    height: 44px;
+    background: #EEF2FE;
+    color: #405FF2;
+    border: 1px solid #D6E0FE;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.tradein-pick-btn:hover {
+    background: #405FF2;
+    border-color: #405FF2;
+    color: #FFFFFF;
+}
+
+/* Finance Form & Action Styles */
+.finance-submit-wrap {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.finance-submit-btn {
+    width: 100%;
+    height: 52px;
+    background: #405FF2;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(64, 95, 242, 0.25);
+    transition: all 0.3s ease;
+}
+
+.finance-submit-btn:hover {
+    background: #2b48db;
+    box-shadow: 0 10px 28px rgba(64, 95, 242, 0.35);
+    transform: translateY(-2px);
+    color: #FFFFFF;
+}
+
+.finance-security-note {
+    font-size: 13px;
+    color: #64748B;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.finance-security-note i {
+    color: #10B981;
+}
+
+.client-card-heading-box {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #EEF1F6;
+}
+
+.client-card-heading-box h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #050B20;
+    margin-bottom: 6px;
+}
+
+.client-card-heading-box p {
+    font-size: 14px;
+    color: #64748B;
+    margin: 0;
+}
+
+.client-cta-box-dark {
+    background: #050B20;
+    border-radius: 20px;
+    padding: 48px 36px;
+    text-align: center;
+    color: #FFFFFF;
+    box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);
+}
+
+.client-cta-box-dark h2 {
+    color: #FFFFFF;
+    font-size: clamp(22px, 2.6vw, 30px);
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+}
+
+.client-cta-btns-row {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.client-cta-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 26px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.client-cta-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: #FFFFFF;
+}
+
+.client-cta-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 26px;
+    border-radius: 12px;
+    background: #405FF2;
+    color: #FFFFFF;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+    box-shadow: 0 4px 14px rgba(64, 95, 242, 0.4);
+}
+
+.client-cta-btn-primary:hover {
+    background: #2b48db;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+/* Alert Banners & Section Spacing Utilities */
+.client-alert-banner {
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-alert-banner.is-success {
+    background: #ECFDF5;
+    border: 1px solid #6EE7B7;
+    color: #065F46;
+}
+
+.client-alert-banner.is-error {
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    color: #B91C1C;
+    align-items: flex-start;
+}
+
+.client-alert-banner.is-error ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.client-section-spacer {
+    margin-bottom: 50px;
+}
+
+.client-section-spacer-lg {
+    margin-bottom: 60px;
+}
+
+.client-inner-max-900 {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.client-card-icon-center {
+    margin: 0 auto 16px;
+}
+
+.client-textarea-sm {
+    min-height: 80px;
+}
+
+.calc-slider-note {
+    color: #64748B;
+    font-size: 13px;
+    display: block;
+    margin-top: 6px;
+}
+
+.finance-feature-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #050B20;
+    margin-bottom: 8px;
+}
+
+.finance-feature-text {
+    font-size: 13.5px;
+    color: #5F6980;
+    line-height: 1.6;
     margin: 0;
 }
 

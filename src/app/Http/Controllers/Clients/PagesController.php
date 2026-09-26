@@ -71,7 +71,7 @@ class PagesController extends ClientBaseController
     }
 
     /**
-     * @return Collection<int, \stdClass>
+     * @return Collection<int, object>
      */
     protected function getAvailableCarsForSelector(): Collection
     {
@@ -81,6 +81,7 @@ class PagesController extends ClientBaseController
             ->limit(50)
             ->get()
             ->map(function (object $car): object {
+                $car = $this->decorateCar($car);
                 $car->label = $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' (' . $car->stock_code . ')';
 
                 return $car;

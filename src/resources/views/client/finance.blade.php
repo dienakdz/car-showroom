@@ -16,7 +16,7 @@
 <section class="client-page-wrap">
     <div class="boxcar-container">
         <!-- 1. Header & Breadcrumb -->
-        <div class="client-header-intro wow fadeInUp">
+        <div class="client-header-intro">
             <ul class="client-breadcrumb">
                 <li><a href="{{ route('home') }}">Trang chủ</a></li>
                 <li><span>/</span></li>
@@ -29,12 +29,12 @@
         </div>
 
         <!-- 2. Interactive Loan Calculator (BoxCar loan-calculator style) -->
-        <div class="finance-calc-wrap wow fadeInUp" data-wow-delay="100ms">
+        <div class="finance-calc-wrap">
             <!-- Left: Controls -->
             <div class="boxcar-white-card">
-                <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #EEF1F6;">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #050B20; margin-bottom: 6px;">Công Cụ Tính Toán Khoản Vay Trực Quan</h3>
-                    <p style="font-size: 14px; color: #64748B; margin: 0;">Điều chỉnh giá xe, tỷ lệ trả trước và thời hạn vay để xem ngay số tiền cần trả hàng tháng.</p>
+                <div class="client-card-heading-box">
+                    <h3>Công Cụ Tính Toán Khoản Vay Trực Quan</h3>
+                    <p>Điều chỉnh giá xe, tỷ lệ trả trước và thời hạn vay để xem ngay số tiền cần trả hàng tháng.</p>
                 </div>
 
                 <!-- 1. Chọn xe hoặc nhập giá xe -->
@@ -56,7 +56,7 @@
                 <!-- 2. Giá trị xe -->
                 <div class="calc-slider-box">
                     <div class="calc-slider-head">
-                        <label for="calc-car-price">Giá trị xe dự kiến (VNĐ)</label>
+                        <label for="calc-price-slider">Giá trị xe dự kiến (VNĐ)</label>
                         <span class="calc-slider-val" id="calc-car-price-display">{{ number_format($defaultPrice) }} ₫</span>
                     </div>
                     <input type="range" class="calc-range-slider" id="calc-price-slider" min="300000000" max="10000000000" step="50000000" value="{{ $defaultPrice }}">
@@ -94,13 +94,13 @@
                 </div>
 
                 <!-- 5. Lãi suất ước tính -->
-                <div class="calc-slider-box" style="margin-bottom: 0;">
+                <div class="calc-slider-box mb-0">
                     <div class="calc-slider-head">
                         <label>Lãi suất vay ưu đãi (%/năm)</label>
                         <span class="calc-slider-val" id="calc-rate-display">7.5% / năm</span>
                     </div>
                     <input type="range" class="calc-range-slider" id="calc-rate-slider" min="5" max="14" step="0.1" value="7.5">
-                    <small style="color: #64748B; font-size: 13px; display: block; margin-top: 6px;">Lãi suất cố định trung bình từ các ngân hàng đối tác trong 12 - 24 tháng đầu.</small>
+                    <small class="calc-slider-note">Lãi suất cố định trung bình từ các ngân hàng đối tác trong 12 - 24 tháng đầu.</small>
                 </div>
             </div>
 
@@ -133,9 +133,9 @@
                     </div>
                 </div>
 
-                <a href="#finance-lead-form" class="client-submit-btn" style="text-decoration: none;">
-                    NHẬN BẢNG TÍNH CHI TIẾT & TƯ VẤN VAY
-                    <i class="fa-solid fa-arrow-down"></i>
+                <a href="#finance-lead-form" class="client-submit-btn js-apply-calc-to-form">
+                    <span>NHẬN BẢNG TÍNH CHI TIẾT & TƯ VẤN VAY</span>
+                    <i class="fa-solid fa-arrow-down ms-2"></i>
                 </a>
 
                 <div class="calc-bank-partners">
@@ -153,15 +153,23 @@
         </div>
 
         <!-- 3. Form Đăng Ký Tư Vấn Gói Vay Tối Ưu -->
-        <div id="finance-lead-form" class="boxcar-white-card wow fadeInUp" style="margin-bottom: 50px;">
-            <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #EEF1F6;">
-                <h3 style="font-size: 20px; font-weight: 700; color: #050B20; margin-bottom: 6px;">Đăng Ký Nhận Hồ Sơ Gói Vay & Bảng Tính Ngân Hàng</h3>
-                <p style="font-size: 14px; color: #64748B; margin: 0;">Chuyên viên tín dụng ngân hàng đối tác sẽ liên hệ gửi bảng sao kê chi tiết từng tháng và hỗ trợ làm hồ sơ vay nhanh nhất.</p>
+        <div id="finance-lead-form" class="boxcar-white-card wow fadeInUp client-section-spacer">
+            <div class="client-card-heading-box">
+                <h3>Đăng Ký Nhận Hồ Sơ Gói Vay & Bảng Tính Ngân Hàng</h3>
+                <p>Chuyên viên tín dụng ngân hàng đối tác sẽ liên hệ gửi bảng sao kê chi tiết từng tháng và hỗ trợ làm hồ sơ vay nhanh nhất.</p>
             </div>
 
+            @if (session('success'))
+                <div class="client-alert-banner is-success wow fadeInUp">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             @if (isset($errors) && $errors->any())
-                <div style="margin-bottom: 20px; padding: 14px 18px; border-radius: 12px; background: #FEF2F2; border: 1px solid #FCA5A5; color: #B91C1C; font-size: 14px;">
-                    <ul style="margin: 0; padding-left: 18px;">
+                <div class="client-alert-banner is-error wow fadeInUp">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -176,7 +184,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="client-form-group">
-                            <label for="lead-car-id">Xe cần làm hồ sơ trả góp <span style="color: #EF4444;">*</span></label>
+                            <label for="lead-car-id">Xe cần làm hồ sơ trả góp <span class="text-danger">*</span></label>
                             <select id="lead-car-id" name="car_unit_id" class="form-control" required>
                                 @foreach ($availableCars as $car)
                                     <option value="{{ $car->id }}" {{ old('car_unit_id') == $car->id ? 'selected' : '' }}>
@@ -188,13 +196,13 @@
                     </div>
                     <div class="col-md-4">
                         <div class="client-form-group">
-                            <label for="finance-name">Họ và tên quý khách <span style="color: #EF4444;">*</span></label>
+                            <label for="finance-name">Họ và tên quý khách <span class="text-danger">*</span></label>
                             <input type="text" id="finance-name" name="name" class="form-control" placeholder="Ví dụ: Trần Minh Hoàng" value="{{ old('name', auth()->user()->name ?? '') }}" required>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="client-form-group">
-                            <label for="finance-phone">Số điện thoại liên hệ <span style="color: #EF4444;">*</span></label>
+                            <label for="finance-phone">Số điện thoại liên hệ <span class="text-danger">*</span></label>
                             <input type="tel" id="finance-phone" name="phone" class="form-control" placeholder="Ví dụ: 0987 654 321" value="{{ old('phone', auth()->user()->phone ?? '') }}" required>
                         </div>
                     </div>
@@ -224,18 +232,24 @@
 
                 <div class="client-form-group">
                     <label for="finance-message">Ghi chú nhu cầu vay cụ thể</label>
-                    <textarea id="finance-message" name="message" class="form-control" placeholder="Ví dụ: Tôi muốn vay 70% giá trị xe trong 5 năm, cần tư vấn thủ tục chứng minh thu nhập...">{{ old('message') }}</textarea>
+                    <textarea id="finance-message" name="message" class="form-control" rows="4" placeholder="Ví dụ: Tôi muốn vay 70% giá trị xe trong 5 năm, cần tư vấn thủ tục chứng minh thu nhập...">{{ old('message') }}</textarea>
                 </div>
 
-                <button type="submit" class="client-submit-btn">
-                    GỬI YÊU CẦU DỰ TOÁN & TƯ VẤN TÍN DỤNG
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <div class="finance-submit-wrap">
+                    <button type="submit" class="finance-submit-btn">
+                        <span>GỬI YÊU CẦU DỰ TOÁN & TƯ VẤN TÍN DỤNG</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div class="finance-security-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Cam kết bảo mật thông tin tuyệt đối. Bảng tính chi tiết sẽ được gửi trong 15 phút.</span>
+                    </div>
+                </div>
             </form>
         </div>
 
         <!-- 4. Quy trình 4 Bước Duyệt Vay Trả Góp -->
-        <div style="margin-bottom: 50px;">
+        <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
                 <h2>Quy Trình 4 Bước Mua Xe Trả Góp Đơn Giản</h2>
                 <div class="text">Đơn giản hóa thủ tục ngân hàng, hỗ trợ duyệt hồ sơ nhanh gọn trong 24 giờ</div>
@@ -273,7 +287,7 @@
         </div>
 
         <!-- 5. 4 Đặc Quyền Vay Trả Góp Tại BoxCar -->
-        <div style="margin-bottom: 50px;">
+        <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
                 <h2>Vì Sao Nên Chọn Gói Tài Chính Tại BoxCar?</h2>
                 <div class="text">Liên kết trực tiếp với các định chế tài chính uy tín nhằm mang lại lợi ích cao nhất cho khách hàng</div>
@@ -281,47 +295,47 @@
 
             <div class="row">
                 <div class="col-md-3 col-sm-6">
-                    <div class="boxcar-white-card text-center wow fadeInUp" style="height: 100%;">
-                        <div class="contact-quick-icon" style="margin: 0 auto 16px;">
+                    <div class="boxcar-white-card text-center wow fadeInUp h-100">
+                        <div class="contact-quick-icon client-card-icon-center">
                             <i class="fa-solid fa-percent"></i>
                         </div>
-                        <h4 style="font-size: 16px; font-weight: 700; color: #050B20; margin-bottom: 8px;">Lãi Suất Cố Định Ưu Đãi</h4>
-                        <p style="font-size: 13.5px; color: #5F6980; line-height: 1.6; margin: 0;">Áp dụng mức lãi suất cạnh tranh nhất từ 6.99%/năm, biên độ lãi suất sau ưu đãi rõ ràng, minh bạch.</p>
+                        <h4 class="finance-feature-title">Lãi Suất Cố Định Ưu Đãi</h4>
+                        <p class="finance-feature-text">Áp dụng mức lãi suất cạnh tranh nhất từ 6.99%/năm, biên độ lãi suất sau ưu đãi rõ ràng, minh bạch.</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="boxcar-white-card text-center wow fadeInUp" data-wow-delay="100ms" style="height: 100%;">
-                        <div class="contact-quick-icon" style="margin: 0 auto 16px;">
+                    <div class="boxcar-white-card text-center wow fadeInUp h-100" data-wow-delay="100ms">
+                        <div class="contact-quick-icon client-card-icon-center">
                             <i class="fa-solid fa-sack-dollar"></i>
                         </div>
-                        <h4 style="font-size: 16px; font-weight: 700; color: #050B20; margin-bottom: 8px;">Hạn Mức Vay Đến 85%</h4>
-                        <p style="font-size: 13.5px; color: #5F6980; line-height: 1.6; margin: 0;">Chỉ cần trả trước từ 15 - 20% giá trị xe, hỗ trợ thời hạn vay tối đa lên đến 7 - 8 năm (84 - 96 tháng).</p>
+                        <h4 class="finance-feature-title">Hạn Mức Vay Đến 85%</h4>
+                        <p class="finance-feature-text">Chỉ cần trả trước từ 15 - 20% giá trị xe, hỗ trợ thời hạn vay tối đa lên đến 7 - 8 năm (84 - 96 tháng).</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="boxcar-white-card text-center wow fadeInUp" data-wow-delay="200ms" style="height: 100%;">
-                        <div class="contact-quick-icon" style="margin: 0 auto 16px;">
+                    <div class="boxcar-white-card text-center wow fadeInUp h-100" data-wow-delay="200ms">
+                        <div class="contact-quick-icon client-card-icon-center">
                             <i class="fa-solid fa-stopwatch"></i>
                         </div>
-                        <h4 style="font-size: 16px; font-weight: 700; color: #050B20; margin-bottom: 8px;">Phê Duyệt Trong 24 Giờ</h4>
-                        <p style="font-size: 13.5px; color: #5F6980; line-height: 1.6; margin: 0;">Quy trình thẩm định hồ sơ tinh gọn, không rườm rà, chấp nhận hồ sơ kinh doanh tự do hoặc không chứng minh bảng lương.</p>
+                        <h4 class="finance-feature-title">Phê Duyệt Trong 24 Giờ</h4>
+                        <p class="finance-feature-text">Quy trình thẩm định hồ sơ tinh gọn, không rườm rà, chấp nhận hồ sơ kinh doanh tự do hoặc không chứng minh bảng lương.</p>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="boxcar-white-card text-center wow fadeInUp" data-wow-delay="300ms" style="height: 100%;">
-                        <div class="contact-quick-icon" style="margin: 0 auto 16px;">
+                    <div class="boxcar-white-card text-center wow fadeInUp h-100" data-wow-delay="300ms">
+                        <div class="contact-quick-icon client-card-icon-center">
                             <i class="fa-solid fa-handshake-angle"></i>
                         </div>
-                        <h4 style="font-size: 16px; font-weight: 700; color: #050B20; margin-bottom: 8px;">Miễn Phí Thẩm Định Hồ Sơ</h4>
-                        <p style="font-size: 13.5px; color: #5F6980; line-height: 1.6; margin: 0;">Quý khách không phải trả thêm bất kỳ chi phí thẩm định hồ sơ hay phụ phí ẩn nào ngoài quy định ngân hàng.</p>
+                        <h4 class="finance-feature-title">Miễn Phí Thẩm Định Hồ Sơ</h4>
+                        <p class="finance-feature-text">Quý khách không phải trả thêm bất kỳ chi phí thẩm định hồ sơ hay phụ phí ẩn nào ngoài quy định ngân hàng.</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 6. FAQs Section -->
-        <div class="faqs-section pt-0" style="margin-bottom: 60px;">
-            <div class="inner-container" style="max-width: 900px; margin: 0 auto;">
+        <div class="faqs-section pt-0 client-section-spacer-lg">
+            <div class="inner-container client-inner-max-900">
                 <div class="client-section-heading wow fadeInUp">
                     <h2>Câu Hỏi Thường Gặp Về Vay Mua Xe</h2>
                     <div class="text">Giải đáp các câu hỏi quan trọng nhất của khách hàng khi mua xe ô tô trả góp</div>
@@ -332,7 +346,7 @@
                             <h4 class="about-faq-title">Hồ sơ vay mua xe trả góp bao gồm những giấy tờ gì?</h4>
                             <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
                         </div>
-                        <div class="about-faq-body" style="display: block;">
+                        <div class="about-faq-body">
                             <p>Đối với khách hàng cá nhân: Chỉ cần Căn cước công dân gắn chip, Giấy xác nhận tình trạng hôn nhân (nếu có), và giấy tờ chứng minh nguồn thu nhập (Hợp đồng lao động, sao kê tài khoản nhận lương hoặc nguồn thu từ cửa hàng, cho thuê tài sản...). Đối với doanh nghiệp: Giấy phép ĐKKD, Báo cáo tài chính và sao kê tài khoản công ty.</p>
                         </div>
                     </div>
@@ -360,11 +374,11 @@
 
         <!-- 7. Call to Action Banner -->
         <div class="boxcar-cta-about wow fadeInUp">
-            <div class="inner-box" style="background: #050B20; border-radius: 20px; padding: 48px 36px; text-align: center; color: #fff; box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);">
-                <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.01em;">CẦN TƯ VẤN PHƯƠNG ÁN TÀI CHÍNH TỐI ƯU NHẤT CHO BẠN?</h2>
-                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                    <a href="{{ route('inventory.index') }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s;">TÌM MẪU XE PHÙ HỢP</a>
-                    <a href="tel:{{ $cleanPhone }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: #405FF2; color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(64, 95, 242, 0.4);">GỌI CHUYÊN VIÊN TÀI CHÍNH</a>
+            <div class="client-cta-box-dark">
+                <h2>CẦN TƯ VẤN PHƯƠNG ÁN TÀI CHÍNH TỐI ƯU NHẤT CHO BẠN?</h2>
+                <div class="client-cta-btns-row">
+                    <a href="{{ route('inventory.index') }}" class="client-cta-btn-outline">TÌM MẪU XE PHÙ HỢP</a>
+                    <a href="tel:{{ $cleanPhone }}" class="client-cta-btn-primary">GỌI CHUYÊN VIÊN TÀI CHÍNH</a>
                 </div>
             </div>
         </div>
@@ -488,6 +502,61 @@
 
             if (carId) {
                 leadCarSelect.val(carId);
+            }
+        });
+
+        // Compile real-time loan parameters into a clear, formatted summary
+        function getLoanDetailsSummary() {
+            const selectedCarText = carSelect.find('option:selected').data('label') || 'Mẫu xe đang xem';
+            const carPrice = formatVND(parseFloat(priceSlider.val()) || 1200000000);
+            const downpaymentPercent = downpaymentSlider.val() || 20;
+            const downpaymentAmount = $('#calc-downpayment-amount').text();
+            const loanAmount = $('#res-loan-amount').text();
+            const tenureMonths = tenureSlider.val() || 60;
+            const annualRate = rateSlider.val() || 7.5;
+            const monthlyPayment = $('#res-monthly-payment').text();
+
+            return [
+                `[DỰ TOÁN GÓI VAY TRẢ GÓP TỰ TÍNH]`,
+                `- Mẫu xe quan tâm: ${selectedCarText}`,
+                `- Giá xe dự tính: ${carPrice}`,
+                `- Tỷ lệ trả trước: ${downpaymentPercent}% (${downpaymentAmount})`,
+                `- Hạn mức vay ngân hàng: ${loanAmount}`,
+                `- Thời hạn vay: ${tenureMonths} tháng (${(tenureMonths / 12).toFixed(tenureMonths % 12 === 0 ? 0 : 1)} năm)`,
+                `- Lãi suất ước tính: ${annualRate}%/năm`,
+                `- Ước tính thanh toán: ${monthlyPayment}`
+            ].join("\n");
+        }
+
+        // Quick quote button: synchronize calculation into message and scroll down to form
+        $('.js-apply-calc-to-form').on('click', function (e) {
+            e.preventDefault();
+            const selectedCarId = carSelect.val();
+            if (selectedCarId) {
+                leadCarSelect.val(selectedCarId);
+            }
+
+            const currentMsg = $('#finance-message').val().trim();
+            const summary = getLoanDetailsSummary();
+
+            if (!currentMsg || currentMsg.startsWith('[DỰ TOÁN GÓI VAY TRẢ GÓP TỰ TÍNH]')) {
+                $('#finance-message').val(summary);
+            }
+
+            $('html, body').animate({
+                scrollTop: $('#finance-lead-form').offset().top - 80
+            }, 500);
+        });
+
+        // Ensure loan calculation is attached when form is submitted
+        $('#finance-lead-form form').on('submit', function () {
+            const currentMsg = $('#finance-message').val().trim();
+            const summary = getLoanDetailsSummary();
+
+            if (!currentMsg) {
+                $('#finance-message').val(summary);
+            } else if (!currentMsg.includes('[DỰ TOÁN GÓI VAY TRẢ GÓP TỰ TÍNH]')) {
+                $('#finance-message').val(summary + "\n\n[GHI CHÚ THÊM CỦA KHÁCH HÀNG]\n" + currentMsg);
             }
         });
 
