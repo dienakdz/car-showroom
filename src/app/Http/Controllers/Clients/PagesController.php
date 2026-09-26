@@ -38,10 +38,7 @@ class PagesController extends ClientBaseController
     {
         return $this->viewWithSharedData('client.contact', [
             'showroom' => $this->sharedShowroom(),
-            'source' => 'contact',
-            'sourceTitle' => 'Liên Hệ Showroom & Đặt Lịch Trải Nghiệm Xe',
             'availableCars' => $this->getAvailableCarsForSelector(),
-            'trims' => $this->getTrimsForSelector(),
         ]);
     }
 
@@ -49,10 +46,7 @@ class PagesController extends ClientBaseController
     {
         return $this->viewWithSharedData('client.finance', [
             'showroom' => $this->sharedShowroom(),
-            'source' => 'finance',
-            'sourceTitle' => 'Dự Toán Tài Chính & Gói Vay Trả Góp Ưu Đãi',
             'availableCars' => $this->getAvailableCarsForSelector(),
-            'trims' => $this->getTrimsForSelector(),
         ]);
     }
 
@@ -62,10 +56,7 @@ class PagesController extends ClientBaseController
 
         return $this->viewWithSharedData('client.trade-in', [
             'showroom' => $this->sharedShowroom(),
-            'source' => 'trade_in',
-            'sourceTitle' => 'Thu Cũ Đổi Mới - Lên Đời Xe Sang Nhanh Chóng',
             'availableCars' => $this->getAvailableCarsForSelector(),
-            'trims' => $this->getTrimsForSelector(),
             'popularMakes' => $popularMakes,
         ]);
     }
@@ -85,33 +76,6 @@ class PagesController extends ClientBaseController
                 $car->label = $car->make_name . ' ' . $car->model_name . ' ' . $car->trim_name . ' (' . $car->stock_code . ')';
 
                 return $car;
-            });
-    }
-
-    /**
-     * @return Collection<int, \stdClass>
-     */
-    protected function getTrimsForSelector(): Collection
-    {
-        return Trim::query()
-            ->toBase()
-            ->select([
-                'trims.id',
-                'trims.slug',
-                'trims.name',
-                'models.name as model_name',
-                'makes.name as make_name',
-            ])
-            ->join('models', 'models.id', '=', 'trims.model_id')
-            ->join('makes', 'makes.id', '=', 'models.make_id')
-            ->orderBy('makes.name')
-            ->orderBy('models.name')
-            ->orderBy('trims.name')
-            ->get()
-            ->map(function (object $trim): object {
-                $trim->label = $trim->make_name . ' ' . $trim->model_name . ' ' . $trim->name;
-
-                return $trim;
             });
     }
 }
