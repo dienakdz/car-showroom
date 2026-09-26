@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $make_name
  * @property string|null $make_slug
  * @property-read CarModel|null $model
+ * @property-read CarUnit|null $primaryCarUnit
  */
 class Trim extends EloquentModel
 {
@@ -36,6 +38,14 @@ class Trim extends EloquentModel
     public function carUnits(): HasMany
     {
         return $this->hasMany(CarUnit::class, 'trim_id');
+    }
+
+    /**
+     * @return HasOne<CarUnit, $this>
+     */
+    public function primaryCarUnit(): HasOne
+    {
+        return $this->hasOne(CarUnit::class, 'trim_id')->ofMany('id', 'min');
     }
 
     public function features(): BelongsToMany

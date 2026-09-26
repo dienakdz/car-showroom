@@ -177,7 +177,7 @@ class Index extends AdminPageComponent
                 'carUnit.trim.model.make',
                 'carUnit.primaryMedia',
                 'trim.model.make',
-                'trim.carUnits.primaryMedia',
+                'trim.primaryCarUnit.primaryMedia',
             ])
             ->withCount(['notes', 'appointments'])
             ->when($includeStatus && $this->status !== '', function (Builder $query): void {

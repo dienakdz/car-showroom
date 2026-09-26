@@ -151,7 +151,7 @@
                                 @php
                                     $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
                                     $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
-                                    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
+                                    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->primaryCarUnit?->primaryMedia;
                                     $rawPath = $contextMedia?->path_or_url;
                                     $thumbUrl = filled($rawPath)
                                         ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
@@ -256,7 +256,7 @@
                             @php
                                 $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
                                 $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
-                                $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
+                                $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->primaryCarUnit?->primaryMedia;
                                 $rawPath = $contextMedia?->path_or_url;
                                 $thumbUrl = filled($rawPath)
                                     ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))

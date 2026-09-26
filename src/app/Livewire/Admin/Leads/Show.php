@@ -116,7 +116,7 @@ class Show extends AdminPageComponent
                 'carUnit.trim.model.make',
                 'carUnit.primaryMedia',
                 'trim.model.make',
-                'trim.carUnits.primaryMedia',
+                'trim.primaryCarUnit.primaryMedia',
                 'notes.createdBy:id,name',
                 'appointments.handledBy:id,name',
                 'appointments.carUnit.trim.model.make',

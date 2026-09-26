@@ -1,7 +1,7 @@
 @php
     $contextTrim = $lead->carUnit?->trim ?? $lead->trim;
     $contextName = trim(collect([$contextTrim?->model?->make?->name, $contextTrim?->model?->name, $contextTrim?->name])->filter()->implode(' '));
-    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->carUnits?->first()?->primaryMedia;
+    $contextMedia = $lead->carUnit?->primaryMedia ?? $contextTrim?->primaryCarUnit?->primaryMedia;
     $rawPath = $contextMedia?->path_or_url;
     $thumbUrl = null;
     if (filled($rawPath)) {

@@ -184,11 +184,11 @@ class Index extends AdminPageComponent
                 'carUnit.trim.model.make',
                 'carUnit.primaryMedia',
                 'trim.model.make',
-                'trim.carUnits.primaryMedia',
+                'trim.primaryCarUnit.primaryMedia',
             ])
-            ->when($this->status !== '', fn (Builder $query): Builder => $query->where('status', $this->status))
-            ->when($this->dateFilter === 'today', fn (Builder $query): Builder => $query->whereDate('scheduled_at', today()))
-            ->when($this->handledBy > 0, fn (Builder $query): Builder => $query->where('handled_by', $this->handledBy))
+            ->when($this->status !== '', fn (Builder $query) => $query->where('status', $this->status))
+            ->when($this->dateFilter === 'today', fn (Builder $query) => $query->whereDate('scheduled_at', today()))
+            ->when($this->handledBy > 0, fn (Builder $query) => $query->where('handled_by', $this->handledBy))
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $query->where(function (Builder $inner) use ($search): void {
                     $inner->whereHas('user', fn (Builder $u) => $u->where('name', 'like', "%{$search}%")->orWhere('phone', 'like', "%{$search}%"))
@@ -196,7 +196,7 @@ class Index extends AdminPageComponent
                         ->orWhere('note', 'like', "%{$search}%");
                 });
             })
-            ->orderByDesc('scheduled_at');
+            ->latest('scheduled_at');
     }
 
     /**
