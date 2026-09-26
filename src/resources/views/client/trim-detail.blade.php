@@ -49,12 +49,6 @@
         if (str_contains($text, 'khí thải') || str_contains($text, 'emission') || str_contains($text, 'chuẩn')) return 'fa-shield-halved';
         return 'fa-sliders';
     };
-
-    // Extract quick specs for hero badge
-    $heroEngine = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'động cơ'))?->display_value ?? 'Đang cập nhật';
-    $heroPower = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'công suất'))?->display_value ?? 'Đang cập nhật';
-    $heroTrans = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'hộp số'))?->display_value ?? 'Tự động';
-    $heroFuel = $attributes->first(fn($a) => str_contains(mb_strtolower($a->label), 'tiêu thụ'))?->display_value ?? 'Tiết kiệm';
 @endphp
 
 <section class="car-detail-page-wrap">
@@ -127,24 +121,6 @@
 
             <div class="trim-hero-visual">
                 <img src="{{ $heroImageUrl }}" alt="{{ $displayTitle }}">
-                <div class="trim-hero-quick-specs">
-                    <div class="quick-spec-item">
-                        <span>Động cơ</span>
-                        <strong title="{{ $heroEngine }}">{{ \Illuminate\Support\Str::limit($heroEngine, 16, '...') }}</strong>
-                    </div>
-                    <div class="quick-spec-item">
-                        <span>Công suất</span>
-                        <strong title="{{ $heroPower }}">{{ \Illuminate\Support\Str::limit($heroPower, 16, '...') }}</strong>
-                    </div>
-                    <div class="quick-spec-item">
-                        <span>Hộp số</span>
-                        <strong title="{{ $heroTrans }}">{{ \Illuminate\Support\Str::limit($heroTrans, 16, '...') }}</strong>
-                    </div>
-                    <div class="quick-spec-item">
-                        <span>Tiêu thụ</span>
-                        <strong title="{{ $heroFuel }}">{{ \Illuminate\Support\Str::limit($heroFuel, 16, '...') }}</strong>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -282,6 +258,22 @@
             </div>
 
             <div>
+                @if (session('success'))
+                    <div class="alert alert-success mb-3 rounded-3">
+                        <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger mb-3 rounded-3">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i> <strong>Đã có lỗi xảy ra:</strong>
+                        <ul class="mb-0 mt-1 ps-3" style="font-size: 13px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('lead.store') }}">
                     @csrf
                     <input type="hidden" name="source" value="trim_page">
@@ -305,7 +297,7 @@
 
                         <div class="booking-input-group">
                             <label>Phiên bản xe quan tâm</label>
-                            <input type="text" value="{{ $displayTitle }}" readonly style="background: #F1F5F9; font-weight: 700;">
+                            <input type="text" value="{{ $displayTitle }}" readonly style="background: #F1F5F9; font-weight: 700; color: #050B20;">
                         </div>
 
                         <div class="booking-input-group full-col">
@@ -313,11 +305,14 @@
                             <textarea name="message" placeholder="Ví dụ: Tôi muốn nhận dự toán chi phí lăn bánh, ưu đãi tháng này và đăng ký lái thử xe...">{{ old('message') }}</textarea>
                         </div>
 
-                        <div class="full-col text-end pt-2">
-                            <button type="submit" class="btn-primary-cta w-100 justify-content-center py-3">
+                        <div class="full-col pt-1">
+                            <button type="submit" class="form-submit-btn">
                                 <span>Gửi Yêu Cầu Nhận Báo Giá & Tư Vấn</span>
                                 <i class="fa-solid fa-paper-plane ms-2"></i>
                             </button>
+                            <p class="text-center text-muted mt-2 mb-0" style="font-size: 12px;">
+                                <i class="fa-solid fa-shield-halved text-success me-1"></i> Thông tin của quý khách được bảo mật tuyệt đối 100%.
+                            </p>
                         </div>
                     </div>
                 </form>
