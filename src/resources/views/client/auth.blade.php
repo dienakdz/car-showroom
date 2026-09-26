@@ -89,7 +89,7 @@
             'purchaseCount' => 0,
             'reviewCount' => 0,
             'reviewableCount' => 0,
-            'memberSinceLabel' => 'Moi tham gia',
+            'memberSinceLabel' => 'Mới tham gia',
             'nextAppointment' => null,
         ];
         $accountAppointments = $accountAppointments ?? collect();
@@ -97,10 +97,10 @@
         $accountPurchases = $accountPurchases ?? collect();
         $accountReviews = $accountReviews ?? collect();
         $overviewCards = [
-            ['value' => $accountSummary['leadCount'], 'label' => 'Yeu cau da tao'],
-            ['value' => $accountSummary['upcomingAppointmentsCount'], 'label' => 'Lich hen sap toi'],
-            ['value' => $accountSummary['purchaseCount'], 'label' => 'Xe da mua'],
-            ['value' => $accountSummary['reviewCount'], 'label' => 'Danh gia da gui'],
+            ['value' => $accountSummary['leadCount'], 'label' => 'Yêu cầu đã gửi'],
+            ['value' => $accountSummary['upcomingAppointmentsCount'], 'label' => 'Lịch hẹn sắp tới'],
+            ['value' => $accountSummary['purchaseCount'], 'label' => 'Xe đã sở hữu'],
+            ['value' => $accountSummary['reviewCount'], 'label' => 'Đánh giá đã gửi'],
         ];
     @endphp
 
@@ -110,20 +110,20 @@
                 <aside class="sidebar">
                     <div class="panel hero">
                         <div class="panel-inner">
-                            <span class="kicker">Customer dashboard</span>
+                            <span class="kicker">Trung tâm khách hàng</span>
                             <div class="avatar">{{ strtoupper(substr($accountUser->name, 0, 1)) }}</div>
-                            <h2>Quan ly tai khoan</h2>
-                            <p>Theo doi lead, lich hen, lich su mua xe va review trong mot dashboard duy nhat.</p>
+                            <h2>Quản lý tài khoản</h2>
+                            <p>Theo dõi yêu cầu tư vấn, lịch hẹn lái thử, lịch sử mua xe và đánh giá trong một giao diện duy nhất.</p>
 
-                            <div class="list-grid" style="margin-top: 20px;">
-                                <div><span>Ho so:</span> <strong>{{ $accountSummary['profileCompletion'] }}%</strong></div>
-                                <div><span>Thanh vien tu:</span> <strong>{{ $accountSummary['memberSinceLabel'] }}</strong></div>
-                                <div><span>Cho gui review:</span> <strong>{{ $accountSummary['reviewableCount'] }}</strong></div>
+                            <div class="list-grid mt-3">
+                                <div><span>Hồ sơ:</span> <strong>{{ $accountSummary['profileCompletion'] }}%</strong></div>
+                                <div><span>Thành viên từ:</span> <strong>{{ $accountSummary['memberSinceLabel'] }}</strong></div>
+                                <div><span>Chờ đánh giá:</span> <strong>{{ $accountSummary['reviewableCount'] }}</strong></div>
                             </div>
 
-                            <div class="meta" style="margin-top: 20px;">
+                            <div class="meta mt-3">
                                 <a href="{{ route('inventory.index') }}" class="chip neutral">Xem kho xe</a>
-                                <a href="{{ route('contact') }}" class="chip neutral">Gui yeu cau moi</a>
+                                <a href="{{ route('contact') }}" class="chip neutral">Gửi yêu cầu mới</a>
                             </div>
                         </div>
                     </div>
@@ -133,39 +133,39 @@
                             <ul class="nav nav-pills flex-column nav-list" id="account-tablist" role="tablist">
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-overview' ? 'active' : '' }}" id="account-overview-tab" type="button" role="tab" data-account-tab="account-overview-pane" aria-controls="account-overview-pane" aria-selected="{{ $activeAccountTab === 'account-overview' ? 'true' : 'false' }}">
-                                        Tong quan <span>&rarr;</span>
+                                        Tổng quan <span>&rarr;</span>
                                     </button>
                                 </li>
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-profile' ? 'active' : '' }}" id="account-profile-tab" type="button" role="tab" data-account-tab="account-profile-pane" aria-controls="account-profile-pane" aria-selected="{{ $activeAccountTab === 'account-profile' ? 'true' : 'false' }}">
-                                        Thong tin ca nhan <span>&rarr;</span>
+                                        Thông tin cá nhân <span>&rarr;</span>
                                     </button>
                                 </li>
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-appointments' ? 'active' : '' }}" id="account-appointments-tab" type="button" role="tab" data-account-tab="account-appointments-pane" aria-controls="account-appointments-pane" aria-selected="{{ $activeAccountTab === 'account-appointments' ? 'true' : 'false' }}">
-                                        Lich hen cua toi <span>&rarr;</span>
+                                        Lịch hẹn của tôi <span>&rarr;</span>
                                     </button>
                                 </li>
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-leads' ? 'active' : '' }}" id="account-leads-tab" type="button" role="tab" data-account-tab="account-leads-pane" aria-controls="account-leads-pane" aria-selected="{{ $activeAccountTab === 'account-leads' ? 'true' : 'false' }}">
-                                        Yeu cau cua toi <span>&rarr;</span>
+                                        Yêu cầu của tôi <span>&rarr;</span>
                                     </button>
                                 </li>
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-purchases' ? 'active' : '' }}" id="account-purchases-tab" type="button" role="tab" data-account-tab="account-purchases-pane" aria-controls="account-purchases-pane" aria-selected="{{ $activeAccountTab === 'account-purchases' ? 'true' : 'false' }}">
-                                        Xe da mua <span>&rarr;</span>
+                                        Xe đã mua <span>&rarr;</span>
                                     </button>
                                 </li>
                                 <li role="presentation">
                                     <button class="nav-link {{ $activeAccountTab === 'account-reviews' ? 'active' : '' }}" id="account-reviews-tab" type="button" role="tab" data-account-tab="account-reviews-pane" aria-controls="account-reviews-pane" aria-selected="{{ $activeAccountTab === 'account-reviews' ? 'true' : 'false' }}">
-                                        Danh gia cua toi <span>&rarr;</span>
+                                        Đánh giá của tôi <span>&rarr;</span>
                                     </button>
                                 </li>
                             </ul>
 
-                            <form method="POST" action="{{ route('logout') }}" style="margin-top: 18px;">
+                            <form method="POST" action="{{ route('logout') }}" class="mt-3">
                                 @csrf
-                                <button type="submit" class="logout-btn">Dang xuat</button>
+                                <button type="submit" class="logout-btn">Đăng xuất</button>
                             </form>
                         </div>
                     </div>
@@ -174,9 +174,9 @@
                 <div class="main">
                     <div class="panel hero">
                         <div class="panel-inner">
-                            <span class="kicker">Ho so cua toi</span>
-                            <h1 style="margin: 14px 0 8px;">{{ $accountUser->name }}</h1>
-                            <p>{{ $accountUser->email ?: 'Chua co email' }} | {{ $accountUser->phone ?: 'Chua co so dien thoai' }}</p>
+                            <span class="kicker">Hồ sơ của tôi</span>
+                            <h1 class="my-2">{{ $accountUser->name }}</h1>
+                            <p>{{ $accountUser->email ?: 'Chưa cập nhật email' }} | {{ $accountUser->phone ?: 'Chưa cập nhật số điện thoại' }}</p>
 
                             <div class="stats">
                                 @foreach ($overviewCards as $card)
@@ -195,31 +195,31 @@
                         <div class="panel-inner">
                             <div class="section-head">
                                 <div>
-                                    <h3>Tong quan hoat dong</h3>
-                                    <p>Tom tat nhanh de ban biet viec gi can xu ly tiep theo.</p>
+                                    <h3>Tổng quan hoạt động</h3>
+                                    <p>Tóm tắt nhanh để bạn nắm bắt các thông tin và bước tiếp theo.</p>
                                 </div>
                             </div>
 
                             <div class="overview-grid">
                                 <div class="mini-card">
-                                    <strong>Buoc tiep theo</strong>
+                                    <strong>Bước tiếp theo</strong>
                                     @if ($accountSummary['nextAppointment'])
-                                        <p>Lich hen gan nhat vao {{ $accountSummary['nextAppointment']->scheduled_at_label }} cho {{ $accountSummary['nextAppointment']->context_label }}.</p>
+                                        <p>Lịch hẹn gần nhất vào {{ $accountSummary['nextAppointment']->scheduled_at_label }} cho {{ $accountSummary['nextAppointment']->context_label }}.</p>
                                         <div class="meta">
                                             <span class="chip {{ $accountSummary['nextAppointment']->status_tone }}">{{ $accountSummary['nextAppointment']->status_label }}</span>
-                                            <a href="{{ $accountSummary['nextAppointment']->context_url }}" class="action-link">Mo context</a>
+                                            <a href="{{ $accountSummary['nextAppointment']->context_url }}" class="action-link">Xem chi tiết</a>
                                         </div>
                                     @else
-                                        <p>Ban chua co lich hen sap toi. Khi da tim duoc xe phu hop, hay dat lich xem xe hoac lai thu.</p>
+                                        <p>Bạn chưa có lịch hẹn sắp tới. Hãy khám phá kho xe và đăng ký lái thử trải nghiệm ngay!</p>
                                     @endif
                                 </div>
 
                                 <div class="mini-card">
-                                    <strong>Tinh trang ho so</strong>
-                                    <p>Ho so hien dat {{ $accountSummary['profileCompletion'] }}%. Cap nhat day du email va so dien thoai de lead va booking duoc dien nhanh hon.</p>
+                                    <strong>Tình trạng hồ sơ</strong>
+                                    <p>Hồ sơ hiện đạt {{ $accountSummary['profileCompletion'] }}%. Cập nhật đầy đủ email và số điện thoại để nhận tư vấn và đặt lịch nhanh chóng hơn.</p>
                                     <div class="meta">
-                                        <span class="chip neutral">Review cho gui: {{ $accountSummary['reviewableCount'] }}</span>
-                                        <a href="{{ route('account.show', ['tab' => 'account-profile']) }}" class="action-link">Cap nhat ngay</a>
+                                        <span class="chip neutral">Chờ gửi đánh giá: {{ $accountSummary['reviewableCount'] }}</span>
+                                        <a href="{{ route('account.show', ['tab' => 'account-profile']) }}" class="action-link">Cập nhật ngay</a>
                                     </div>
                                 </div>
                             </div>
@@ -238,8 +238,8 @@
                             @endphp
                             <div class="section-head">
                                 <div>
-                                    <h3>Thong tin ca nhan</h3>
-                                    <p>Xem trang thai hien tai, chinh sua lien he va cap nhat bao mat theo tung buoc ro rang.</p>
+                                    <h3>Thông tin cá nhân</h3>
+                                    <p>Xem trạng thái hiện tại, chỉnh sửa liên hệ và quản lý bảo mật theo từng bước rõ ràng.</p>
                                 </div>
                             </div>
 
@@ -248,45 +248,45 @@
                                     <div class="form-card">
                                         <div class="profile-card-head">
                                             <div>
-                                                <span class="profile-step">Trang thai hien tai</span>
-                                                <h4>Thong tin dang duoc su dung</h4>
-                                                <p>Day la bo du lieu showroom se dung khi tiep nhan lead, dat lich va lien he lai voi ban.</p>
+                                                <span class="profile-step">Trạng thái hiện tại</span>
+                                                <h4>Thông tin đang được sử dụng</h4>
+                                                <p>Đây là thông tin showroom sử dụng khi tiếp nhận tư vấn, đặt lịch và liên hệ lại với bạn.</p>
                                             </div>
-                                            <span class="chip {{ $contactReady ? 'success' : 'warning' }}">{{ $contactReady ? 'San sang lien he' : 'Can bo sung lien he' }}</span>
+                                            <span class="chip {{ $contactReady ? 'success' : 'warning' }}">{{ $contactReady ? 'Sẵn sàng liên hệ' : 'Cần bổ sung liên hệ' }}</span>
                                         </div>
 
                                         <div class="profile-summary-grid">
                                             <div class="profile-summary-item">
-                                                <label>Ho ten</label>
+                                                <label>Họ và tên</label>
                                                 <strong>{{ $accountUser->name }}</strong>
-                                                <span>Ten nay hien tren lead va lich hen cua ban.</span>
+                                                <span>Tên này hiển thị trên thông tin đặt lịch, yêu cầu tư vấn và đánh giá của bạn.</span>
                                             </div>
                                             <div class="profile-summary-item">
                                                 <label>Email</label>
-                                                <strong>{{ $accountUser->email ?: 'Chua cap nhat' }}</strong>
-                                                <span>{{ $hasEmail ? 'Da san sang cho email xac nhan va thong bao.' : 'Nen bo sung neu muon nhan xac nhan qua email.' }}</span>
+                                                <strong>{{ $accountUser->email ?: 'Chưa cập nhật' }}</strong>
+                                                <span>{{ $hasEmail ? 'Đã sẵn sàng cho email xác nhận và thông báo.' : 'Nên bổ sung nếu muốn nhận xác nhận qua email.' }}</span>
                                             </div>
                                             <div class="profile-summary-item">
-                                                <label>So dien thoai</label>
-                                                <strong>{{ $accountUser->phone ?: 'Chua cap nhat' }}</strong>
-                                                <span>{{ $hasPhone ? 'Da san sang cho tu van va xac nhan nhanh.' : 'Nen bo sung de showroom goi hoac nhan tin.' }}</span>
+                                                <label>Số điện thoại</label>
+                                                <strong>{{ $accountUser->phone ?: 'Chưa cập nhật' }}</strong>
+                                                <span>{{ $hasPhone ? 'Đã sẵn sàng cho tư vấn và xác nhận nhanh chóng.' : 'Nên bổ sung để showroom có thể gọi điện trực tiếp.' }}</span>
                                             </div>
                                             <div class="profile-summary-item">
-                                                <label>Ho so</label>
-                                                <strong>{{ $accountSummary['profileCompletion'] }}% hoan thien</strong>
-                                                <span>Thanh vien tu {{ $accountSummary['memberSinceLabel'] }}.</span>
+                                                <label>Hồ sơ</label>
+                                                <strong>{{ $accountSummary['profileCompletion'] }}% hoàn thiện</strong>
+                                                <span>Thành viên từ {{ $accountSummary['memberSinceLabel'] }}.</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="form-card">
-                                        <span class="profile-step">Huong dan</span>
-                                        <h4>Ban nen thao tac nhu the nao?</h4>
-                                        <p>Lam theo 2 buoc duoi day de cap nhat nhanh ma khong bo sot thong tin quan trong.</p>
+                                        <span class="profile-step">Hướng dẫn</span>
+                                        <h4>Bạn nên thao tác như thế nào?</h4>
+                                        <p>Làm theo các bước dưới đây để cập nhật nhanh chóng mà không bỏ sót thông tin quan trọng.</p>
                                         <ul class="profile-guide-list">
-                                            <li>Buoc 1: kiem tra thong tin hien tai o ben trai de biet truong nao dang thieu.</li>
-                                            <li>Buoc 2: cap nhat form lien he ben duoi. Tai khoan can it nhat email hoac so dien thoai.</li>
-                                            <li>Buoc 3: neu can doi mat khau, thao tac tai block Bao mat tai khoan o cot ben phai.</li>
+                                            <li>Bước 1: Kiểm tra thông tin hiện tại ở bên trái để biết trường nào còn thiếu.</li>
+                                            <li>Bước 2: Cập nhật form liên hệ bên dưới. Tài khoản cần ít nhất email hoặc số điện thoại.</li>
+                                            <li>Bước 3: Nếu cần đổi mật khẩu, thao tác tại khối Bảo mật tài khoản ở cột bên phải.</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -295,11 +295,11 @@
                                     <div class="form-card">
                                         <div class="profile-card-head">
                                             <div>
-                                                <span class="profile-step">Buoc 1</span>
-                                                <h4>Chinh sua thong tin lien he</h4>
-                                                <p>Form nay duoc dung de chinh sua truc tiep thong tin nguoi dung. Sau khi luu, thay doi se ap dung cho cac yeu cau moi.</p>
+                                                <span class="profile-step">Bước 1</span>
+                                                <h4>Chỉnh sửa thông tin liên hệ</h4>
+                                                <p>Form này được dùng để chỉnh sửa thông tin người dùng. Sau khi lưu, thay đổi sẽ áp dụng cho các yêu cầu mới.</p>
                                             </div>
-                                            <span class="chip info">Form chinh sua</span>
+                                            <span class="chip info">Form chỉnh sửa</span>
                                         </div>
 
                                         <form class="row" method="POST" action="{{ route('account.profile.update') }}">
@@ -308,9 +308,9 @@
 
                                             <div class="col-lg-12">
                                                 <div class="form_boxes">
-                                                    <label>Ho ten</label>
-                                                    <input class="@error('name') is-invalid @enderror" name="name" type="text" value="{{ old('name', $accountUser->name) }}" placeholder="Nguyen Van A" required>
-                                                    <small class="field-note">Day la ten xuat hien tren thong tin booking, lead va review cua ban.</small>
+                                                    <label>Họ và tên</label>
+                                                    <input class="@error('name') is-invalid @enderror" name="name" type="text" value="{{ old('name', $accountUser->name) }}" placeholder="Nguyễn Văn A" required>
+                                                    <small class="field-note">Đây là tên xuất hiện trên thông tin đặt lịch, tư vấn và đánh giá của bạn.</small>
                                                     @error('name')<span class="error-text">{{ $message }}</span>@enderror
                                                 </div>
                                             </div>
@@ -319,25 +319,25 @@
                                                 <div class="form_boxes">
                                                     <label>Email</label>
                                                     <input class="@error('email') is-invalid @enderror" name="email" type="email" value="{{ old('email', $accountUser->email) }}" placeholder="name@email.com">
-                                                    <small class="field-note">Nen nhap email de nhan xac nhan va cac cap nhat quan trong.</small>
+                                                    <small class="field-note">Nên nhập email để nhận xác nhận và các cập nhật quan trọng từ showroom.</small>
                                                     @error('email')<span class="error-text">{{ $message }}</span>@enderror
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="form_boxes">
-                                                    <label>So dien thoai</label>
+                                                    <label>Số điện thoại</label>
                                                     <input class="@error('phone') is-invalid @enderror" name="phone" type="text" value="{{ old('phone', $accountUser->phone) }}" placeholder="0901234567">
-                                                    <small class="field-note">Ban can it nhat email hoac so dien thoai de showroom co the lien he lai.</small>
+                                                    <small class="field-note">Bạn cần ít nhất email hoặc số điện thoại để showroom có thể liên hệ hỗ trợ.</small>
                                                     @error('phone')<span class="error-text">{{ $message }}</span>@enderror
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="profile-actions">
-                                                    <p>Luu xong, he thong se giu ban o lai tab nay de ban kiem tra thong tin ngay lap tuc.</p>
-                                                    <div class="form-submit" style="margin: 0;">
-                                                        <button type="submit" class="theme-btn">Luu thong tin <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
+                                                    <p>Lưu xong, hệ thống sẽ giữ bạn ở lại trang này để kiểm tra thông tin ngay lập tức.</p>
+                                                    <div class="form-submit m-0">
+                                                        <button type="submit" class="theme-btn">Lưu thông tin <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -347,59 +347,59 @@
                                     <div class="form-card">
                                         <div class="profile-card-head">
                                             <div>
-                                                <span class="profile-step">Buoc 2</span>
-                                                <h4>Bao mat tai khoan</h4>
-                                                <p>Doi mat khau o day neu ban muon tang bao mat hoac vua chia se tai khoan tren thiet bi khac.</p>
+                                                <span class="profile-step">Bước 2</span>
+                                                <h4>Bảo mật tài khoản</h4>
+                                                <p>Đổi mật khẩu ở đây nếu bạn muốn tăng cường bảo mật hoặc vừa chia sẻ tài khoản trên thiết bị khác.</p>
                                             </div>
-                                            <span class="chip warning">Bao mat</span>
+                                            <span class="chip warning">Bảo mật</span>
                                         </div>
 
                                         <div class="security-points">
                                             <div class="security-point">
-                                                <strong>Nhap mat khau hien tai truoc</strong>
-                                                <span>He thong can xac minh chinh ban la nguoi dang thay doi mat khau.</span>
+                                                <strong>Nhập mật khẩu hiện tại trước</strong>
+                                                <span>Hệ thống cần xác minh chính bạn là người đang thay đổi mật khẩu.</span>
                                             </div>
                                             <div class="security-point">
-                                                <strong>Mat khau moi toi thieu 6 ky tu</strong>
-                                                <span>Khong nen dung lai mat khau cu va nen chua ky tu de de nho nhung kho doan.</span>
+                                                <strong>Mật khẩu mới tối thiểu 6 ký tự</strong>
+                                                <span>Không nên dùng lại mật khẩu cũ và nên chứa các ký tự dễ nhớ với bạn nhưng khó đoán.</span>
                                             </div>
                                         </div>
 
-                                        <form class="row" method="POST" action="{{ route('account.password.update') }}" style="margin-top: 18px;">
+                                        <form class="row mt-3" method="POST" action="{{ route('account.password.update') }}">
                                             @csrf
                                             <input type="hidden" name="form_mode" value="account_password">
 
                                             <div class="col-lg-12">
                                                 <div class="form_boxes">
-                                                    <label>Mat khau hien tai</label>
-                                                    <input class="@error('current_password') is-invalid @enderror" type="password" name="current_password" placeholder="Nhap mat khau hien tai">
+                                                    <label>Mật khẩu hiện tại</label>
+                                                    <input class="@error('current_password') is-invalid @enderror" type="password" name="current_password" placeholder="Nhập mật khẩu hiện tại">
                                                     @error('current_password')<span class="error-text">{{ $message }}</span>@enderror
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="form_boxes">
-                                                    <label>Mat khau moi</label>
-                                                    <input class="@error('new_password') is-invalid @enderror" type="password" name="new_password" placeholder="Toi thieu 6 ky tu">
-                                                    <small class="field-note">Nen su dung mat khau khac voi mat khau cu de tang muc do an toan.</small>
+                                                    <label>Mật khẩu mới</label>
+                                                    <input class="@error('new_password') is-invalid @enderror" type="password" name="new_password" placeholder="Tối thiểu 6 ký tự">
+                                                    <small class="field-note">Nên sử dụng mật khẩu khác với mật khẩu cũ để tăng mức độ an toàn.</small>
                                                     @error('new_password')<span class="error-text">{{ $message }}</span>@enderror
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="form_boxes">
-                                                    <label>Nhap lai mat khau moi</label>
-                                                    <input class="@error('new_password') is-invalid @enderror" type="password" name="new_password_confirmation" placeholder="Nhap lai mat khau moi">
+                                                    <label>Nhập lại mật khẩu mới</label>
+                                                    <input class="@error('new_password') is-invalid @enderror" type="password" name="new_password_confirmation" placeholder="Nhập lại mật khẩu mới">
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
-                                                <div class="security-note">Neu ban dang dang nhap tren nhieu thiet bi, hay dam bao cac thiet bi con lai van thuoc quyen su dung cua ban sau khi doi mat khau.</div>
+                                                <div class="security-note">Nếu bạn đang đăng nhập trên nhiều thiết bị, hãy đảm bảo các thiết bị còn lại an toàn sau khi đổi mật khẩu.</div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="form-submit">
-                                                    <button type="submit" class="theme-btn">Cap nhat mat khau <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
+                                                    <button type="submit" class="theme-btn">Cập nhật mật khẩu <img src="{{ asset('boxcar/images/arrow.svg') }}" alt="arrow"></button>
                                                 </div>
                                             </div>
                                         </form>
@@ -414,9 +414,9 @@
                     <div class="account-tab-pane {{ $activeAccountTab === 'account-appointments' ? 'is-active' : '' }}" id="account-appointments-pane" role="tabpanel" aria-labelledby="account-appointments-tab" tabindex="0">
                     <div class="panel">
                         <div class="panel-inner">
-                            <div class="section-head"><div><h3>Lich hen cua toi</h3><p>Theo doi cac lich xem xe hoac lai thu da gui tu public site.</p></div></div>
+                            <div class="section-head"><div><h3>Lịch hẹn của tôi</h3><p>Theo dõi các lịch xem xe hoặc lái thử đã gửi tới showroom.</p></div></div>
                             @if ($accountAppointments->isEmpty())
-                                <div class="empty">Ban chua co lich hen nao. Khi da tim duoc xe phu hop, hay vao trang chi tiet xe de dat lich.</div>
+                                <div class="empty">Bạn chưa có lịch hẹn nào. Khi đã tìm được mẫu xe ưng ý, hãy vào trang chi tiết xe để đặt lịch nhé!</div>
                             @else
                                 <div class="list-grid">
                                     @foreach ($accountAppointments as $appointment)
@@ -429,9 +429,9 @@
                                                         <span class="chip neutral">{{ $appointment->scheduled_at_label }}</span>
                                                     </div>
                                                 </div>
-                                                <a href="{{ $appointment->context_url }}" class="action-link">Mo context</a>
+                                                <a href="{{ $appointment->context_url }}" class="action-link">Xem chi tiết</a>
                                             </div>
-                                            <p>{{ $appointment->note !== '' ? $appointment->note : 'Chua co ghi chu them cho lich hen nay.' }}</p>
+                                            <p>{{ $appointment->note !== '' ? $appointment->note : 'Không có ghi chú thêm cho lịch hẹn này.' }}</p>
                                         </div>
                                     @endforeach
                                 </div>
@@ -444,9 +444,9 @@
                     <div class="account-tab-pane {{ $activeAccountTab === 'account-leads' ? 'is-active' : '' }}" id="account-leads-pane" role="tabpanel" aria-labelledby="account-leads-tab" tabindex="0">
                     <div class="panel">
                         <div class="panel-inner">
-                            <div class="section-head"><div><h3>Yeu cau cua toi</h3><p>Danh sach cac lead ban da tao tu trang chi tiet xe, trang phien ban hoac form lien he.</p></div></div>
+                            <div class="section-head"><div><h3>Yêu cầu tư vấn của tôi</h3><p>Danh sách các yêu cầu báo giá và tư vấn bạn đã gửi từ các trang sản phẩm.</p></div></div>
                             @if ($accountLeads->isEmpty())
-                                <div class="empty">Ban chua tao yeu cau nao khi dang nhap. Cac yeu cau moi se duoc luu tai day de ban theo doi trang thai.</div>
+                                <div class="empty">Bạn chưa tạo yêu cầu tư vấn nào khi đăng nhập. Các yêu cầu mới sẽ được lưu tại đây để bạn theo dõi trạng thái.</div>
                             @else
                                 <div class="list-grid">
                                     @foreach ($accountLeads as $lead)
@@ -460,9 +460,9 @@
                                                         <span class="chip neutral">{{ $lead->created_at_label }}</span>
                                                     </div>
                                                 </div>
-                                                <a href="{{ $lead->context_url }}" class="action-link">Xem context</a>
+                                                <a href="{{ $lead->context_url }}" class="action-link">Xem chi tiết</a>
                                             </div>
-                                            <p>{{ $lead->message !== '' ? $lead->message : 'Lead nay khong co ghi chu bo sung.' }}</p>
+                                            <p>{{ $lead->message !== '' ? $lead->message : 'Không có ghi chú bổ sung cho yêu cầu này.' }}</p>
                                         </div>
                                     @endforeach
                                 </div>
@@ -475,9 +475,9 @@
                     <div class="account-tab-pane {{ $activeAccountTab === 'account-purchases' ? 'is-active' : '' }}" id="account-purchases-pane" role="tabpanel" aria-labelledby="account-purchases-tab" tabindex="0">
                     <div class="panel">
                         <div class="panel-inner">
-                            <div class="section-head"><div><h3>Xe da mua</h3><p>Lich su cac xe da duoc gan cho tai khoan cua ban sau khi sale offline duoc tao.</p></div></div>
+                            <div class="section-head"><div><h3>Xe đã mua</h3><p>Lịch sử các xe đã được bàn giao và liên kết với tài khoản của quý khách.</p></div></div>
                             @if ($accountPurchases->isEmpty())
-                                <div class="empty">Hien chua co sale nao duoc lien ket voi tai khoan nay. Khi showroom gan sale cho tai khoan, thong tin se hien o day.</div>
+                                <div class="empty">Hiện chưa có hợp đồng mua xe nào được liên kết với tài khoản này. Khi hoàn tất giao dịch tại showroom, thông tin xe sẽ hiển thị ở đây.</div>
                             @else
                                 <div class="purchase-grid">
                                     @foreach ($accountPurchases as $purchase)
@@ -492,7 +492,7 @@
                                                 </div>
                                                 <p>{{ $purchase->trim_label }}</p>
                                                 <div class="meta">
-                                                    <a href="{{ $purchase->trim_url }}" class="action-link">{{ $purchase->can_review ? 'Gui review cho trim' : 'Xem trang trim' }}</a>
+                                                    <a href="{{ $purchase->trim_url }}" class="action-link">{{ $purchase->can_review ? 'Gửi đánh giá cho phiên bản' : 'Xem trang phiên bản' }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -507,9 +507,9 @@
                     <div class="account-tab-pane {{ $activeAccountTab === 'account-reviews' ? 'is-active' : '' }}" id="account-reviews-pane" role="tabpanel" aria-labelledby="account-reviews-tab" tabindex="0">
                     <div class="panel">
                         <div class="panel-inner">
-                            <div class="section-head"><div><h3>Danh gia cua toi</h3><p>Theo doi review da gui cho cac trim ban da mua.</p></div></div>
+                            <div class="section-head"><div><h3>Đánh giá của tôi</h3><p>Theo dõi đánh giá và nhận xét đã gửi cho các phiên bản xe bạn đã sở hữu.</p></div></div>
                             @if ($accountReviews->isEmpty())
-                                <div class="empty">Ban chua gui review nao. Sau khi mua xe va dang nhap dung tai khoan, ban co the vao trang trim de gui danh gia.</div>
+                                <div class="empty">Bạn chưa gửi đánh giá nào. Sau khi hoàn tất mua xe và đăng nhập tài khoản, bạn có thể gửi đánh giá cho từng phiên bản xe.</div>
                             @else
                                 <div class="list-grid">
                                     @foreach ($accountReviews as $review)
@@ -522,13 +522,13 @@
                                                         <span class="chip neutral">{{ $review->created_at_label }}</span>
                                                     </div>
                                                 </div>
-                                                <a href="{{ $review->trim_url }}" class="action-link">Mo trim</a>
+                                                <a href="{{ $review->trim_url }}" class="action-link">Xem phiên bản</a>
                                             </div>
                                             <div class="rating">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     <i class="fa {{ $i <= $review->rating ? 'fa-star' : 'fa-star-o' }}"></i>
                                                 @endfor
-                                                <span style="margin-left: 8px; color: #667085;">{{ $review->rating }}/5</span>
+                                                <span class="rating-number ms-2 text-muted">{{ $review->rating }}/5</span>
                                             </div>
                                             <p>{{ $review->comment }}</p>
                                         </div>

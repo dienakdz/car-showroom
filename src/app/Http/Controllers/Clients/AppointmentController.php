@@ -24,7 +24,7 @@ class AppointmentController extends ClientBaseController
 
         if (($validated['car_unit_id'] ?? null) === null && ($validated['trim_id'] ?? null) === null) {
             return back()
-                ->withErrors(['scheduled_at' => 'Can xac dinh xe hoac phien ban truoc khi dat lich.'])
+                ->withErrors(['scheduled_at' => 'Cần xác định mẫu xe hoặc phiên bản trước khi đặt lịch trải nghiệm.'])
                 ->withInput();
         }
 
@@ -49,8 +49,10 @@ class AppointmentController extends ClientBaseController
             'status' => 'pending',
             'note' => $validated['message'] ?? null,
         ]);
-        $this->pushSuccessToast('Yeu cau dat lich da duoc ghi nhan. Showroom se xac nhan voi ban som.');
 
-        return back();
+        $successMessage = 'Yêu cầu đặt lịch lái thử đã được ghi nhận. Showroom sẽ sớm liên hệ xác nhận.';
+        $this->pushSuccessToast($successMessage);
+
+        return back()->with('success', $successMessage);
     }
 }

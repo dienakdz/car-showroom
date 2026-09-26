@@ -34,6 +34,6 @@ class EnsurePurchasedTrimForReview
     {
         return redirect()
             ->route('trim.show', ['trimSlug' => $trimSlug])
-            ->withErrors(['review' => 'Chi khach da mua xe thuoc phien ban nay moi co the danh gia.']);
+            ->withErrors(['review' => 'Chỉ khách hàng đã mua xe thuộc phiên bản này mới có thể gửi đánh giá.']);
     }
 }

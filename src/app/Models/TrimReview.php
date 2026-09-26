@@ -12,8 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $trim_id
  * @property int $user_id
  * @property int $rating
- * @property string $title
- * @property string $content
+ * @property string $comment
  * @property string $status
  * @property string|null $user_name
  * @property-read User|null $user

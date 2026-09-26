@@ -344,15 +344,6 @@ abstract class ClientBaseController extends Controller
         return $lead;
     }
 
-    protected function leadSourceTitle(string $source): string
-    {
-        return match ($source) {
-            'finance' => 'Dự Toán Tài Chính & Vay Trả Góp',
-            'trade_in' => 'Thu Cũ Đổi Mới - Lên Đời Xe',
-            default => 'Liên Hệ Showroom',
-        };
-    }
-
     protected function pushSuccessToast(string $message): void
     {
         toastr()->success($message, [

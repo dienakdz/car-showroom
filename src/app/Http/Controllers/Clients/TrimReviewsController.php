@@ -27,7 +27,7 @@ class TrimReviewsController extends ClientBaseController
         if ($existingReview) {
             return redirect()
                 ->route('trim.show', ['trimSlug' => $trim->slug])
-                ->withErrors(['review' => 'Ban da gui danh gia cho phien ban nay.']);
+                ->withErrors(['review' => 'Bạn đã gửi đánh giá cho phiên bản này rồi.']);
         }
 
         $data = $request->validate([
@@ -55,9 +55,11 @@ class TrimReviewsController extends ClientBaseController
         } catch (\Throwable) {
         }
 
-        $this->pushSuccessToast('Danh gia cua ban da duoc gui va dang cho duyet.');
+        $successMessage = 'Đánh giá của bạn đã được gửi thành công và đang chờ duyệt.';
+        $this->pushSuccessToast($successMessage);
 
         return redirect()
-            ->route('trim.show', ['trimSlug' => $trim->slug]);
+            ->route('trim.show', ['trimSlug' => $trim->slug])
+            ->with('success', $successMessage);
     }
 }

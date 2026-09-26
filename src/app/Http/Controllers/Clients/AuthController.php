@@ -85,7 +85,7 @@ class AuthController extends ClientBaseController
             'purchaseCount' => Sale::query()->where('buyer_user_id', $user->id)->count(),
             'reviewCount' => $reviewModels->count(),
             'reviewableCount' => $purchasedTrimIds->diff($reviewModels->keys())->count(),
-            'memberSinceLabel' => optional($user->created_at)->format('d/m/Y') ?? 'Moi tham gia',
+            'memberSinceLabel' => optional($user->created_at)->format('d/m/Y') ?? 'Mới tham gia',
             'nextAppointment' => $nextAppointment ? $this->mapAccountAppointment($nextAppointment) : null,
         ];
 

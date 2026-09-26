@@ -32,8 +32,9 @@ class LeadController extends ClientBaseController
         }
 
         $this->createLead($validated);
-        $this->pushSuccessToast('Yêu cầu của bạn đã được gửi. Showroom sẽ liên hệ trong thời gian sớm nhất.');
+        $successMessage = 'Yêu cầu của bạn đã được gửi. Showroom sẽ liên hệ trong thời gian sớm nhất.';
+        $this->pushSuccessToast($successMessage);
 
-        return back();
+        return back()->with('success', $successMessage);
     }
 }
