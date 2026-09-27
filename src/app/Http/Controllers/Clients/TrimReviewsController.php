@@ -58,8 +58,6 @@ class TrimReviewsController extends ClientBaseController
         $successMessage = 'Đánh giá của bạn đã được gửi thành công và đang chờ duyệt.';
         $this->pushSuccessToast($successMessage);
 
-        return redirect()
-            ->route('trim.show', ['trimSlug' => $trim->slug])
-            ->with('success', $successMessage);
+        return redirect()->route('trim.show', ['trimSlug' => $trim->slug]);
     }
 }

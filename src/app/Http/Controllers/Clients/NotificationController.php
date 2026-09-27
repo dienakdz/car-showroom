@@ -47,7 +47,7 @@ class NotificationController extends ClientBaseController
 
         $this->pushSuccessToast('Đã đánh dấu tất cả thông báo là đã đọc.');
 
-        return back()->with('success', 'Đã đánh dấu tất cả thông báo là đã đọc.');
+        return back();
     }
 
     public function destroy(Request $request, string $id, NotificationService $service): JsonResponse|RedirectResponse
@@ -68,6 +68,6 @@ class NotificationController extends ClientBaseController
 
         $this->pushSuccessToast('Đã xóa thông báo.');
 
-        return back()->with('success', 'Đã xóa thông báo.');
+        return back();
     }
 }

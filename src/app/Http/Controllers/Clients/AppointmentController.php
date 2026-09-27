@@ -53,6 +53,6 @@ class AppointmentController extends ClientBaseController
         $successMessage = 'Yêu cầu đặt lịch lái thử đã được ghi nhận. Showroom sẽ sớm liên hệ xác nhận.';
         $this->pushSuccessToast($successMessage);
 
-        return back()->with('success', $successMessage);
+        return back();
     }
 }
