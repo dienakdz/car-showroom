@@ -72,6 +72,10 @@ class AuthController extends ClientBaseController
             ->whereIn('status', ['pending', 'confirmed'])
             ->where('scheduled_at', '>=', now())
             ->with([
+                'carUnit.media' => fn ($query) => $query
+                    ->where('type', 'image')
+                    ->orderByDesc('is_cover')
+                    ->orderBy('sort_order'),
                 'carUnit.trim.model.make',
                 'trim.model.make',
             ])
@@ -85,16 +89,19 @@ class AuthController extends ClientBaseController
             'purchaseCount' => Sale::query()->where('buyer_user_id', $user->id)->count(),
             'reviewCount' => $reviewModels->count(),
             'reviewableCount' => $purchasedTrimIds->diff($reviewModels->keys())->count(),
+            'notificationCount' => $user->notifications()->count(),
+            'unreadNotificationCount' => $user->unreadNotifications()->count(),
             'memberSinceLabel' => optional($user->created_at)->format('d/m/Y') ?? 'Mới tham gia',
             'nextAppointment' => $nextAppointment ? $this->mapAccountAppointment($nextAppointment) : null,
         ];
 
-        return $this->viewWithSharedData('client.auth', [
+        return $this->viewWithSharedData('client.account', [
             'accountSummary' => $accountSummary,
             'accountAppointments' => $this->loadAccountAppointments($user),
             'accountLeads' => $this->loadAccountLeads($user),
             'accountPurchases' => $this->loadAccountPurchases($user, $reviewModels),
             'accountReviews' => $this->loadAccountReviews($user),
+            'accountNotifications' => $user->notifications()->latest()->paginate(10, ['*'], 'notif_page')->withQueryString(),
         ]);
     }
 
@@ -413,6 +420,10 @@ class AuthController extends ClientBaseController
         return Appointment::query()
             ->where('user_id', $user->id)
             ->with([
+                'carUnit.media' => fn ($query) => $query
+                    ->where('type', 'image')
+                    ->orderByDesc('is_cover')
+                    ->orderBy('sort_order'),
                 'carUnit.trim.model.make',
                 'trim.model.make',
             ])
@@ -428,9 +439,12 @@ class AuthController extends ClientBaseController
         $carUnit = $appointment->carUnit;
         /** @var Trim|null $contextTrim */
         $contextTrim = $carUnit !== null ? $carUnit->trim : $appointment->trim;
+        $coverMedia = $carUnit !== null ? $carUnit->media->first() : null;
+        $coverMediaPath = $coverMedia instanceof CarUnitMedia ? (string) $coverMedia->path_or_url : null;
 
         return (object) [
             'id' => $appointment->id,
+            'image_url' => $this->resolveMediaPath($coverMediaPath),
             'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
             'status_label' => $this->appointmentStatusLabel((string) $appointment->status),
             'status_tone' => $this->appointmentStatusTone((string) $appointment->status),
@@ -549,23 +563,23 @@ class AuthController extends ClientBaseController
     protected function leadSourceLabel(string $source): string
     {
         return match ($source) {
-            'unit_detail' => 'Từ trang chi tiết xe',
-            'trim_page' => 'Từ trang phiên bản',
-            'finance' => 'Tư vấn tài chính',
-            'trade_in' => 'Thu cũ đổi mới',
-            default => 'Liên hệ chung',
+            'unit_detail' => 'Trang chi tiết xe',
+            'trim_page' => 'Trang phiên bản xe',
+            'finance' => 'Tư vấn tài chính trả góp',
+            'trade_in' => 'Thẩm định thu cũ đổi mới',
+            default => 'Liên hệ tư vấn chung',
         };
     }
 
     protected function leadStatusLabel(string $status): string
     {
         return match ($status) {
-            'contacted' => 'Đã liên hệ',
-            'qualified' => 'Đã xác thực nhu cầu',
-            'booked' => 'Đã đặt lịch',
-            'closed' => 'Đã chốt',
-            'lost' => 'Không chốt',
-            default => 'Mới tạo',
+            'contacted' => 'Đã liên hệ tư vấn',
+            'qualified' => 'Đã xác nhận nhu cầu',
+            'booked' => 'Đã đặt lịch hẹn',
+            'closed' => 'Giao dịch thành công',
+            'lost' => 'Đã hủy yêu cầu',
+            default => 'Đang chờ xử lý',
         };
     }
 
@@ -583,10 +597,10 @@ class AuthController extends ClientBaseController
     protected function appointmentStatusLabel(string $status): string
     {
         return match ($status) {
-            'confirmed' => 'Đã xác nhận',
+            'confirmed' => 'Đã xác nhận lịch',
             'done' => 'Đã hoàn tất',
-            'cancelled' => 'Đã hủy',
-            default => 'Chờ xác nhận',
+            'cancelled' => 'Đã hủy lịch',
+            default => 'Chờ showroom xác nhận',
         };
     }
 

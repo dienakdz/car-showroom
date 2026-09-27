@@ -94,5 +94,74 @@ class NotificationSeeder extends Seeder
                 'read_at' => $item['read_at'],
             ]);
         }
+
+        // Seed realistic customer notifications for customer accounts
+        $customerEmails = ['tuan.nguyen@gmail.com', 'khoa.nguyen@gmail.com'];
+        foreach ($customerEmails as $email) {
+            $customer = User::where('email', $email)->first();
+            if (! $customer instanceof User) {
+                continue;
+            }
+
+            $customer->notifications()->delete();
+
+            $customerNotifications = [
+                [
+                    'payload' => [
+                        'category' => 'appointment',
+                        'title' => 'Xác nhận lịch hẹn trải nghiệm xe thành công',
+                        'message' => 'Lịch hẹn lái thử của bạn đã được showroom tiếp nhận. Chuyên viên dịch vụ sẽ đón tiếp và chuẩn bị xe chu đáo.',
+                        'action_url' => route('account.show', ['tab' => 'appointments']),
+                        'icon' => 'fa-solid fa-calendar-check',
+                    ],
+                    'created_at' => Carbon::now()->subHours(2),
+                    'read_at' => null,
+                ],
+                [
+                    'payload' => [
+                        'category' => 'sale',
+                        'title' => 'Bàn giao xe thành công & Kích hoạt bảo hành',
+                        'message' => 'Chúc mừng bạn đã hoàn tất thủ tục nhận bàn giao xe. Hồ sơ bảo hành điện tử chính hãng đã được kích hoạt trong Gara của bạn.',
+                        'action_url' => route('account.show', ['tab' => 'purchases']),
+                        'icon' => 'fa-solid fa-car',
+                    ],
+                    'created_at' => Carbon::now()->subDays(2),
+                    'read_at' => null,
+                ],
+                [
+                    'payload' => [
+                        'category' => 'review',
+                        'title' => 'Đánh giá trải nghiệm của bạn đã được duyệt',
+                        'message' => 'Cảm ơn bạn đã đóng góp đánh giá khách quan. Bài nhận xét xe của bạn đã được ban quản trị phê duyệt và đăng tải.',
+                        'action_url' => route('account.show', ['tab' => 'reviews']),
+                        'icon' => 'fa-solid fa-star',
+                    ],
+                    'created_at' => Carbon::now()->subDays(4),
+                    'read_at' => Carbon::now()->subDays(3),
+                ],
+                [
+                    'payload' => [
+                        'category' => 'lead',
+                        'title' => 'Báo giá dự toán lăn bánh và quà tặng khuyến mãi',
+                        'message' => 'Chuyên viên tư vấn đã phản hồi yêu cầu của bạn cùng bảng tính gói tài chính trả góp ưu đãi 7.5%/năm.',
+                        'action_url' => route('account.show', ['tab' => 'leads']),
+                        'icon' => 'fa-solid fa-file-invoice-dollar',
+                    ],
+                    'created_at' => Carbon::now()->subDays(6),
+                    'read_at' => Carbon::now()->subDays(5),
+                ],
+            ];
+
+            foreach ($customerNotifications as $item) {
+                $notification = new \App\Notifications\CustomerNotification($item['payload']);
+                $customer->notify($notification);
+
+                $customer->notifications()->latest('created_at')->first()?->update([
+                    'created_at' => $item['created_at'],
+                    'updated_at' => $item['created_at'],
+                    'read_at' => $item['read_at'],
+                ]);
+            }
+        }
     }
 }
