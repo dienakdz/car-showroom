@@ -6,15 +6,18 @@ use App\Models\CarModel;
 use App\Models\CarUnit;
 use App\Models\Lead;
 use App\Models\Make;
+use App\Models\Role;
 use App\Models\Sale;
 use App\Models\Trim;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class SaleManagementService
 {
+    public const DEFAULT_CUSTOMER_PASSWORD = 'Auto123';
+
     public function create(array $validated, User $actor): Sale
     {
         return DB::transaction(function () use ($validated, $actor): Sale {
@@ -129,11 +132,21 @@ class SaleManagementService
             return $buyer;
         }
 
-        return User::query()->create([
+        $newUser = User::query()->create([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
-            'password' => Str::random(24),
+            'password' => self::DEFAULT_CUSTOMER_PASSWORD,
         ]);
+
+        $customerRoleId = Role::query()->where('name', 'customer')->value('id');
+        if ($customerRoleId) {
+            UserRole::query()->firstOrCreate([
+                'user_id' => $newUser->id,
+                'role_id' => $customerRoleId,
+            ]);
+        }
+
+        return $newUser;
     }
 }
