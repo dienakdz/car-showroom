@@ -85,7 +85,7 @@ class SaleManagementService
                     'sale',
                     'Chúc mừng bạn đã sở hữu xe ' . $carTitle,
                     "Hợp đồng mua xe {$carTitle} (Mã kho: {$carUnit->stock_code}) đã được Showroom hoàn tất ghi nhận. Kính chúc bạn vạn dặm bình an!",
-                    route('account.show', ['tab' => 'account-purchases']),
+                    route('account.show', ['tab' => 'purchases']),
                     'fa-solid fa-car-side',
                     ['sale_id' => $sale->id, 'car_unit_id' => $carUnit->id]
                 );

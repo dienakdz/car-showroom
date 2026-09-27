@@ -364,7 +364,7 @@ abstract class ClientBaseController extends Controller
 
         if (auth()->check()) {
             $user = auth()->user();
-            if ($user instanceof User) {
+            if ($user instanceof User && ! $user->hasAnyRole(['admin', 'staff'])) {
                 $clientNotifications = $user->notifications()->latest()->limit(5)->get();
                 $clientUnreadNotificationsCount = $user->unreadNotifications()->count();
             }

@@ -137,7 +137,8 @@
                                 headers: {
                                     'X-CSRF-TOKEN': csrfToken,
                                     'Accept': 'application/json'
-                                }
+                                },
+                                keepalive: true
                             }).catch(() => {});
                         }
                     });
@@ -224,9 +225,9 @@
                                 <li class="d-lg-none {{ request()->routeIs('login') || request()->routeIs('account.show') ? 'current' : '' }}">
                                     <a href="{{ $accountUrl }}">{{ $accountLabel }}</a>
                                 </li>
-                                @if (auth()->check())
+                                @if (auth()->check() && ! $isStaffOrAdmin)
                                     <li class="d-lg-none">
-                                        <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}">
+                                        <a href="{{ route('account.show', ['tab' => 'notifications']) }}">
                                             Thông báo @if (($clientUnreadNotificationsCount ?? 0) > 0) <span class="badge bg-danger rounded-pill ms-1">{{ $clientUnreadNotificationsCount }}</span> @endif
                                         </a>
                                     </li>
@@ -255,7 +256,7 @@
                         </div>
 
                         {{-- Client Notification Hub --}}
-                        @if (auth()->check())
+                        @if (auth()->check() && ! $isStaffOrAdmin)
                             @php
                                 $clientNotifications = $clientNotifications ?? collect();
                                 $clientUnreadNotificationsCount = $clientUnreadNotificationsCount ?? 0;
@@ -286,7 +287,7 @@
                                             @php
                                                 $data = $notification->data;
                                                 $isUnread = $notification->read_at === null;
-                                                $actionUrl = $data['action_url'] ?? route('account.show', ['tab' => 'account-notifications']);
+                                                $actionUrl = $data['action_url'] ?? route('account.show', ['tab' => 'notifications']);
                                                 $iconClass = $data['icon'] ?? 'fa-solid fa-bell';
                                             @endphp
                                             <a href="{{ $actionUrl }}" class="notification-item {{ $isUnread ? 'is-unread' : '' }} js-notification-item" data-id="{{ $notification->id }}" data-read-url="{{ route('account.notifications.read', $notification->id) }}">
@@ -310,7 +311,7 @@
                                         @endforelse
                                     </div>
                                     <div class="notification-dropdown-footer">
-                                        <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}" class="view-all-link">
+                                        <a href="{{ route('account.show', ['tab' => 'notifications']) }}" class="view-all-link">
                                             Xem tất cả thông báo <i class="fa-solid fa-angle-right ms-1"></i>
                                         </a>
                                     </div>
@@ -338,25 +339,25 @@
                                             <i class="fa-solid fa-shield-halved"></i>
                                             <span>Khu vực quản trị</span>
                                         </a>
-                                        <div class="user-dropdown-divider"></div>
+                                    @else
+                                        <a href="{{ route('account.show') }}" class="user-dropdown-item">
+                                            <i class="fa-solid fa-user-gear"></i>
+                                            <span>Thông tin tài khoản</span>
+                                        </a>
+                                        <a href="{{ route('account.show', ['tab' => 'notifications']) }}" class="user-dropdown-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fa-regular fa-bell"></i>
+                                                <span>Thông báo của tôi</span>
+                                            </div>
+                                            @if (($clientUnreadNotificationsCount ?? 0) > 0)
+                                                <span class="badge bg-danger rounded-pill">{{ $clientUnreadNotificationsCount }}</span>
+                                            @endif
+                                        </a>
+                                        <a href="{{ route('account.show', ['tab' => 'appointments']) }}" class="user-dropdown-item">
+                                            <i class="fa-solid fa-calendar-check"></i>
+                                            <span>Lịch hẹn của tôi</span>
+                                        </a>
                                     @endif
-                                    <a href="{{ route('account.show') }}" class="user-dropdown-item">
-                                        <i class="fa-solid fa-user-gear"></i>
-                                        <span>Thông tin tài khoản</span>
-                                    </a>
-                                    <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}" class="user-dropdown-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="fa-regular fa-bell"></i>
-                                            <span>Thông báo của tôi</span>
-                                        </div>
-                                        @if (($clientUnreadNotificationsCount ?? 0) > 0)
-                                            <span class="badge bg-danger rounded-pill">{{ $clientUnreadNotificationsCount }}</span>
-                                        @endif
-                                    </a>
-                                    <a href="{{ route('account.show', ['tab' => 'account-appointments']) }}" class="user-dropdown-item">
-                                        <i class="fa-solid fa-calendar-check"></i>
-                                        <span>Lịch hẹn của tôi</span>
-                                    </a>
                                     <div class="user-dropdown-divider"></div>
                                     <form action="{{ route('logout') }}" method="POST" class="m-0">
                                         @csrf

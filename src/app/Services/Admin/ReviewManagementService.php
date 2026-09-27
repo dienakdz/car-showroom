@@ -99,7 +99,7 @@ class ReviewManagementService
                 $trimName = $trim !== null ? $trim->name : 'phiên bản xe';
                 $actionUrl = $trim !== null
                     ? route('trim.show', ['trimSlug' => $trim->slug])
-                    : route('account.show', ['tab' => 'account-reviews']);
+                    : route('account.show', ['tab' => 'reviews']);
 
                 app(\App\Services\Admin\NotificationService::class)->notifyUser(
                     $review->user,

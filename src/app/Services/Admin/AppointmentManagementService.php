@@ -159,7 +159,7 @@ class AppointmentManagementService
                             'appointment',
                             $cfg['title'],
                             $cfg['message'],
-                            route('account.show', ['tab' => 'account-appointments']),
+                            route('account.show', ['tab' => 'appointments']),
                             $cfg['icon'],
                             ['appointment_id' => $appointment->id, 'status' => $currentStatus]
                         );

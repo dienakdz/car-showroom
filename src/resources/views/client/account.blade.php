@@ -60,21 +60,30 @@
             });
         });
 
-        // Initial tab check from URL or active class
+        // Determine initial active tab:
+        // 1. If form validation errors exist, prioritize keeping the profile tab active.
+        // 2. If 'tab' query param is provided, clean and activate it.
+        // 3. Fallback to server-rendered active button or first button.
+        const hasValidationErrors = document.querySelector('.form-error-custom, .is-invalid') !== null;
         const urlParams = new URLSearchParams(window.location.search);
         const tabParam = urlParams.get('tab');
-        if (tabParam) {
-            const matchedPaneId = 'account-' + tabParam + '-pane';
-            const matchedBtn = buttons.find((btn) => btn.dataset.accountTab === matchedPaneId);
-            if (matchedBtn) {
-                setActiveTab(matchedPaneId, false);
-                return;
+
+        let initialPaneId = null;
+        if (hasValidationErrors) {
+            initialPaneId = 'account-profile-pane';
+        } else if (tabParam) {
+            const cleanParam = tabParam.replace('account-', '').replace('-pane', '');
+            initialPaneId = 'account-' + cleanParam + '-pane';
+        } else {
+            const serverActiveBtn = buttons.find((btn) => btn.classList.contains('active'));
+            if (serverActiveBtn) {
+                initialPaneId = serverActiveBtn.dataset.accountTab;
             }
         }
 
-        const initialButton = buttons.find((button) => button.classList.contains('active')) ?? buttons[0];
-        if (initialButton) {
-            setActiveTab(initialButton.dataset.accountTab, false);
+        const targetButton = buttons.find((btn) => btn.dataset.accountTab === initialPaneId) ?? buttons[0];
+        if (targetButton) {
+            setActiveTab(targetButton.dataset.accountTab, false);
         }
     });
 </script>
@@ -83,7 +92,7 @@
 @section('content')
 @php
     $accountUser = auth()->user();
-    $rawTab = request('tab', 'overview');
+    $rawTab = str_replace(['account-', '-pane'], '', (string) request('tab', 'overview'));
     $tabMap = [
         'overview' => 'account-overview',
         'profile' => 'account-profile',
@@ -95,7 +104,7 @@
     ];
     $activeAccountTab = $tabMap[$rawTab] ?? 'account-overview';
 
-    if (in_array(old('form_mode'), ['account_profile', 'account_password'], true)) {
+    if (in_array(old('form_mode'), ['account_profile', 'account_password'], true) || (isset($errors) && $errors->any())) {
         $activeAccountTab = 'account-profile';
     }
 @endphp

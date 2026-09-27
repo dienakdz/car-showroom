@@ -274,7 +274,7 @@ class AuthController extends ClientBaseController
 
         $this->pushSuccessToast('Cập nhật thông tin cá nhân thành công.');
 
-        return redirect()->route('account.show', ['tab' => 'account-profile']);
+        return redirect()->route('account.show', ['tab' => 'profile']);
     }
 
     public function updatePassword(Request $request): RedirectResponse
@@ -308,7 +308,7 @@ class AuthController extends ClientBaseController
 
         $this->pushSuccessToast('Đổi mật khẩu thành công.');
 
-        return redirect()->route('account.show', ['tab' => 'account-profile']);
+        return redirect()->route('account.show', ['tab' => 'profile']);
     }
 
     protected function resolveLoginField(string $identifier): array
