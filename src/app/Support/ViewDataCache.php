@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Cache;
 
 class ViewDataCache
 {
-    public const STORE = 'file';
-
     public const SHOWROOM_KEY = 'view-data.showroom';
 
     public const ADMIN_SETTINGS_KEY = 'view-data.admin.settings';
@@ -26,7 +24,11 @@ class ViewDataCache
 
     public static function store(): Repository
     {
-        return Cache::store(app()->runningInConsole() ? 'array' : self::STORE);
+        $storeName = app()->runningInConsole()
+            ? 'array'
+            : config('showroom.cache_store');
+
+        return Cache::store($storeName);
     }
 
     public static function rememberShowroom(): ?Showroom

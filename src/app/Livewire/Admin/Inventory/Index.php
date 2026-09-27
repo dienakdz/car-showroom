@@ -115,8 +115,10 @@ class Index extends AdminPageComponent
 
     public function render(): View
     {
+        $perPage = config('showroom.pagination.admin');
+
         return view('livewire.admin.inventory.index', [
-            'carUnits' => $this->filteredQuery()->paginate(12, ['*'], 'inventoryPage'),
+            'carUnits' => $this->filteredQuery()->paginate($perPage, ['*'], 'inventoryPage'),
             'statusCounts' => $this->statusCounts(),
             'trims' => $this->availableTrims(),
         ])->layout('admin.layouts.livewire', $this->adminLayoutData([

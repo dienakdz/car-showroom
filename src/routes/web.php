@@ -31,8 +31,11 @@ Route::middleware(['auth', 'customer.access'])->group(function (): void {
     Route::post('/tai-khoan/thong-bao/{id}/doc', [NotificationController::class, 'markAsRead'])->name('account.notifications.read');
     Route::delete('/tai-khoan/thong-bao/{id}', [NotificationController::class, 'destroy'])->name('account.notifications.destroy');
 });
+$appointmentThrottle = config('showroom.throttle.appointments');
+$leadThrottle = config('showroom.throttle.leads');
+
 Route::post('/dat-lich-hen', [AppointmentController::class, 'store'])
-    ->middleware('throttle:10,1')
+    ->middleware("throttle:{$appointmentThrottle},1")
     ->name('appointments.store');
 
 Route::get('/kho-xe', [InventoryController::class, 'index'])->name('inventory.index');
@@ -50,6 +53,8 @@ Route::get('/ve-chung-toi', [PagesController::class, 'about'])->name('about');
 Route::get('/lien-he', [PagesController::class, 'contact'])->name('contact');
 Route::get('/tai-chinh', [PagesController::class, 'finance'])->name('finance');
 Route::get('/thu-cu-doi-moi', [PagesController::class, 'tradeIn'])->name('tradein');
-Route::post('/gui-yeu-cau-tu-van', [LeadController::class, 'store'])->middleware('throttle:15,1')->name('lead.store');
+Route::post('/gui-yeu-cau-tu-van', [LeadController::class, 'store'])
+    ->middleware("throttle:{$leadThrottle},1")
+    ->name('lead.store');
 
 require __DIR__ . '/admin.php';

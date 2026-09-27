@@ -57,9 +57,11 @@ class Index extends AdminPageComponent
 
     public function render(CustomerManagementService $service): View
     {
+        $perPage = config('showroom.pagination.admin');
+
         $customers = $this->query()
             ->withCount(['purchases', 'appointments', 'leads'])
-            ->paginate(12, ['*'], 'customersPage');
+            ->paginate($perPage, ['*'], 'customersPage');
 
         $stats = $service->getStats();
 

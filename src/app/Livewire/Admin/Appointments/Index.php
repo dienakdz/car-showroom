@@ -145,9 +145,10 @@ class Index extends AdminPageComponent
             ->count();
 
         $allCount = (int) $statusCounts->sum();
+        $perPage = config('showroom.pagination.admin');
 
         return view('livewire.admin.appointments.index', [
-            'appointments' => $this->filteredQuery()->paginate(12, ['*'], 'appointmentsPage'),
+            'appointments' => $this->filteredQuery()->paginate($perPage, ['*'], 'appointmentsPage'),
             'appointmentCounts' => [
                 'all' => $allCount,
                 'today' => $todayCount,

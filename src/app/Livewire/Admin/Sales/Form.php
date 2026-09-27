@@ -160,7 +160,10 @@ class Form extends AdminPageComponent
 
     public function render(): View
     {
+        $defaultCustomerPassword = config('showroom.default_customer_password');
+
         return view('livewire.admin.sales.form', [
+            'defaultCustomerPassword' => $defaultCustomerPassword,
             'availableCarUnits' => $this->availableCarUnits(),
             'selectedCarUnit' => $this->selectedCarUnit(),
             'selectedBuyer' => $this->selectedBuyer(),

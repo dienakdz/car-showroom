@@ -8,14 +8,6 @@ use Illuminate\Support\Str;
 
 class CarMediaService
 {
-    public const TARGET_WIDTH = 1280;
-
-    public const TARGET_HEIGHT = 720;
-
-    public const TARGET_ASPECT = 16 / 9;
-
-    public const JPEG_QUALITY = 90;
-
     /**
      * Crop to 16:9 aspect ratio, resize to standard 1280x720, and store to storage disk.
      */
@@ -46,18 +38,23 @@ class CarMediaService
         $origWidth = imagesx($source);
         $origHeight = imagesy($source);
 
+        $targetWidth = config('showroom.media.max_width');
+        $targetHeight = config('showroom.media.max_height');
+        $jpegQuality = config('showroom.media.jpeg_quality');
+        $targetAspect = $targetHeight > 0 ? ($targetWidth / $targetHeight) : (16 / 9);
+
         $origAspect = $origWidth / $origHeight;
 
-        if ($origAspect > self::TARGET_ASPECT) {
-            // Wider than 16:9 -> crop sides
-            $cropWidth = (int) round($origHeight * self::TARGET_ASPECT);
+        if ($origAspect > $targetAspect) {
+            // Wider than target ratio -> crop sides
+            $cropWidth = (int) round($origHeight * $targetAspect);
             $cropHeight = $origHeight;
             $cropX = (int) max(0, round(($origWidth - $cropWidth) / 2));
             $cropY = 0;
-        } elseif ($origAspect < self::TARGET_ASPECT) {
-            // Taller than 16:9 -> crop top/bottom
+        } elseif ($origAspect < $targetAspect) {
+            // Taller than target ratio -> crop top/bottom
             $cropWidth = $origWidth;
-            $cropHeight = (int) round($origWidth / self::TARGET_ASPECT);
+            $cropHeight = (int) round($origWidth / $targetAspect);
             $cropX = 0;
             $cropY = (int) max(0, round(($origHeight - $cropHeight) / 2));
         } else {
@@ -66,9 +63,6 @@ class CarMediaService
             $cropX = 0;
             $cropY = 0;
         }
-
-        $targetWidth = self::TARGET_WIDTH;
-        $targetHeight = self::TARGET_HEIGHT;
 
         $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
         if (! $canvas) {
@@ -105,7 +99,7 @@ class CarMediaService
         }
 
         $targetFullPath = Storage::disk($disk)->path($filename);
-        $saved = imagejpeg($canvas, $targetFullPath, self::JPEG_QUALITY);
+        $saved = imagejpeg($canvas, $targetFullPath, $jpegQuality);
 
         imagedestroy($source);
         imagedestroy($canvas);

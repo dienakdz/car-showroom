@@ -91,8 +91,9 @@ class Index extends AdminPageComponent
 
     public function render(): View
     {
+        $perPage = config('showroom.pagination.admin');
         $leads = $this->viewMode === 'table'
-            ? $this->filteredQuery()->paginate(12, ['*'], 'leadsPage')
+            ? $this->filteredQuery()->paginate($perPage, ['*'], 'leadsPage')
             : null;
 
         $kanbanLeads = null;

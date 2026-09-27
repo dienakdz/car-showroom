@@ -138,7 +138,8 @@ class InventoryController extends ClientBaseController
                 break;
         }
 
-        $cars = $query->paginate(12)->withQueryString();
+        $perPage = config('showroom.pagination.client');
+        $cars = $query->paginate($perPage)->withQueryString();
         $cars->getCollection()->transform(fn (object $car) => $this->decorateCar($car));
 
         $pageTitle = match ($effectiveCondition) {

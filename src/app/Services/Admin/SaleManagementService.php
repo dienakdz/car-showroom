@@ -16,8 +16,6 @@ use Illuminate\Validation\ValidationException;
 
 class SaleManagementService
 {
-    public const DEFAULT_CUSTOMER_PASSWORD = 'Auto123';
-
     public function create(array $validated, User $actor): Sale
     {
         return DB::transaction(function () use ($validated, $actor): Sale {
@@ -132,11 +130,13 @@ class SaleManagementService
             return $buyer;
         }
 
+        $defaultPassword = config('showroom.default_customer_password');
+
         $newUser = User::query()->create([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
-            'password' => self::DEFAULT_CUSTOMER_PASSWORD,
+            'password' => $defaultPassword,
         ]);
 
         $customerRoleId = Role::query()->where('name', 'customer')->value('id');

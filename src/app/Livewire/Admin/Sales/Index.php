@@ -57,8 +57,10 @@ class Index extends AdminPageComponent
             ', [now()->startOfMonth(), now()->endOfMonth()])
             ->first();
 
+        $perPage = config('showroom.pagination.admin');
+
         return view('livewire.admin.sales.index', [
-            'sales' => $this->filteredQuery()->paginate(12, ['*'], 'salesPage'),
+            'sales' => $this->filteredQuery()->paginate($perPage, ['*'], 'salesPage'),
             'totalRevenue' => (int) ($metrics->total_revenue ?? 0),
             'monthlyCount' => (int) ($metrics->monthly_count ?? 0),
             'totalCount' => (int) ($metrics->total_count ?? 0),

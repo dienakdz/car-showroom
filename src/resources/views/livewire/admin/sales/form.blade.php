@@ -278,7 +278,7 @@
                         @else
                             <div class="col-12">
                                 <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: #1e40af;">
-                                    <i class="fa fa-info-circle me-1"></i> Tài khoản khách hàng mới sẽ tự động được khởi tạo với mật khẩu mặc định là <strong>Auto123</strong> (Đăng nhập bằng SĐT hoặc Email). Khách hàng có thể đổi mật khẩu bất kỳ lúc nào tại mục Quản lý tài khoản.
+                                    <i class="fa fa-info-circle me-1"></i> Tài khoản khách hàng mới sẽ tự động được khởi tạo với mật khẩu mặc định là <strong>{{ $defaultCustomerPassword }}</strong> (Đăng nhập bằng SĐT hoặc Email). Khách hàng có thể đổi mật khẩu bất kỳ lúc nào tại mục Quản lý tài khoản.
                                 </div>
                             </div>
 
