@@ -16,9 +16,9 @@ class Index extends AdminPageComponent
 {
     use WithPagination;
 
-    private const STATUSES = ['new', 'contacted', 'qualified', 'booked', 'closed', 'lost'];
+    private const STATUSES = LeadWorkflowService::VALID_STATUSES;
 
-    private const SOURCES = ['unit_detail', 'trim_page', 'finance', 'trade_in', 'contact'];
+    private const SOURCES = LeadWorkflowService::SOURCES;
 
     private const VIEW_MODES = ['kanban', 'table'];
 

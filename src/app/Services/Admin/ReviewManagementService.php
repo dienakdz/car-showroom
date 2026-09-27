@@ -9,6 +9,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ReviewManagementService
 {
+    public const STATUSES = ['pending', 'approved', 'hidden'];
+
     /**
      * @return LengthAwarePaginator<int, TrimReview>
      */
@@ -80,7 +82,7 @@ class ReviewManagementService
 
     public function updateStatus(int $reviewId, string $status): bool
     {
-        if (! in_array($status, ['pending', 'approved', 'hidden'], true)) {
+        if (! in_array($status, self::STATUSES, true)) {
             return false;
         }
 

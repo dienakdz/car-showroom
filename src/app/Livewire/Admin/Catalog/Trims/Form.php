@@ -168,7 +168,7 @@ class Form extends AdminPageComponent
             $formAttributes[(string) $attribute->id] = [
                 'value_string' => (string) ($value->value_string ?? ''),
                 'value_number' => $value?->value_number === null ? '' : (string) $value->value_number,
-                'value_boolean' => $value?->value_boolean === null ? '' : (string) (int) $value->value_boolean,
+                'value_boolean' => $value?->value_boolean === null ? '' : ($value->value_boolean ? '1' : '0'),
             ];
         }
 

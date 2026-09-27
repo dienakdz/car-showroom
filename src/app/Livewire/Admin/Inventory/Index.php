@@ -16,9 +16,9 @@ class Index extends AdminPageComponent
 {
     use WithPagination;
 
-    private const CONDITIONS = ['new', 'used', 'cpo'];
+    private const CONDITIONS = CarUnit::CONDITIONS;
 
-    private const STATUSES = ['available', 'on_hold', 'draft', 'sold', 'archived'];
+    private const STATUSES = CarUnit::STATUSES;
 
     protected string $paginationTheme = 'bootstrap';
 

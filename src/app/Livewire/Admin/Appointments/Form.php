@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\Admin\AppointmentManagementService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -235,17 +236,34 @@ class Form extends AdminPageComponent
     {
         $this->customerMode = 'existing_lead';
 
+        if ($appointment !== null) {
+            $this->form = [
+                'user_id' => $appointment->user_id,
+                'lead_id' => $appointment->lead_id,
+                'customer_name' => '',
+                'customer_phone' => '',
+                'customer_email' => '',
+                'car_unit_id' => $appointment->car_unit_id,
+                'handled_by' => $appointment->handled_by,
+                'status' => (string) $appointment->status,
+                'scheduled_at' => Carbon::parse($appointment->scheduled_at)->format('Y-m-d\TH:i'),
+                'note' => (string) ($appointment->note ?? ''),
+            ];
+
+            return;
+        }
+
         $this->form = [
-            'user_id' => $appointment?->user_id,
-            'lead_id' => $appointment?->lead_id,
+            'user_id' => null,
+            'lead_id' => null,
             'customer_name' => '',
             'customer_phone' => '',
             'customer_email' => '',
-            'car_unit_id' => $appointment?->car_unit_id,
-            'handled_by' => $appointment?->handled_by,
-            'status' => $appointment !== null ? (string) $appointment->status : 'pending',
-            'scheduled_at' => optional($appointment?->scheduled_at)->format('Y-m-d\TH:i') ?? now()->addDay()->setHour(10)->setMinute(0)->format('Y-m-d\TH:i'),
-            'note' => $appointment !== null ? (string) ($appointment->note ?? '') : '',
+            'car_unit_id' => null,
+            'handled_by' => null,
+            'status' => 'pending',
+            'scheduled_at' => now()->addDay()->setHour(10)->setMinute(0)->format('Y-m-d\TH:i'),
+            'note' => '',
         ];
     }
 

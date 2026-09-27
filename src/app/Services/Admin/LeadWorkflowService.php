@@ -12,6 +12,8 @@ class LeadWorkflowService
 {
     public const VALID_STATUSES = ['new', 'contacted', 'qualified', 'booked', 'closed', 'lost'];
 
+    public const SOURCES = ['unit_detail', 'trim_page', 'finance', 'trade_in', 'contact'];
+
     public const STATUS_LABELS = [
         'new' => 'Mới tiếp nhận',
         'contacted' => 'Đã liên hệ',

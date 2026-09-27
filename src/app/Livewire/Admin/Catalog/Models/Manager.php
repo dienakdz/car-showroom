@@ -14,7 +14,7 @@ use Livewire\WithPagination;
 
 class Manager extends AdminPageComponent
 {
-    private const PER_PAGE_OPTIONS = [10, 25, 50];
+    private const PER_PAGE_OPTIONS = self::DEFAULT_PER_PAGE_OPTIONS;
 
     use WithPagination;
 

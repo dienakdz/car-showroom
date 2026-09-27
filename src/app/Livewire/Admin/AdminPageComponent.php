@@ -8,6 +8,8 @@ use Livewire\Component;
 
 abstract class AdminPageComponent extends Component
 {
+    public const DEFAULT_PER_PAGE_OPTIONS = [10, 25, 50];
+
     public function boot(): void
     {
         $this->authorizeAdminAccess($this->requiredPermission());

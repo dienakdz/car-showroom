@@ -213,7 +213,7 @@ class Form extends AdminPageComponent
 
         return [
             'form.trim_id' => ['required', 'integer', 'exists:trims,id'],
-            'form.condition' => ['required', Rule::in(['new', 'used', 'cpo'])],
+            'form.condition' => ['required', Rule::in(CarUnit::CONDITIONS)],
             'form.vin' => ['nullable', 'string', 'max:255', Rule::unique('car_units', 'vin')->ignore($this->carUnitId)],
             'form.stock_code' => ['required', 'string', 'max:255', Rule::unique('car_units', 'stock_code')->ignore($this->carUnitId)],
             'form.year' => ['required', 'integer', 'min:1900', 'max:' . $currentYear],
@@ -231,7 +231,7 @@ class Form extends AdminPageComponent
             'form.interior_color_id' => ['nullable', 'integer', Rule::exists('colors', 'id')->where('type', 'interior')],
             'form.price' => ['nullable', 'integer', 'min:0'],
             'form.currency' => ['required', 'string', 'size:3'],
-            'form.status' => ['required', Rule::in(['draft', 'available', 'on_hold', 'sold', 'archived'])],
+            'form.status' => ['required', Rule::in(CarUnit::STATUSES)],
             'form.notes_internal' => ['nullable', 'string'],
             'media' => ['array', 'max:30'],
             'media.*.id' => ['nullable', 'integer', 'distinct'],
@@ -342,9 +342,7 @@ class Form extends AdminPageComponent
      */
     private function normalizeForm(array $data): array
     {
-        $defaultStatus = $this->carUnitId !== null
-            ? (string) ($this->form['status'] ?? 'draft')
-            : 'draft';
+        $defaultStatus = (string) ($this->form['status'] ?? 'draft');
 
         return [
             'trim_id' => ! empty($data['trim_id']) ? (int) $data['trim_id'] : null,

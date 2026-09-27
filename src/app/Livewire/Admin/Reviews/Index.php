@@ -14,7 +14,7 @@ class Index extends AdminPageComponent
 {
     use WithPagination;
 
-    private const STATUSES = ['pending', 'approved', 'hidden'];
+    private const STATUSES = ReviewManagementService::STATUSES;
 
     protected string $paginationTheme = 'bootstrap';
 

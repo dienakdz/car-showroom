@@ -15,6 +15,10 @@ class CarUnit extends EloquentModel
     use HasFactory;
     use SoftDeletes;
 
+    public const CONDITIONS = ['new', 'used', 'cpo'];
+
+    public const STATUSES = ['draft', 'available', 'on_hold', 'sold', 'archived'];
+
     protected $guarded = [];
 
     protected function casts(): array

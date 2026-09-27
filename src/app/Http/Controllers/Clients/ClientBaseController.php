@@ -11,6 +11,7 @@ use App\Models\Showroom;
 use App\Models\TrimAttributeValue;
 use App\Models\TrimReview;
 use App\Models\User;
+use App\Services\Admin\LeadWorkflowService;
 use App\Support\ViewDataCache;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Collection;
@@ -20,13 +21,7 @@ abstract class ClientBaseController extends Controller
 {
     protected array $resolvedMediaPathCache = [];
 
-    protected const LEAD_SOURCES = [
-        'unit_detail',
-        'trim_page',
-        'finance',
-        'trade_in',
-        'contact',
-    ];
+    protected const LEAD_SOURCES = LeadWorkflowService::SOURCES;
 
     protected function baseCarQuery(): EloquentBuilder
     {
@@ -318,7 +313,7 @@ abstract class ClientBaseController extends Controller
             'car_unit_id' => $payload['car_unit_id'] ?? null,
             'trim_id' => $payload['trim_id'] ?? null,
             'assigned_to' => $this->firstStaffUserId(),
-            'source' => $this->normalizeLeadSource((string) ($payload['source'] ?? 'contact')),
+            'source' => $this->normalizeLeadSource((string) ($payload['source'] ?? '')),
             'name' => $payload['name'],
             'phone' => $payload['phone'],
             'email' => $payload['email'] ?? null,
@@ -362,12 +357,10 @@ abstract class ClientBaseController extends Controller
         $clientNotifications = collect();
         $clientUnreadNotificationsCount = 0;
 
-        if (auth()->check()) {
-            $user = auth()->user();
-            if ($user instanceof User && ! $user->hasAnyRole(['admin', 'staff'])) {
-                $clientNotifications = $user->notifications()->latest()->limit(5)->get();
-                $clientUnreadNotificationsCount = $user->unreadNotifications()->count();
-            }
+        $user = auth()->user();
+        if ($user instanceof User && ! $user->hasAnyRole(['admin', 'staff'])) {
+            $clientNotifications = $user->notifications()->latest()->limit(5)->get();
+            $clientUnreadNotificationsCount = $user->unreadNotifications()->count();
         }
 
         return view($viewName, array_merge([
