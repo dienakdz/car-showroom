@@ -1,10 +1,12 @@
-@php($headerClasses = $headerClasses ?? 'boxcar-header header-style-v1 header-default')
-@php($showSearch = $showSearch ?? false)
-@php($currentUser = auth()->user())
-@php($isStaffOrAdmin = $currentUser !== null && $currentUser->hasAnyRole(['admin', 'staff']))
-@php($accountLabel = $isStaffOrAdmin ? 'Khu vực quản trị' : (auth()->check() ? 'Tài khoản' : 'Đăng nhập'))
-@php($accountUrl = $isStaffOrAdmin ? route('admin.dashboard') : (auth()->check() ? route('account.show') : route('login')))
-@php($inventoryMenuActive = request()->routeIs('inventory.*'))
+@php
+    $headerClasses = $headerClasses ?? 'boxcar-header header-style-v1 header-default';
+    $showSearch = $showSearch ?? false;
+    $currentUser = auth()->user();
+    $isStaffOrAdmin = $currentUser !== null && $currentUser->hasAnyRole(['admin', 'staff']);
+    $accountLabel = $isStaffOrAdmin ? 'Khu vực quản trị' : (auth()->check() ? 'Tài khoản' : 'Đăng nhập');
+    $accountUrl = $isStaffOrAdmin ? route('admin.dashboard') : (auth()->check() ? route('account.show') : route('login'));
+    $inventoryMenuActive = request()->routeIs('inventory.*');
+@endphp
 
 
 @once
@@ -72,10 +74,73 @@
             // User account hub toggle
             const userHub = document.querySelector('.js-user-hub');
             const userTrigger = document.querySelector('.js-user-trigger');
+            const notificationHub = document.querySelector('.js-notification-hub');
+            const notificationTrigger = document.querySelector('.js-notification-trigger');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             if (userHub && userTrigger) {
                 userTrigger.addEventListener('click', function (e) {
                     e.stopPropagation();
                     userHub.classList.toggle('active');
+                    if (notificationHub) notificationHub.classList.remove('active');
+                });
+            }
+
+            // Client Notification Hub toggle & actions
+            if (notificationHub && notificationTrigger) {
+                notificationTrigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    notificationHub.classList.toggle('active');
+                    if (userHub) userHub.classList.remove('active');
+                });
+
+                // Mark all as read
+                const markAllBtn = notificationHub.querySelector('.js-mark-all-read');
+                if (markAllBtn) {
+                    markAllBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const url = this.dataset.url;
+                        if (!url) return;
+
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(res => res.json()).then(data => {
+                            if (data.success) {
+                                notificationHub.querySelectorAll('.notification-item').forEach(item => {
+                                    item.classList.remove('is-unread');
+                                    const dot = item.querySelector('.unread-dot');
+                                    if (dot) dot.remove();
+                                });
+                                const headerBadge = notificationHub.querySelector('.js-header-badge');
+                                if (headerBadge) headerBadge.remove();
+                                const triggerBadge = notificationHub.querySelector('.js-notification-badge');
+                                if (triggerBadge) triggerBadge.remove();
+                                markAllBtn.remove();
+                            }
+                        }).catch(() => {});
+                    });
+                }
+
+                // Individual item click mark as read
+                notificationHub.querySelectorAll('.js-notification-item.is-unread').forEach(item => {
+                    item.addEventListener('click', function () {
+                        const readUrl = this.dataset.readUrl;
+                        if (readUrl && csrfToken) {
+                            fetch(readUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                }
+                            }).catch(() => {});
+                        }
+                    });
                 });
             }
 
@@ -87,6 +152,9 @@
                 }
                 if (userHub && !userHub.contains(e.target)) {
                     userHub.classList.remove('active');
+                }
+                if (notificationHub && !notificationHub.contains(e.target)) {
+                    notificationHub.classList.remove('active');
                 }
             });
         });
@@ -156,6 +224,13 @@
                                 <li class="d-lg-none {{ request()->routeIs('login') || request()->routeIs('account.show') ? 'current' : '' }}">
                                     <a href="{{ $accountUrl }}">{{ $accountLabel }}</a>
                                 </li>
+                                @if (auth()->check())
+                                    <li class="d-lg-none">
+                                        <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}">
+                                            Thông báo @if (($clientUnreadNotificationsCount ?? 0) > 0) <span class="badge bg-danger rounded-pill ms-1">{{ $clientUnreadNotificationsCount }}</span> @endif
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </nav>
                     </div>
@@ -178,6 +253,70 @@
                                 </form>
                             </div>
                         </div>
+
+                        {{-- Client Notification Hub --}}
+                        @if (auth()->check())
+                            @php
+                                $clientNotifications = $clientNotifications ?? collect();
+                                $clientUnreadNotificationsCount = $clientUnreadNotificationsCount ?? 0;
+                            @endphp
+                            <div class="client-notification-hub js-notification-hub">
+                                <button type="button" class="notification-trigger-btn js-notification-trigger" title="Thông báo của bạn" aria-label="Thông báo của bạn">
+                                    <i class="fa-regular fa-bell"></i>
+                                    @if ($clientUnreadNotificationsCount > 0)
+                                        <span class="notification-badge js-notification-badge">{{ $clientUnreadNotificationsCount > 9 ? '9+' : $clientUnreadNotificationsCount }}</span>
+                                    @endif
+                                </button>
+                                <div class="notification-dropdown-menu js-notification-popover">
+                                    <div class="notification-dropdown-header">
+                                        <div class="header-title">
+                                            <span class="fw-bold">Thông báo</span>
+                                            @if ($clientUnreadNotificationsCount > 0)
+                                                <span class="badge bg-primary rounded-pill js-header-badge">{{ $clientUnreadNotificationsCount }} mới</span>
+                                            @endif
+                                        </div>
+                                        @if ($clientUnreadNotificationsCount > 0)
+                                            <button type="button" class="mark-all-read-btn js-mark-all-read" title="Đánh dấu tất cả đã đọc" data-url="{{ route('account.notifications.read-all') }}">
+                                                <i class="fa-solid fa-check-double"></i> Đọc tất cả
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="notification-dropdown-body">
+                                        @forelse ($clientNotifications as $notification)
+                                            @php
+                                                $data = $notification->data;
+                                                $isUnread = $notification->read_at === null;
+                                                $actionUrl = $data['action_url'] ?? route('account.show', ['tab' => 'account-notifications']);
+                                                $iconClass = $data['icon'] ?? 'fa-solid fa-bell';
+                                            @endphp
+                                            <a href="{{ $actionUrl }}" class="notification-item {{ $isUnread ? 'is-unread' : '' }} js-notification-item" data-id="{{ $notification->id }}" data-read-url="{{ route('account.notifications.read', $notification->id) }}">
+                                                <div class="item-icon">
+                                                    <i class="{{ $iconClass }}"></i>
+                                                </div>
+                                                <div class="item-content">
+                                                    <div class="item-title">{{ $data['title'] ?? 'Thông báo từ Showroom' }}</div>
+                                                    <div class="item-message">{{ Str::limit($data['message'] ?? '', 75) }}</div>
+                                                    <div class="item-time">{{ $notification->created_at->diffForHumans() }}</div>
+                                                </div>
+                                                @if ($isUnread)
+                                                    <span class="unread-dot"></span>
+                                                @endif
+                                            </a>
+                                        @empty
+                                            <div class="notification-empty">
+                                                <i class="fa-regular fa-bell-slash text-muted mb-2" style="font-size: 24px;"></i>
+                                                <p class="mb-0 text-muted small">Bạn chưa có thông báo nào</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                    <div class="notification-dropdown-footer">
+                                        <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}" class="view-all-link">
+                                            Xem tất cả thông báo <i class="fa-solid fa-angle-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- User Account Hub --}}
                         @if (auth()->check())
@@ -205,7 +344,16 @@
                                         <i class="fa-solid fa-user-gear"></i>
                                         <span>Thông tin tài khoản</span>
                                     </a>
-                                    <a href="{{ route('contact') }}" class="user-dropdown-item">
+                                    <a href="{{ route('account.show', ['tab' => 'account-notifications']) }}" class="user-dropdown-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fa-regular fa-bell"></i>
+                                            <span>Thông báo của tôi</span>
+                                        </div>
+                                        @if (($clientUnreadNotificationsCount ?? 0) > 0)
+                                            <span class="badge bg-danger rounded-pill">{{ $clientUnreadNotificationsCount }}</span>
+                                        @endif
+                                    </a>
+                                    <a href="{{ route('account.show', ['tab' => 'account-appointments']) }}" class="user-dropdown-item">
                                         <i class="fa-solid fa-calendar-check"></i>
                                         <span>Lịch hẹn của tôi</span>
                                     </a>

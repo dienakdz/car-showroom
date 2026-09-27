@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\User;
 use App\Notifications\AdminSystemNotification;
+use App\Notifications\CustomerNotification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -126,5 +127,37 @@ class NotificationService
         foreach ($adminUsers as $admin) {
             $admin->notify(new AdminSystemNotification($payload));
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $meta
+     */
+    public function notifyUser(
+        User $user,
+        string $category,
+        string $title,
+        string $message,
+        ?string $actionUrl = null,
+        ?string $icon = null,
+        array $meta = []
+    ): void {
+        $defaultIcons = [
+            'appointment' => 'fa-solid fa-calendar-check',
+            'sale' => 'fa-solid fa-handshake',
+            'review' => 'fa-solid fa-star',
+            'lead' => 'fa-solid fa-file-lines',
+            'system' => 'fa-solid fa-bell',
+        ];
+
+        $payload = [
+            'category' => $category,
+            'title' => $title,
+            'message' => $message,
+            'action_url' => $actionUrl,
+            'icon' => $icon ?? ($defaultIcons[$category] ?? 'fa-solid fa-bell'),
+            'meta' => $meta,
+        ];
+
+        $user->notify(new CustomerNotification($payload));
     }
 }

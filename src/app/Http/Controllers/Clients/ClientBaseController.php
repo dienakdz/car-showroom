@@ -359,8 +359,22 @@ abstract class ClientBaseController extends Controller
     protected function viewWithSharedData(string $viewName, array $data = []): View
     {
         $navShowroom = $this->sharedShowroom();
+        $clientNotifications = collect();
+        $clientUnreadNotificationsCount = 0;
 
-        return view($viewName, array_merge(['navShowroom' => $navShowroom], $data));
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user instanceof User) {
+                $clientNotifications = $user->notifications()->latest()->limit(5)->get();
+                $clientUnreadNotificationsCount = $user->unreadNotifications()->count();
+            }
+        }
+
+        return view($viewName, array_merge([
+            'navShowroom' => $navShowroom,
+            'clientNotifications' => $clientNotifications,
+            'clientUnreadNotificationsCount' => $clientUnreadNotificationsCount,
+        ], $data));
     }
 
     protected function sharedShowroom(): ?Showroom

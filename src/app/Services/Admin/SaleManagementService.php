@@ -2,9 +2,12 @@
 
 namespace App\Services\Admin;
 
+use App\Models\CarModel;
 use App\Models\CarUnit;
 use App\Models\Lead;
+use App\Models\Make;
 use App\Models\Sale;
+use App\Models\Trim;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -59,6 +62,32 @@ class SaleManagementService
                     route('admin.sales.index'),
                     'fa fa-handshake',
                     ['sale_id' => $sale->id, 'contract_code' => $saleCode]
+                );
+
+                // Gửi thông báo chúc mừng tới tài khoản khách hàng
+                $carUnit->loadMissing('trim.model.make');
+                /** @var Trim|null $trim */
+                $trim = $carUnit->trim;
+                /** @var CarModel|null $model */
+                $model = $trim?->model;
+                /** @var Make|null $make */
+                $make = $model?->make;
+
+                $makeName = $make !== null ? $make->name : '';
+                $trimName = $trim !== null ? $trim->name : '';
+                $carTitle = trim(($carUnit->year ? $carUnit->year . ' ' : '') . $makeName . ' ' . $trimName);
+                if ($carTitle === '') {
+                    $carTitle = $carUnit->stock_code;
+                }
+
+                app(\App\Services\Admin\NotificationService::class)->notifyUser(
+                    $buyer,
+                    'sale',
+                    'Chúc mừng bạn đã sở hữu xe ' . $carTitle,
+                    "Hợp đồng mua xe {$carTitle} (Mã kho: {$carUnit->stock_code}) đã được Showroom hoàn tất ghi nhận. Kính chúc bạn vạn dặm bình an!",
+                    route('account.show', ['tab' => 'account-purchases']),
+                    'fa-solid fa-car-side',
+                    ['sale_id' => $sale->id, 'car_unit_id' => $carUnit->id]
                 );
             } catch (\Throwable) {
             }

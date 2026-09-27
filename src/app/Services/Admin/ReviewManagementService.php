@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\TrimReview;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -83,12 +84,37 @@ class ReviewManagementService
             return false;
         }
 
-        $review = TrimReview::query()->find($reviewId);
+        $review = TrimReview::query()->with(['trim', 'user'])->find($reviewId);
         if (! $review instanceof TrimReview) {
             return false;
         }
 
-        return $review->update(['status' => $status]);
+        $oldStatus = $review->status;
+        $updated = $review->update(['status' => $status]);
+
+        if ($updated && $status === 'approved' && $oldStatus !== 'approved' && $review->user instanceof User) {
+            try {
+                /** @var \App\Models\Trim|null $trim */
+                $trim = $review->trim;
+                $trimName = $trim !== null ? $trim->name : 'phiên bản xe';
+                $actionUrl = $trim !== null
+                    ? route('trim.show', ['trimSlug' => $trim->slug])
+                    : route('account.show', ['tab' => 'account-reviews']);
+
+                app(\App\Services\Admin\NotificationService::class)->notifyUser(
+                    $review->user,
+                    'review',
+                    'Đánh giá xe của bạn đã được phê duyệt',
+                    "Đánh giá {$review->rating} sao cho phiên bản {$trimName} đã được kiểm duyệt và hiển thị công khai trên website.",
+                    $actionUrl,
+                    'fa-solid fa-star',
+                    ['review_id' => $review->id, 'trim_id' => $review->trim_id]
+                );
+            } catch (\Throwable) {
+            }
+        }
+
+        return $updated;
     }
 
     public function deleteReview(int $reviewId): bool

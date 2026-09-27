@@ -126,6 +126,48 @@ class AppointmentManagementService
                 }
             }
 
+            // Gửi thông báo đến tài khoản khách hàng khi trạng thái lịch hẹn thay đổi
+            $customerUser = $appointment->user ?? ($appointment->user_id ? User::find($appointment->user_id) : ($lead?->user_id ? User::find($lead->user_id) : null));
+            if ($customerUser instanceof User && ! $isNew && $oldStatus !== (string) $appointment->status) {
+                try {
+                    $timeStr = optional($appointment->scheduled_at)->format('H:i d/m/Y') ?? 'thời gian hẹn';
+                    $carInfo = $unit?->stock_code ? " ({$unit->stock_code})" : '';
+                    $currentStatus = (string) $appointment->status;
+
+                    $statusNotificationConfig = [
+                        'confirmed' => [
+                            'title' => 'Lịch hẹn lái thử đã được xác nhận',
+                            'message' => "Lịch hẹn lái thử / xem xe{$carInfo} lúc {$timeStr} đã được Showroom xác nhận. Hân hạnh được đón tiếp bạn!",
+                            'icon' => 'fa-solid fa-calendar-check',
+                        ],
+                        'cancelled' => [
+                            'title' => 'Lịch hẹn lái thử đã bị hủy',
+                            'message' => "Lịch hẹn lái thử / xem xe{$carInfo} lúc {$timeStr} đã được hủy.",
+                            'icon' => 'fa-solid fa-calendar-xmark',
+                        ],
+                        'done' => [
+                            'title' => 'Lịch hẹn lái thử đã hoàn tất',
+                            'message' => "Showroom cảm ơn bạn đã đến trải nghiệm xe lúc {$timeStr}. Đội ngũ tư vấn sẵn sàng hỗ trợ bạn bất kỳ thông tin nào tiếp theo.",
+                            'icon' => 'fa-solid fa-circle-check',
+                        ],
+                    ];
+
+                    if (isset($statusNotificationConfig[$currentStatus])) {
+                        $cfg = $statusNotificationConfig[$currentStatus];
+                        app(\App\Services\Admin\NotificationService::class)->notifyUser(
+                            $customerUser,
+                            'appointment',
+                            $cfg['title'],
+                            $cfg['message'],
+                            route('account.show', ['tab' => 'account-appointments']),
+                            $cfg['icon'],
+                            ['appointment_id' => $appointment->id, 'status' => $currentStatus]
+                        );
+                    }
+                } catch (\Throwable) {
+                }
+            }
+
             $fresh = $appointment->fresh([
                 'user',
                 'carUnit.trim.model.make',

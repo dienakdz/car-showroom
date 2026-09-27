@@ -5,6 +5,7 @@ use App\Http\Controllers\Clients\AuthController;
 use App\Http\Controllers\Clients\HomeController;
 use App\Http\Controllers\Clients\InventoryController;
 use App\Http\Controllers\Clients\LeadController;
+use App\Http\Controllers\Clients\NotificationController;
 use App\Http\Controllers\Clients\PagesController;
 use App\Http\Controllers\Clients\TrimReviewsController;
 use App\Http\Controllers\Clients\TrimsController;
@@ -24,6 +25,12 @@ Route::post('/tai-khoan/doi-mat-khau', [AuthController::class, 'updatePassword']
     ->middleware(['auth', 'customer.access'])
     ->name('account.password.update');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth', 'customer.access'])->group(function (): void {
+    Route::post('/tai-khoan/thong-bao/doc-tat-ca', [NotificationController::class, 'markAllAsRead'])->name('account.notifications.read-all');
+    Route::post('/tai-khoan/thong-bao/{id}/doc', [NotificationController::class, 'markAsRead'])->name('account.notifications.read');
+    Route::delete('/tai-khoan/thong-bao/{id}', [NotificationController::class, 'destroy'])->name('account.notifications.destroy');
+});
 Route::post('/appointments', [AppointmentController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('appointments.store');
