@@ -285,6 +285,7 @@ class Form extends AdminPageComponent
     private function staffUsers(): Collection
     {
         return User::query()
+            ->where('is_active', true)
             ->whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['admin', 'staff']))
             ->orderBy('name')
             ->get();

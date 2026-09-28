@@ -396,11 +396,11 @@
                             </div>
                             <div style="display: flex; justify-content: space-between;">
                                 <span class="text-muted">Thời điểm tạo:</span>
-                                <span>{{ optional($appointment->created_at)->format('d/m/Y H:i') }}</span>
+                                <span>{{ $appointment->created_at?->format('d/m/Y H:i') ?? '--' }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
                                 <span class="text-muted">Cập nhật lần cuối:</span>
-                                <span>{{ optional($appointment->updated_at)->format('d/m/Y H:i') }}</span>
+                                <span>{{ $appointment->updated_at?->format('d/m/Y H:i') ?? '--' }}</span>
                             </div>
                             @if ($appointment->lead)
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px dashed #e2e8f0;">

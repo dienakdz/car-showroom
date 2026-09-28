@@ -188,6 +188,7 @@ class Show extends AdminPageComponent
     private function assignableUsers(): Collection
     {
         return User::query()
+            ->where('is_active', true)
             ->whereHas('roles', fn (Builder $query): Builder => $query->whereIn('roles.name', ['admin', 'staff']))
             ->orderBy('name')
             ->get(['id', 'name', 'email']);

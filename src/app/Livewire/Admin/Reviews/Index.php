@@ -138,11 +138,12 @@ class Index extends AdminPageComponent
     public function render(ReviewManagementService $service): View
     {
         $stats = $service->getStats();
+        $perPage = config('showroom.pagination.admin');
         $reviews = $service->getPaginatedReviews(
             $this->status,
             $this->search,
             $this->ratingFilter > 0 ? $this->ratingFilter : null,
-            10
+            $perPage
         );
 
         $selectedReview = null;

@@ -124,7 +124,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="text-muted small">{{ optional($model->updated_at)->format('d/m/Y H:i') ?: '--' }}</span>
+                                <span class="text-muted small">{{ $model->updated_at?->format('d/m/Y H:i') ?? '--' }}</span>
                             </td>
                             <td style="text-align: right; white-space: nowrap;">
                                 <div class="c1-actions-cell">

@@ -78,7 +78,7 @@ class Index extends AdminPageComponent
 
         $notifications = $service->getPaginatedNotifications(
             $user,
-            perPage: 15,
+            perPage: config('showroom.pagination.admin'),
             category: $this->activeCategory,
             search: $this->search
         );

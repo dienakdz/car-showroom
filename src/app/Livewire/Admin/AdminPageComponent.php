@@ -26,6 +26,10 @@ abstract class AdminPageComponent extends Component
             abort(403, 'Bạn không có quyền truy cập khu vực quản trị.');
         }
 
+        if (! $user->is_active) {
+            abort(403, 'Tài khoản của bạn đã bị tạm khóa.');
+        }
+
         if ($permission !== null && ! $user->hasPermission($permission)) {
             abort(403, 'Bạn không đủ quyền thực hiện thao tác này.');
         }

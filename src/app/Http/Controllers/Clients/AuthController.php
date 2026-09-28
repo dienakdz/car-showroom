@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -91,7 +92,7 @@ class AuthController extends ClientBaseController
             'reviewableCount' => $purchasedTrimIds->diff($reviewModels->keys())->count(),
             'notificationCount' => $user->notifications()->count(),
             'unreadNotificationCount' => $user->unreadNotifications()->count(),
-            'memberSinceLabel' => optional($user->created_at)->format('d/m/Y') ?? 'Mới tham gia',
+            'memberSinceLabel' => $user->created_at ? Carbon::parse($user->created_at)->format('d/m/Y') : 'Mới tham gia',
             'nextAppointment' => $nextAppointment ? $this->mapAccountAppointment($nextAppointment) : null,
         ];
 
@@ -404,7 +405,7 @@ class AuthController extends ClientBaseController
 
                 return (object) [
                     'id' => $lead->id,
-                    'created_at_label' => optional($lead->created_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
+                    'created_at_label' => $lead->created_at ? Carbon::parse($lead->created_at)->format('d/m/Y H:i') : 'Đang cập nhật',
                     'source_label' => $this->leadSourceLabel((string) $lead->source),
                     'status_label' => $this->leadStatusLabel((string) $lead->status),
                     'status_tone' => $this->leadStatusTone((string) $lead->status),
@@ -445,7 +446,7 @@ class AuthController extends ClientBaseController
         return (object) [
             'id' => $appointment->id,
             'image_url' => $this->resolveMediaPath($coverMediaPath),
-            'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
+            'scheduled_at_label' => $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('d/m/Y H:i') : 'Đang cập nhật',
             'status_label' => $this->appointmentStatusLabel((string) $appointment->status),
             'status_tone' => $this->appointmentStatusTone((string) $appointment->status),
             'context_label' => $this->formatCarContextLabel($appointment->carUnit, $contextTrim),
@@ -482,7 +483,7 @@ class AuthController extends ClientBaseController
                     'image_url' => $this->resolveMediaPath($coverMediaPath),
                     'car_label' => $this->formatCarContextLabel($sale->carUnit, $trim),
                     'trim_label' => $this->formatTrimLabel($trim),
-                    'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Đang cập nhật',
+                    'sold_at_label' => $sale->sold_at ? Carbon::parse($sale->sold_at)->format('d/m/Y') : 'Đang cập nhật',
                     'sold_price_label' => $sale->sold_price !== null
                         ? number_format((float) $sale->sold_price, 0, ',', '.') . ' VNĐ'
                         : 'Theo hợp đồng',
@@ -514,7 +515,7 @@ class AuthController extends ClientBaseController
                     'comment' => trim((string) $review->comment),
                     'status_label' => $this->reviewStatusLabel((string) $review->status),
                     'status_tone' => $this->reviewStatusTone((string) $review->status),
-                    'created_at_label' => optional($review->created_at)->format('d/m/Y') ?? 'Đang cập nhật',
+                    'created_at_label' => $review->created_at ? Carbon::parse($review->created_at)->format('d/m/Y') : 'Đang cập nhật',
                 ];
             });
     }

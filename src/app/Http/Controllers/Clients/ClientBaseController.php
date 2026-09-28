@@ -302,8 +302,13 @@ abstract class ClientBaseController extends Controller
     protected function firstStaffUserId(): ?int
     {
         return User::query()
+            ->where('is_active', true)
             ->whereHas('roles', fn ($query) => $query->where('roles.name', 'staff'))
-            ->value('id');
+            ->value('id')
+            ?? User::query()
+                ->where('is_active', true)
+                ->whereHas('roles', fn ($query) => $query->where('roles.name', 'admin'))
+                ->value('id');
     }
 
     protected function createLead(array $payload): Lead

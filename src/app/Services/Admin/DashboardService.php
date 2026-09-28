@@ -311,7 +311,7 @@ class DashboardService
             return (object) [
                 'buyer_name' => $buyer ? $buyer->name : 'Khách hàng showroom',
                 'car_name' => $this->formatCarContext($trim) ?: 'Xe showroom',
-                'sold_at_label' => optional($sale->sold_at)->format('d/m/Y') ?? 'Đang cập nhật',
+                'sold_at_label' => $sale->sold_at ? Carbon::parse($sale->sold_at)->format('d/m/Y') : 'Đang cập nhật',
                 'sold_price_label' => $this->formatCurrency($sale->sold_price, $currency),
                 'url' => route('admin.sales.index'),
             ];
@@ -353,9 +353,9 @@ class DashboardService
             return (object) [
                 'customer_name' => $customerName,
                 'car_name' => $this->formatCarContext($trim) ?: 'Không chọn xe trước',
-                'scheduled_date' => optional($appointment->scheduled_at)->format('d/m') ?? '--',
-                'scheduled_time' => optional($appointment->scheduled_at)->format('H:i') ?? '--',
-                'scheduled_at_label' => optional($appointment->scheduled_at)->format('d/m/Y H:i') ?? 'Đang cập nhật',
+                'scheduled_date' => $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('d/m') : '--',
+                'scheduled_time' => $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('H:i') : '--',
+                'scheduled_at_label' => $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('d/m/Y H:i') : 'Đang cập nhật',
                 'status' => $appointment->status,
                 'status_label' => $this->appointmentStatusLabel($appointment->status),
                 'status_class' => $this->appointmentStatusClass($appointment->status),

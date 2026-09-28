@@ -263,9 +263,11 @@ class Index extends AdminPageComponent
             'status' => $this->statusFilter,
         ];
 
+        $perPage = config('showroom.pagination.admin');
+
         return view('livewire.admin.staff.index', [
             'stats' => $service->getStats(),
-            'staffList' => $service->getPaginatedStaff($filters, 10),
+            'staffList' => $service->getPaginatedStaff($filters, $perPage),
             'roles' => $service->getAllRoles(),
             'permissions' => $service->getAllPermissions(),
             'selectedRole' => $this->selectedRoleId ? Role::find($this->selectedRoleId) : null,

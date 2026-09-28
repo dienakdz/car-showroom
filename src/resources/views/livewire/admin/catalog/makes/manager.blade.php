@@ -139,7 +139,7 @@
                                 <span class="c1-pill-badge c1-pill-green">Đang kinh doanh</span>
                             </td>
                             <td>
-                                <span class="text-muted small">{{ optional($make->updated_at)->format('d/m/Y H:i') ?: '--' }}</span>
+                                <span class="text-muted small">{{ $make->updated_at?->format('d/m/Y H:i') ?? '--' }}</span>
                             </td>
                             <td style="text-align: right; white-space: nowrap;">
                                 <div class="c1-actions-cell">

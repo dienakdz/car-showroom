@@ -160,7 +160,7 @@
                                 $thumbUrl = filled($rawPath)
                                     ? ((str_starts_with($rawPath, 'http://') || str_starts_with($rawPath, 'https://')) ? $rawPath : asset(ltrim($rawPath, '/')))
                                     : null;
-                                $timeLabel = optional($appointment->scheduled_at)->format('H:i • d/m/Y') ?? 'Chưa hẹn giờ';
+                                $timeLabel = $appointment->scheduled_at?->format('H:i • d/m/Y') ?? 'Chưa hẹn giờ';
                                 $customerName = $appointment->user?->name ?: ($appointment->lead?->name ?: 'Khách hàng đặt lịch');
                                 $customerContact = $appointment->user?->phone ?: ($appointment->lead?->phone ?: $appointment->user?->email);
                                 $isToday = $appointment->scheduled_at?->isToday();
