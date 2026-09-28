@@ -64,7 +64,7 @@
                     <div class="footer-widget">
                         <div class="footer-logo mb-3">
                             <a href="{{ route('home') }}">
-                                <img src="{{ asset('boxcar/images/logo.svg') }}" alt="BoxCar Showroom" style="max-height: 28px;">
+                                <img src="{{ asset('boxcar/images/logo.svg') }}" alt="MD-CARS Showroom" style="max-height: 36px;">
                             </a>
                         </div>
                         <p class="small text-muted mb-3" style="line-height: 1.6;">
@@ -84,7 +84,7 @@
                             </div>
                             <div class="showroom-info-item">
                                 <i class="fa-solid fa-envelope"></i>
-                                <a href="mailto:{{ $navShowroom->email ?? 'contact@boxcar.vn' }}">{{ $navShowroom->email ?? 'contact@boxcar.vn' }}</a>
+                                <a href="mailto:{{ $navShowroom->email ?? 'contact@md-cars.vn' }}">{{ $navShowroom->email ?? 'contact@md-cars.vn' }}</a>
                             </div>
                         </div>
                         <div class="footer-socials mt-3">
@@ -162,7 +162,7 @@
         <div class="boxcar-container">
             <div class="inner-container d-flex align-items-center justify-content-between">
                 <div class="copyright-text">
-                    © {{ date('Y') }} {{ $navShowroom->name ?? 'BoxCar Showroom' }}. Bản quyền thuộc về đại lý BoxCar Việt Nam. All rights reserved.
+                    © {{ date('Y') }} {{ $navShowroom->name ?? 'MD-CARS Showroom' }}. Bản quyền thuộc về đại lý MD-CARS Việt Nam. All rights reserved.
                 </div>
                 <div class="footer-legal-links">
                     <a href="{{ route('about') }}">Giới thiệu</a>

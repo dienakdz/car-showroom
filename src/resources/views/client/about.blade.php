@@ -4,10 +4,10 @@
 
 @section('content')
 @php
-    $showroomName = $showroom->name ?? 'BoxCar Showroom';
+    $showroomName = $showroom->name ?? 'MD-CARS Showroom';
     $showroomAddress = $showroom->address ?? 'TP. Hồ Chí Minh';
     $showroomPhone = $showroom->phone ?? '0900 000 000';
-    $showroomEmail = $showroom->email ?? 'contact@showroom.test';
+    $showroomEmail = $showroom->email ?? 'contact@md-cars.vn';
 @endphp
 
 <section class="about-page-v2">

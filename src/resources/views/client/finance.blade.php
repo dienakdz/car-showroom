@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $showroomName = $showroom->name ?? 'BoxCar Showroom';
+    $showroomName = $showroom->name ?? 'MD-CARS Showroom';
     $showroomPhone = $showroom->phone ?? '0900 000 000';
     $cleanPhone = preg_replace('/\D+/', '', (string) $showroomPhone);
 
@@ -289,7 +289,7 @@
         <!-- 5. 4 Đặc Quyền Vay Trả Góp Tại BoxCar -->
         <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
-                <h2>Vì Sao Nên Chọn Gói Tài Chính Tại BoxCar?</h2>
+                <h2>Vì Sao Nên Chọn Gói Tài Chính Tại MD-CARS?</h2>
                 <div class="text">Liên kết trực tiếp với các định chế tài chính uy tín nhằm mang lại lợi ích cao nhất cho khách hàng</div>
             </div>
 

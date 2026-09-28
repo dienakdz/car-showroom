@@ -15,19 +15,19 @@ class ShowroomSettingsSeeder extends Seeder
         $now = now();
 
         DB::table('showrooms')->updateOrInsert(
-            ['name' => 'Minh Dien Auto Showroom'],
+            ['name' => 'MD-CARS Showroom'],
             [
                 'phone' => '0900000002',
-                'email' => 'hello@showroom.test',
+                'email' => 'contact@md-cars.vn',
                 'address' => '123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh',
-                'description' => 'Showroom mô hình một người bán, tập trung vào xe mới và xe đã qua sử dụng được chọn lọc.',
+                'description' => 'Showroom ô tô cao cấp MD-CARS, chuyên các dòng xe mới chính hãng và xe lướt chọn lọc kiểm định 160 bước.',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]
         );
 
         $settings = [
-            'site.brand_name' => ['value' => 'Minh Dien Auto Showroom'],
+            'site.brand_name' => ['value' => 'MD-CARS Showroom'],
             'site.default_currency' => ['value' => 'VND'],
             'inventory.filters' => ['conditions' => ['new', 'used', 'cpo'], 'default_status' => 'available'],
             'contact.sales_hotline' => ['value' => '0900000002'],

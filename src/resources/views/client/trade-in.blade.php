@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $showroomName = $showroom->name ?? 'BoxCar Showroom';
+    $showroomName = $showroom->name ?? 'MD-CARS Showroom';
     $showroomPhone = $showroom->phone ?? '0900 000 000';
     $cleanPhone = preg_replace('/\D+/', '', (string) $showroomPhone);
 @endphp
@@ -20,7 +20,7 @@
             </ul>
             <h1 class="client-main-title">THU CŨ ĐỔI MỚI - LÊN ĐỜI XE SANG NHANH CHÓNG</h1>
             <p class="client-main-desc">
-                Chương trình Trade-in độc quyền tại BoxCar: Định giá minh bạch sát giá thị trường, không ép giá, hỗ trợ trọn gói thủ tục pháp lý và rút ngắn thời gian lên đời xe chỉ trong 2 giờ.
+                Chương trình Trade-in độc quyền tại MD-CARS: Định giá minh bạch sát giá thị trường, không ép giá, hỗ trợ trọn gói thủ tục pháp lý và rút ngắn thời gian lên đời xe chỉ trong 2 giờ.
             </p>
         </div>
 
@@ -240,7 +240,7 @@
         <!-- 4. Cam kết Trade-in Vượt Trội -->
         <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
-                <h2>Cam Kết Dịch Vụ Thu Cũ Đổi Mới Tại BoxCar</h2>
+                <h2>Cam Kết Dịch Vụ Thu Cũ Đổi Mới Tại MD-CARS</h2>
                 <div class="text">Đồng hành cùng khách hàng nâng tầm đẳng cấp phương tiện một cách thuận lợi và an tâm nhất</div>
             </div>
 
@@ -319,7 +319,7 @@
             <div class="inner-container client-inner-max-900">
                 <div class="client-section-heading wow fadeInUp">
                     <h2>Câu Hỏi Thường Gặp Về Thu Cũ Đổi Mới</h2>
-                    <div class="text">Tất cả những điều quý khách cần biết khi thực hiện nâng cấp đổi xe tại BoxCar</div>
+                    <div class="text">Tất cả những điều quý khách cần biết khi thực hiện nâng cấp đổi xe tại MD-CARS</div>
                 </div>
                 <div class="about-faq-accordion wow fadeInUp">
                     <div class="about-faq-item is-active">

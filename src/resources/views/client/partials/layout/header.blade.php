@@ -173,7 +173,7 @@
                     <div class="logo-inner">
                         <div class="logo">
                             <a href="{{ route('home') }}">
-                                <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="BoxCar Showroom" title="BoxCar Showroom">
+                                <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="MD-CARS Showroom" title="MD-CARS Showroom">
                             </a>
                         </div>
                     </div>

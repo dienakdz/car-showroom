@@ -4,11 +4,11 @@
 
 @section('content')
 @php
-    $showroomName = $showroom->name ?? 'BoxCar Showroom';
+    $showroomName = $showroom->name ?? 'MD-CARS Showroom';
     $showroomAddress = $showroom->address ?? 'TP. Hồ Chí Minh';
     $showroomPhone = $showroom->phone ?? '0900 000 000';
     $cleanPhone = preg_replace('/\D+/', '', (string) $showroomPhone);
-    $showroomEmail = $showroom->email ?? 'contact@showroom.test';
+    $showroomEmail = $showroom->email ?? 'contact@md-cars.vn';
     $mapAddress = urlencode($showroomAddress);
 @endphp
 
@@ -266,7 +266,7 @@
                             <span class="about-faq-icon"><i class="fa-solid fa-plus"></i></span>
                         </div>
                         <div class="about-faq-body">
-                            <p>Hoàn toàn miễn phí 100%. Quý khách chỉ cần chuẩn bị Giấy phép lái xe (GPLX) còn hiệu lực. Chuyên viên của BoxCar sẽ đồng hành, giới thiệu các tính năng an toàn và công nghệ trên xe trong suốt lộ trình lái thử.</p>
+                            <p>Hoàn toàn miễn phí 100%. Quý khách chỉ cần chuẩn bị Giấy phép lái xe (GPLX) còn hiệu lực. Chuyên viên của MD-CARS sẽ đồng hành, giới thiệu các tính năng an toàn và công nghệ trên xe trong suốt lộ trình lái thử.</p>
                         </div>
                     </div>
                     <div class="about-faq-item">
@@ -285,7 +285,7 @@
         <!-- 6. Call to Action Banner -->
         <div class="boxcar-cta-about wow fadeInUp">
             <div class="inner-box" style="background: #050B20; border-radius: 20px; padding: 48px 36px; text-align: center; color: #fff; box-shadow: 0 16px 40px rgba(5, 11, 32, 0.15);">
-                <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.01em;">BẠN ĐÃ SẴN SÀNG CHO HÀNH TRÌNH MỚI CÙNG BOXCAR?</h2>
+                <h2 style="color: #fff; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.01em;">BẠN ĐÃ SẴN SÀNG CHO HÀNH TRÌNH MỚI CÙNG MD-CARS?</h2>
                 <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
                     <a href="{{ route('inventory.index') }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s;">KHÁM PHÁ BỘ SƯU TẬP XE</a>
                     <a href="tel:{{ $cleanPhone }}" style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 26px; border-radius: 12px; background: #405FF2; color: #fff; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(64, 95, 242, 0.4);">GỌI HOTLINE TƯ VẤN NGAY</a>

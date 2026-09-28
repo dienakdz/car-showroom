@@ -408,7 +408,7 @@
                         <span class="inventory-cta-badge">DỊCH VỤ ĐẶT XE THEO YÊU CẦU</span>
                         <h3 class="inventory-cta-title">Chưa tìm thấy chiếc xe đúng sở thích của quý khách?</h3>
                         <p class="inventory-cta-desc">
-                            Hệ thống đối tác phân phối của BoxCar kết nối hơn 300+ showroom trên toàn quốc. Đội ngũ chuyên viên tư vấn sẽ hỗ trợ tìm kiếm, thẩm định xe 160 bước nghiêm ngặt và giao xe tận nhà theo đúng yêu cầu trong 24 giờ.
+                            Hệ thống đối tác phân phối của MD-CARS kết nối hơn 300+ showroom trên toàn quốc. Đội ngũ chuyên viên tư vấn sẽ hỗ trợ tìm kiếm, thẩm định xe 160 bước nghiêm ngặt và giao xe tận nhà theo đúng yêu cầu trong 24 giờ.
                         </p>
                     </div>
                     <div class="inventory-cta-actions">
