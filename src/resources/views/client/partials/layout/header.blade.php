@@ -243,10 +243,14 @@
                             <button type="button" class="search-trigger-btn js-search-trigger" title="Tìm kiếm xe" aria-label="Tìm kiếm xe">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
-                            <div class="header-search-popover js-search-popover">
+                            <div class="header-search-popover js-search-popover {{ request('test_header_search') ? 'show' : '' }}">
                                 <form action="{{ route('inventory.index') }}" method="GET">
                                     <div class="search-input-group">
-                                        <input type="search" name="q" placeholder="Tìm theo hãng, dòng xe, mã xe..." value="{{ request('q') }}">
+                                        <input type="search" name="q" placeholder="Tìm theo hãng, dòng xe, mã xe..." value="{{ request('q') }}" autocomplete="off">
+                                        <button type="button" class="voice-search-btn js-voice-search-btn" title="Tìm kiếm bằng giọng nói" aria-label="Tìm kiếm bằng giọng nói">
+                                            <i class="fa-solid fa-microphone voice-mic-idle"></i>
+                                            <i class="fa-solid fa-microphone-lines voice-mic-listening" style="display: none;"></i>
+                                        </button>
                                         <button type="submit" class="submit-btn" title="Tìm kiếm">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>

@@ -214,8 +214,12 @@
                         <div class="top-filter-grid">
                             <!-- 1. Tìm kiếm từ khóa -->
                             <div class="top-search-wrap">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" name="q" value="{{ request('q', '') }}" placeholder="Hãng, dòng xe, mã kho...">
+                                <i class="fa-solid fa-magnifying-glass search-magnifier-icon"></i>
+                                <input type="text" name="q" value="{{ request('q', '') }}" placeholder="Hãng, dòng xe, mã kho..." autocomplete="off">
+                                <button type="button" class="voice-search-btn in-top-search js-voice-search-btn" title="Tìm kiếm bằng giọng nói" aria-label="Tìm kiếm bằng giọng nói">
+                                    <i class="fa-solid fa-microphone voice-mic-idle"></i>
+                                    <i class="fa-solid fa-microphone-lines voice-mic-listening" style="display: none;"></i>
+                                </button>
                             </div>
 
                             <!-- 2. Tình trạng xe -->

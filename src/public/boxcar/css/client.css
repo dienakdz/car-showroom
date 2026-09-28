@@ -4516,7 +4516,7 @@ input, button, select, textarea {
     width: 100% !important;
     height: 44px !important;
     min-height: 44px !important;
-    padding: 0 14px 0 38px !important;
+    padding: 0 44px 0 38px !important;
     border-radius: 10px !important;
     border: 1px solid #E2E8F0 !important;
     background: #F8FAFC !important;
@@ -4535,7 +4535,8 @@ input, button, select, textarea {
     box-shadow: 0 0 0 3px rgba(64, 95, 242, 0.08) !important;
 }
 
-.top-search-wrap i {
+.top-search-wrap > i.search-magnifier-icon,
+.top-search-wrap > i:first-child {
     position: absolute !important;
     left: 14px !important;
     top: 50% !important;
@@ -9419,5 +9420,493 @@ body.drawer-open {
         width: 100%;
         height: 180px;
     }
+}
+
+/* ==========================================================================
+   Voice Search Module Styles (Speech Recognition)
+   ========================================================================== */
+
+/* 1. Inline Search Trigger Buttons */
+.header-search-popover .voice-search-btn {
+    border: none;
+    background: transparent;
+    color: #64748B;
+    width: 38px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    position: relative;
+}
+
+.header-search-popover .voice-search-btn:hover {
+    color: #B89358;
+}
+
+.top-search-wrap .voice-search-btn.in-top-search {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+    padding: 0;
+}
+
+.top-search-wrap .voice-search-btn.in-top-search:hover {
+    color: #405FF2;
+    background: #EEF2FF;
+}
+
+/* 2. Active / Listening State on Trigger Buttons (State 2: Đang lắng nghe) */
+.voice-search-btn.is-listening {
+    color: #FFFFFF !important;
+    background: #EF4444 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: voiceBtnPulse 1.5s infinite;
+}
+
+.header-search-popover .voice-search-btn.is-listening {
+    width: 32px;
+    height: 32px;
+    margin: 5px;
+}
+
+@keyframes voiceBtnPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* 3. Voice Search Overlay Modal */
+.voice-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
+}
+
+.voice-search-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.voice-search-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.voice-search-dialog {
+    position: relative;
+    width: 92%;
+    max-width: 500px;
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+    padding: 34px 28px 28px;
+    z-index: 1;
+    transform: scale(0.92) translateY(12px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+}
+
+.voice-search-overlay.is-open .voice-search-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.voice-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #F1F5F9;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.voice-close-btn:hover {
+    background: #E2E8F0;
+    color: #0F172A;
+}
+
+.voice-dialog-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #B89358;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.voice-dialog-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #050B20;
+    margin-bottom: 6px;
+}
+
+.voice-dialog-subtitle {
+    font-size: 13.5px;
+    color: #64748B;
+    margin-bottom: 20px;
+}
+
+/* Central Visualizer & Pulse */
+.voice-visualizer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0 20px;
+    position: relative;
+    height: 120px;
+}
+
+.voice-mic-main-btn {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+}
+
+/* State 1: Idle */
+.voice-mic-main-btn.is-idle {
+    background: #F1F5F9;
+    color: #475569;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.voice-mic-main-btn.is-idle:hover {
+    background: #E2E8F0;
+    color: #050B20;
+    transform: scale(1.05);
+}
+
+/* State 2: Listening */
+.voice-mic-main-btn.is-listening {
+    background: #EF4444;
+    color: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+    transform: scale(1.06);
+}
+
+/* Pulse Rings */
+.pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.voice-mic-main-btn.is-listening .pulse-ring {
+    border: 2px solid rgba(239, 68, 68, 0.45);
+    animation: voiceRingExpand 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.voice-mic-main-btn.is-listening .ring-1 {
+    width: 100px;
+    height: 100px;
+    animation-delay: 0s;
+}
+
+.voice-mic-main-btn.is-listening .ring-2 {
+    width: 130px;
+    height: 130px;
+    animation-delay: 0.5s;
+}
+
+.voice-mic-main-btn.is-listening .ring-3 {
+    width: 160px;
+    height: 160px;
+    animation-delay: 1s;
+}
+
+@keyframes voiceRingExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.6);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Equalizer Bars */
+.voice-equalizer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    margin-top: 14px;
+}
+
+.eq-bar {
+    width: 3px;
+    background: #EF4444;
+    border-radius: 3px;
+    animation: voiceEqWave 1s ease-in-out infinite alternate;
+}
+
+.bar-1 { height: 10px; animation-delay: 0.1s; }
+.bar-2 { height: 18px; animation-delay: 0.25s; }
+.bar-3 { height: 24px; animation-delay: 0.4s; }
+.bar-4 { height: 14px; animation-delay: 0.2s; }
+.bar-5 { height: 22px; animation-delay: 0.35s; }
+.bar-6 { height: 16px; animation-delay: 0.15s; }
+.bar-7 { height: 8px;  animation-delay: 0.3s; }
+
+@keyframes voiceEqWave {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(1); }
+}
+
+/* Transcript Box */
+.voice-transcript-wrapper {
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+.voice-listening-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    margin-bottom: 10px;
+}
+
+.voice-listening-status .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94A3B8;
+}
+
+.voice-listening-status.status-listening {
+    color: #EF4444;
+}
+
+.voice-listening-status.status-listening .status-indicator {
+    background: #EF4444;
+    animation: voiceStatusBlink 1s infinite alternate;
+}
+
+.voice-listening-status.status-success {
+    color: #10B981;
+}
+
+.voice-listening-status.status-success .status-indicator {
+    background: #10B981;
+}
+
+.voice-listening-status.status-error {
+    color: #F59E0B;
+}
+
+.voice-listening-status.status-error .status-indicator {
+    background: #F59E0B;
+}
+
+@keyframes voiceStatusBlink {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+.voice-transcript-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.voice-transcript-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #050B20;
+    margin: 0;
+    word-break: break-word;
+    line-height: 1.45;
+}
+
+.voice-transcript-text.placeholder-active {
+    color: #94A3B8;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 13.5px;
+}
+
+.voice-transcript-text.is-interim {
+    color: #64748B;
+}
+
+/* Action Buttons */
+.voice-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.voice-action-btn {
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+/* Listening State Action: Red button "Dừng nói & Tìm kiếm" */
+.voice-btn-listening {
+    background: #EF4444;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.voice-btn-listening:hover {
+    background: #DC2626;
+    transform: translateY(-1px);
+}
+
+/* Primary Search Now Action */
+.voice-btn-primary {
+    background: #B89358;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(184, 147, 88, 0.25);
+}
+
+.voice-btn-primary:hover {
+    background: #A0783D;
+    transform: translateY(-1px);
+}
+
+/* Secondary Retry Action */
+.voice-btn-secondary {
+    background: #F1F5F9;
+    color: #475569;
+}
+
+.voice-btn-secondary:hover {
+    background: #E2E8F0;
+    color: #050B20;
+}
+
+/* Suggestions Tags */
+.voice-suggestions-wrapper {
+    border-top: 1px solid #F1F5F9;
+    padding-top: 16px;
+    text-align: left;
+}
+
+.suggestions-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94A3B8;
+    margin-bottom: 8px;
+}
+
+.suggestions-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.voice-tag-btn {
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.voice-tag-btn:hover {
+    border-color: #B89358;
+    color: #B89358;
+    background: #FBF8F2;
+}
+
+body.voice-modal-active {
+    overflow: hidden;
 }
 

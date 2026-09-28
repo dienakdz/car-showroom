@@ -44,6 +44,9 @@
 <script src="{{ asset('boxcar/js/knob.js') }}"></script>
 <script src="{{ asset('boxcar/js/mmenu.js') }}"></script>
 <script src="{{ asset('boxcar/js/main.js') }}"></script>
+{{-- Voice Search Modal & Engine --}}
+@include('client.partials.voice-search-modal')
+<script src="{{ asset('boxcar/js/voice-search.js') }}?v={{ filemtime(public_path('boxcar/js/voice-search.js')) }}"></script>
 @stack('scripts')
 </body>
 </html>
