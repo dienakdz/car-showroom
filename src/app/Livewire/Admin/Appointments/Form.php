@@ -101,6 +101,7 @@ class Form extends AdminPageComponent
     {
         $this->feedback = [];
         $this->resetErrorBag();
+        $this->form = $this->normalizeForm($this->form);
 
         $validated = $this->validate(
             $this->rules(),
@@ -287,5 +288,25 @@ class Form extends AdminPageComponent
             ->whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['admin', 'staff']))
             ->orderBy('name')
             ->get();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function normalizeForm(array $data): array
+    {
+        return [
+            'user_id' => ! empty($data['user_id']) ? (int) $data['user_id'] : null,
+            'lead_id' => ! empty($data['lead_id']) ? (int) $data['lead_id'] : null,
+            'customer_name' => ! empty($data['customer_name']) ? trim((string) $data['customer_name']) : null,
+            'customer_phone' => ! empty($data['customer_phone']) ? trim((string) $data['customer_phone']) : null,
+            'customer_email' => ! empty($data['customer_email']) ? strtolower(trim((string) $data['customer_email'])) : null,
+            'car_unit_id' => ! empty($data['car_unit_id']) ? (int) $data['car_unit_id'] : null,
+            'handled_by' => ! empty($data['handled_by']) ? (int) $data['handled_by'] : null,
+            'status' => ! empty($data['status']) ? trim((string) $data['status']) : 'pending',
+            'scheduled_at' => ! empty($data['scheduled_at']) ? trim((string) $data['scheduled_at']) : null,
+            'note' => ! empty($data['note']) ? trim((string) $data['note']) : null,
+        ];
     }
 }

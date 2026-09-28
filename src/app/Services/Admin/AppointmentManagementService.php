@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\LeadNote;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AppointmentManagementService
@@ -86,7 +87,7 @@ class AppointmentManagementService
             if ($isNew) {
                 try {
                     $customerName = $lead !== null ? (string) $lead->name : 'Khách hàng';
-                    $timeStr = optional($appointment->scheduled_at)->format('H:i d/m/Y') ?? '';
+                    $timeStr = $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('H:i d/m/Y') : '';
                     app(\App\Services\Admin\NotificationService::class)->notifyAdmins(
                         'appointment',
                         'Lịch hẹn lái thử / xem xe mới',
@@ -104,7 +105,7 @@ class AppointmentManagementService
                 $statusMap = self::STATUS_LABELS;
 
                 if ($isNew) {
-                    $timeStr = optional($appointment->scheduled_at)->format('H:i d/m/Y') ?? 'Chưa rõ';
+                    $timeStr = $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('H:i d/m/Y') : 'Chưa rõ';
                     $statusName = $statusMap[$currentStatus];
                     LeadNote::query()->create([
                         'lead_id' => $lead->id,
@@ -130,7 +131,7 @@ class AppointmentManagementService
             $customerUser = $appointment->user ?? ($appointment->user_id ? User::find($appointment->user_id) : ($lead?->user_id ? User::find($lead->user_id) : null));
             if ($customerUser instanceof User && ! $isNew && $oldStatus !== (string) $appointment->status) {
                 try {
-                    $timeStr = optional($appointment->scheduled_at)->format('H:i d/m/Y') ?? 'thời gian hẹn';
+                    $timeStr = $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('H:i d/m/Y') : 'thời gian hẹn';
                     $carInfo = $unit?->stock_code ? " ({$unit->stock_code})" : '';
                     $currentStatus = (string) $appointment->status;
 

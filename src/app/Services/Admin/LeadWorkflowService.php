@@ -108,13 +108,15 @@ class LeadWorkflowService
                 ]);
             }
 
-            return $lead->fresh([
+            $fresh = $lead->fresh([
                 'assignedTo:id,name',
                 'carUnit.trim.model.make',
                 'trim.model.make',
                 'notes.createdBy:id,name',
                 'appointments.handledBy:id,name',
             ]);
+
+            return $fresh ?? $lead;
         });
     }
 
@@ -149,13 +151,15 @@ class LeadWorkflowService
                 'note' => $logNote,
             ]);
 
-            return $lead->fresh([
+            $fresh = $lead->fresh([
                 'assignedTo:id,name',
                 'carUnit.trim.model.make',
                 'trim.model.make',
                 'notes.createdBy:id,name',
                 'appointments.handledBy:id,name',
             ]);
+
+            return $fresh ?? $lead;
         });
     }
 

@@ -29,11 +29,13 @@ class TrimManagementService
             $trim->features()->sync($validated['feature_ids'] ?? []);
             $this->syncAttributes($trim, $validated['attributes'] ?? []);
 
-            return $trim->fresh([
+            $fresh = $trim->fresh([
                 'model.make',
                 'features',
                 'attributeValues.attribute',
             ]);
+
+            return $fresh ?? $trim;
         });
     }
 

@@ -218,6 +218,10 @@ class StaffManagementService
             throw new InvalidArgumentException('Không thể xóa Quản trị viên này vì hệ thống cần ít nhất 1 Admin hoạt động.');
         }
 
+        if ($staff->salesCreated()->exists()) {
+            throw new InvalidArgumentException('Không thể xóa nhân viên này vì đã có hợp đồng bán xe liên quan trong hệ thống. Vui lòng chuyển sang hình thức tạm khóa tài khoản.');
+        }
+
         return DB::transaction(function () use ($staff): bool {
             $staff->roles()->detach();
 

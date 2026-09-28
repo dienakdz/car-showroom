@@ -46,9 +46,19 @@ class SaleManagementService
                 'hold_until' => null,
             ]);
 
-            if (! empty($validated['lead_id'])) {
+            $leadId = $validated['lead_id'] ?? null;
+            if (empty($leadId) && $buyer->id) {
+                $leadId = Lead::query()
+                    ->where('user_id', $buyer->id)
+                    ->where('car_unit_id', $carUnit->id)
+                    ->whereNotIn('status', ['closed', 'lost'])
+                    ->latest('id')
+                    ->value('id');
+            }
+
+            if (! empty($leadId)) {
                 Lead::query()
-                    ->whereKey($validated['lead_id'])
+                    ->whereKey($leadId)
                     ->update(['status' => 'closed']);
             }
 
@@ -93,11 +103,13 @@ class SaleManagementService
             } catch (\Throwable) {
             }
 
-            return $sale->fresh([
+            $fresh = $sale->fresh([
                 'buyer',
                 'carUnit.trim.model.make',
                 'createdBy',
             ]);
+
+            return $fresh ?? $sale;
         });
     }
 
@@ -107,24 +119,38 @@ class SaleManagementService
             return User::query()->findOrFail($validated['buyer_user_id']);
         }
 
-        $email = $validated['buyer_email'] ?? null;
-        $phone = $validated['buyer_phone'] ?? null;
+        $email = ! empty($validated['buyer_email']) ? trim((string) $validated['buyer_email']) : null;
+        $phone = ! empty($validated['buyer_phone']) ? trim((string) $validated['buyer_phone']) : null;
         $name = filled($validated['buyer_name'] ?? null) ? trim((string) $validated['buyer_name']) : 'Khách hàng showroom';
 
-        $buyer = User::query()
-            ->when($email, fn ($q) => $q->where('email', $email))
-            ->when(! $email && $phone, fn ($q) => $q->where('phone', $phone))
-            ->first();
+        $buyer = null;
+        if ($email || $phone) {
+            $buyer = User::query()
+                ->where(function ($q) use ($email, $phone): void {
+                    if ($email) {
+                        $q->where('email', $email);
+                    }
+                    if ($phone) {
+                        $email ? $q->orWhere('phone', $phone) : $q->where('phone', $phone);
+                    }
+                })
+                ->first();
+        }
 
         if ($buyer !== null) {
-            $buyer->fill(array_filter([
-                'name' => $buyer->name ?: $name,
-                'email' => $buyer->email ?: $email,
-                'phone' => $buyer->phone ?: $phone,
-            ]));
+            $updates = [];
+            if (empty($buyer->name) && $name !== 'Khách hàng showroom') {
+                $updates['name'] = $name;
+            }
+            if (empty($buyer->email) && $email && ! User::query()->where('email', $email)->where('id', '!=', $buyer->id)->exists()) {
+                $updates['email'] = $email;
+            }
+            if (empty($buyer->phone) && $phone && ! User::query()->where('phone', $phone)->where('id', '!=', $buyer->id)->exists()) {
+                $updates['phone'] = $phone;
+            }
 
-            if ($buyer->isDirty()) {
-                $buyer->save();
+            if (! empty($updates)) {
+                $buyer->update($updates);
             }
 
             return $buyer;
