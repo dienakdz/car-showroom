@@ -18,6 +18,12 @@ Route::get('/tai-khoan', [AuthController::class, 'account'])
     ->name('account.show');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->name('login.attempt');
 Route::post('/dang-ky', [AuthController::class, 'register'])->name('register');
+Route::get('/kich-hoat-tai-khoan/{id}/{hash}', [AuthController::class, 'activate'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+Route::post('/gui-lai-email-kich-hoat', [AuthController::class, 'resendActivation'])
+    ->middleware('throttle:6,1')
+    ->name('verification.resend');
 Route::post('/tai-khoan/cap-nhat', [AuthController::class, 'updateProfile'])
     ->middleware(['auth', 'customer.access'])
     ->name('account.profile.update');

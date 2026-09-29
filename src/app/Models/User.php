@@ -31,6 +31,7 @@ class User extends Authenticatable
         'phone',
         'password',
         'is_active',
+        'email_verified_at',
     ];
 
     /**
@@ -52,7 +53,21 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'email_verified_at' => 'datetime',
         ];
+    }
+
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function markEmailAsVerified(): bool
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+            'is_active' => true,
+        ])->save();
     }
 
     public function userRoles(): HasMany

@@ -63,6 +63,18 @@
                     });
                 });
             }
+
+            // Resend activation modal triggers
+            const resendModalEl = document.getElementById('resendActivationModal');
+            if (resendModalEl) {
+                document.querySelectorAll('.js-resend-trigger').forEach(function (btn) {
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const modal = bootstrap.Modal.getOrCreateInstance(resendModalEl);
+                        modal.show();
+                    });
+                });
+            }
         });
     </script>
     @endpush
@@ -79,6 +91,34 @@
                 <h2 class="auth-title">Chào mừng bạn trở lại</h2>
                 <p class="auth-desc">Đăng nhập tài khoản để trải nghiệm đầy đủ tiện ích</p>
             </div>
+
+            @if (session('auth_notice'))
+                @php($notice = session('auth_notice'))
+                <div class="auth-notice-alert auth-notice-{{ $notice['type'] ?? 'info' }}" style="margin-bottom: 24px; padding: 14px 18px; border-radius: 8px; font-size: 14px; line-height: 1.5; display: flex; gap: 12px; align-items: flex-start; {{ ($notice['type'] ?? '') === 'success' ? 'background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;' : (($notice['type'] ?? '') === 'danger' ? 'background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;' : 'background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;') }}">
+                    <i class="fa {{ ($notice['type'] ?? '') === 'success' ? 'fa-circle-check text-success' : (($notice['type'] ?? '') === 'danger' ? 'fa-circle-xmark text-danger' : 'fa-circle-info text-primary') }}" style="font-size: 18px; margin-top: 2px;"></i>
+                    <div style="flex: 1;">
+                        @if (! empty($notice['title']))
+                            <strong style="display: block; font-weight: 600; margin-bottom: 4px;">{{ $notice['title'] }}</strong>
+                        @endif
+                        <span>{{ $notice['message'] }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('unverified_email'))
+                <div class="resend-activation-box" style="margin-bottom: 20px; padding: 12px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <span style="font-size: 13px; color: #92400e;">
+                        <i class="fa fa-envelope-open-text me-1"></i> Chưa nhận được email kích hoạt?
+                    </span>
+                    <form method="POST" action="{{ route('verification.resend') }}" style="margin: 0;">
+                        @csrf
+                        <input type="hidden" name="email" value="{{ session('unverified_email') }}">
+                        <button type="submit" class="btn btn-sm" style="font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 6px; background: #f59e0b; color: #ffffff; border: none;">
+                            Gửi lại email ngay
+                        </button>
+                    </form>
+                </div>
+            @endif
 
             {{-- Underline Navigation Tabs --}}
             <nav class="boxcar-auth-nav">
@@ -131,7 +171,10 @@
                                 <span class="checkmark"></span>
                                 <span>Ghi nhớ đăng nhập</span>
                             </label>
-                            <button type="button" class="link-forgot js-forgot-trigger">Quên mật khẩu?</button>
+                            <div style="display: flex; gap: 14px; align-items: center;">
+                                <button type="button" class="link-forgot js-resend-trigger" title="Yêu cầu gửi lại email kích hoạt tài khoản">Kích hoạt tài khoản?</button>
+                                <button type="button" class="link-forgot js-forgot-trigger">Quên mật khẩu?</button>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn-primary-auth">
@@ -173,12 +216,12 @@
                         </div>
 
                         <div class="form-group-field">
-                            <label for="register-email">Địa chỉ Email</label>
+                            <label for="register-email">Địa chỉ Email <span class="text-danger">*</span></label>
                             <div class="field-wrapper">
                                 <i class="fa fa-envelope field-icon"></i>
-                                <input id="register-email" class="@error('email') is-invalid @enderror" type="email" name="email" value="{{ $activeTab === 'register' ? old('email') : '' }}" placeholder="name@email.com" autocomplete="email" autocapitalize="none" spellcheck="false">
+                                <input id="register-email" class="@error('email') is-invalid @enderror" type="email" name="email" value="{{ $activeTab === 'register' ? old('email') : '' }}" placeholder="name@email.com" autocomplete="email" autocapitalize="none" spellcheck="false" required>
                             </div>
-                            <span class="field-hint">Dùng để nhận xác nhận lịch hẹn lái thử và chứng từ.</span>
+                            <span class="field-hint">Dùng để nhận liên kết kích hoạt tài khoản và xác nhận giao dịch.</span>
                             @error('email')
                                 <span class="error-text"><i class="fa fa-circle-exclamation"></i> {{ $message }}</span>
                             @enderror
@@ -279,6 +322,46 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Gửi lại email kích hoạt tài khoản --}}
+<div class="modal fade auth-support-modal" id="resendActivationModal" tabindex="-1" aria-labelledby="resendActivationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resendActivationModalLabel">
+                    <i class="fa fa-envelope-circle-check"></i> Kích hoạt Tài khoản
+                </h5>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Đóng">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form method="POST" action="{{ route('verification.resend') }}">
+                @csrf
+                <div class="modal-body">
+                    <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                        Quý khách vui lòng nhập địa chỉ email đã dùng để đăng ký tài khoản. Hệ thống MD-CARS sẽ gửi lại một liên kết kích hoạt mới (có hiệu lực trong 24 giờ).
+                    </p>
+
+                    <div class="form-group-field" style="margin-bottom: 8px;">
+                        <label for="resend-email" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #0f172a;">
+                            Địa chỉ Email của bạn <span class="text-danger">*</span>
+                        </label>
+                        <div class="field-wrapper">
+                            <i class="fa fa-envelope field-icon"></i>
+                            <input id="resend-email" type="email" name="email" value="{{ session('unverified_email', old('email')) }}" placeholder="name@email.com" autocomplete="email" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 15px 24px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 14px; font-weight: 500;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #405ff2; border-color: #405ff2; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 8px;">
+                        <i class="fa fa-paper-plane me-1"></i> Gửi lại email kích hoạt
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -22,6 +22,18 @@ class EnsureCustomerAccess
             return redirect()->route('admin.dashboard');
         }
 
+        // Unverified email accounts are logged out and redirected
+        if (! $user->hasVerifiedEmail()) {
+            $unverifiedEmail = $user->email;
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('unverified_email', $unverifiedEmail)
+                ->withErrors(['identifier' => 'Tài khoản của bạn chưa được kích hoạt qua email. Vui lòng kích hoạt tài khoản để tiếp tục.']);
+        }
+
         // Deactivated accounts are logged out and blocked
         if (! $user->is_active) {
             auth()->logout();
