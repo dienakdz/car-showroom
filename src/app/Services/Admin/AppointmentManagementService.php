@@ -29,8 +29,16 @@ class AppointmentManagementService
             $isNew = $appointment === null || ! $appointment->exists;
             $appointment ??= new Appointment;
 
-            $unit = ! empty($validated['car_unit_id']) ? CarUnit::query()->find($validated['car_unit_id']) : null;
-            $trimId = $unit?->trim_id;
+            $carUnitId = array_key_exists('car_unit_id', $validated)
+                ? $validated['car_unit_id']
+                : ($appointment->car_unit_id ?? null);
+
+            /** @var CarUnit|null $unit */
+            $unit = ! empty($carUnitId) ? CarUnit::query()->find($carUnitId) : $appointment->carUnit;
+
+            $trimId = array_key_exists('trim_id', $validated)
+                ? $validated['trim_id']
+                : ($unit instanceof CarUnit ? $unit->trim_id : ($appointment->trim_id ?? null));
 
             $lead = null;
             $leadId = $validated['lead_id'] ?? $appointment->lead_id;
@@ -42,7 +50,7 @@ class AppointmentManagementService
                     'email' => ! empty($validated['customer_email']) ? trim((string) $validated['customer_email']) : null,
                     'source' => 'unit_detail',
                     'status' => 'booked',
-                    'car_unit_id' => $unit?->id,
+                    'car_unit_id' => $unit instanceof CarUnit ? $unit->id : null,
                     'trim_id' => $trimId,
                     'assigned_to' => $validated['handled_by'] ?? $actor->id,
                     'message' => 'Lịch hẹn xem xe / lái thử tại Showroom' . (! empty($validated['note']) ? ': ' . trim((string) $validated['note']) : ''),
@@ -67,17 +75,19 @@ class AppointmentManagementService
                 'note',
             ]);
 
-            $payload['trim_id'] = $trimId;
-
-            if ($lead !== null) {
-                $payload['lead_id'] = $lead->id;
-                $payload['user_id'] = $payload['user_id'] ?? $lead->user_id;
-                $payload['car_unit_id'] = $payload['car_unit_id'] ?? $lead->car_unit_id;
-                $payload['trim_id'] = $payload['trim_id'] ?? $lead->trim_id;
-                $payload['handled_by'] = $payload['handled_by'] ?? $lead->assigned_to ?? $actor->id;
+            if ($trimId !== null && ($isNew || array_key_exists('car_unit_id', $validated) || array_key_exists('trim_id', $validated))) {
+                $payload['trim_id'] = $trimId;
             }
 
-            $payload['handled_by'] = $payload['handled_by'] ?? $actor->id;
+            if ($lead !== null) {
+                $payload['lead_id'] = $payload['lead_id'] ?? $lead->id;
+                $payload['user_id'] = $payload['user_id'] ?? $lead->user_id;
+                $payload['car_unit_id'] = $payload['car_unit_id'] ?? $lead->car_unit_id;
+                $payload['trim_id'] = $payload['trim_id'] ?? $lead->trim_id ?? $trimId;
+                $payload['handled_by'] = $payload['handled_by'] ?? $appointment->handled_by ?? $lead->assigned_to ?? $actor->id;
+            }
+
+            $payload['handled_by'] = $payload['handled_by'] ?? $appointment->handled_by ?? $actor->id;
 
             $oldStatus = $appointment->status;
 
@@ -132,7 +142,7 @@ class AppointmentManagementService
             if ($customerUser instanceof User && ! $isNew && $oldStatus !== (string) $appointment->status) {
                 try {
                     $timeStr = $appointment->scheduled_at ? Carbon::parse($appointment->scheduled_at)->format('H:i d/m/Y') : 'thời gian hẹn';
-                    $carInfo = $unit?->stock_code ? " ({$unit->stock_code})" : '';
+                    $carInfo = $unit instanceof CarUnit && $unit->stock_code ? " ({$unit->stock_code})" : '';
                     $currentStatus = (string) $appointment->status;
 
                     $statusNotificationConfig = [

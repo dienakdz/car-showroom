@@ -218,8 +218,13 @@ class StaffManagementService
             throw new InvalidArgumentException('Không thể xóa Quản trị viên này vì hệ thống cần ít nhất 1 Admin hoạt động.');
         }
 
-        if ($staff->salesCreated()->exists()) {
-            throw new InvalidArgumentException('Không thể xóa nhân viên này vì đã có hợp đồng bán xe liên quan trong hệ thống. Vui lòng chuyển sang hình thức tạm khóa tài khoản.');
+        $hasHistoricalRecords = $staff->salesCreated()->exists()
+            || $staff->leadNotesCreated()->exists()
+            || $staff->carUnitPriceChanges()->exists()
+            || $staff->carUnitHoldsCreated()->exists();
+
+        if ($hasHistoricalRecords) {
+            throw new InvalidArgumentException('Không thể xóa nhân sự này vì đã có lịch sử hoạt động nghiệp vụ (hợp đồng bán xe, ghi chú CRM, lịch sử giá xe hoặc giữ cọc). Vui lòng chuyển sang hình thức tạm khóa tài khoản để bảo toàn dữ liệu.');
         }
 
         return DB::transaction(function () use ($staff): bool {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Clients;
 
 use App\Models\Appointment;
+use App\Models\CarUnit;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,21 +33,28 @@ class AppointmentController extends ClientBaseController
         }
 
         $appointment = DB::transaction(function () use ($validated): Appointment {
+            $carUnitId = $validated['car_unit_id'] ?? null;
+            $trimId = $validated['trim_id'] ?? null;
+
+            if ($carUnitId !== null && $trimId === null) {
+                $trimId = CarUnit::query()->whereKey($carUnitId)->value('trim_id');
+            }
+
             $lead = $this->createLead([
                 'source' => $validated['source'],
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'] ?? null,
                 'message' => $validated['message'] ?? null,
-                'car_unit_id' => $validated['car_unit_id'] ?? null,
-                'trim_id' => $validated['trim_id'] ?? null,
+                'car_unit_id' => $carUnitId,
+                'trim_id' => $trimId,
                 'status' => 'booked',
             ]);
 
             return Appointment::query()->create([
                 'user_id' => auth()->id(),
-                'car_unit_id' => $validated['car_unit_id'] ?? null,
-                'trim_id' => $validated['trim_id'] ?? null,
+                'car_unit_id' => $carUnitId,
+                'trim_id' => $trimId,
                 'lead_id' => $lead->id,
                 'handled_by' => $lead->assigned_to,
                 'scheduled_at' => $validated['scheduled_at'],
