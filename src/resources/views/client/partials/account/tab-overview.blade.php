@@ -103,7 +103,7 @@
                         </div>
                         <div class="meta-item">
                             <span class="meta-label"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Địa điểm đón tiếp</span>
-                            <strong class="meta-val">{{ $showroom->name ?? 'BoxCar Showroom' }}</strong>
+                            <strong class="meta-val">{{ $showroom->name ?? 'MD-CARS Showroom' }}</strong>
                         </div>
                     </div>
 
@@ -161,7 +161,7 @@
             </div>
             <div class="promo-content">
                 <h4>Thẩm định thu cũ đổi mới</h4>
-                <p>Định giá xe ô tô cũ nhanh chóng, hỗ trợ bù trừ giá ưu đãi khi lên đời xe sang tại BoxCar.</p>
+                <p>Định giá xe ô tô cũ nhanh chóng, hỗ trợ bù trừ giá ưu đãi khi lên đời xe sang tại MD-CARS.</p>
                 <a href="{{ route('tradein') }}" class="action-link-btn">
                     Định giá xe ngay <i class="fa-solid fa-arrow-right ms-1"></i>
                 </a>

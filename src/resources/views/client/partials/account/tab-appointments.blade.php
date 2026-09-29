@@ -21,7 +21,7 @@
             </div>
             <h4 class="empty-title">Bạn chưa có lịch hẹn nào</h4>
             <p class="empty-desc">
-                Chọn mẫu xe ưng ý trong kho xe của BoxCar và đặt lịch lái thử để trải nghiệm trực tiếp!
+                Chọn mẫu xe ưng ý trong kho xe của MD-CARS và đặt lịch lái thử để trải nghiệm trực tiếp!
             </p>
             <a href="{{ route('inventory.index') }}" class="theme-btn btn-sm mt-3">
                 <i class="fa-solid fa-car-side me-1"></i> Khám phá kho xe

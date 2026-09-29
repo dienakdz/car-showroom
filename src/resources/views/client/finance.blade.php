@@ -286,7 +286,7 @@
             </div>
         </div>
 
-        <!-- 5. 4 Đặc Quyền Vay Trả Góp Tại BoxCar -->
+        <!-- 5. 4 Đặc Quyền Vay Trả Góp Tại MD-CARS -->
         <div class="client-section-spacer">
             <div class="client-section-heading wow fadeInUp">
                 <h2>Vì Sao Nên Chọn Gói Tài Chính Tại MD-CARS?</h2>

@@ -45,7 +45,7 @@ class AdminContextResolver
         $permissionNames = $user?->permissionNames() ?? collect();
 
         if ($brandName === '') {
-            $brandName = $showroom?->name ?: 'Car Showroom';
+            $brandName = $showroom?->name ?: 'MD-CARS Showroom';
         }
 
         $primaryRole = (string) ($roleNames->first() ?? 'admin');

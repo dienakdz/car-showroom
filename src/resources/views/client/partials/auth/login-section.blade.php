@@ -74,7 +74,7 @@
             {{-- Header: Logo & Subtitle --}}
             <div class="boxcar-auth-head">
                 <a href="{{ route('home') }}" class="auth-brand-logo">
-                    <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="BoxCar" title="BoxCar Showroom">
+                    <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="MD-CARS Showroom" title="MD-CARS Showroom">
                 </a>
                 <h2 class="auth-title">Chào mừng bạn trở lại</h2>
                 <p class="auth-desc">Đăng nhập tài khoản để trải nghiệm đầy đủ tiện ích</p>
@@ -250,7 +250,7 @@
             </div>
             <div class="modal-body">
                 <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                    Để bảo vệ an toàn thông tin tài khoản và dữ liệu giao dịch xe, BoxCar cung cấp hai phương thức hỗ trợ cấp lại mật khẩu xác thực trực tiếp:
+                    Để bảo vệ an toàn thông tin tài khoản và dữ liệu giao dịch xe, MD-CARS cung cấp hai phương thức hỗ trợ cấp lại mật khẩu xác thực trực tiếp:
                 </p>
 
                 <div class="support-channel-card">

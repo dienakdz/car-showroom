@@ -15,8 +15,9 @@ class ShowroomSettingsSeeder extends Seeder
         $now = now();
 
         DB::table('showrooms')->updateOrInsert(
-            ['name' => 'MD-CARS Showroom'],
+            ['id' => 1],
             [
+                'name' => 'MD-CARS Showroom',
                 'phone' => '0900000002',
                 'email' => 'contact@md-cars.vn',
                 'address' => '123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh',

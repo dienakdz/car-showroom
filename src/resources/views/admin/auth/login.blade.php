@@ -64,7 +64,10 @@
     <div class="c1-auth-form-side">
         <div class="c1-auth-brand">
             <div class="c1-auth-logo">
-                <i class="fa fa-car" style="color: var(--c1-primary);"></i> BOXCARS
+                <a href="{{ route('home') }}" title="MD-CARS Showroom" style="display: flex; align-items: center; text-decoration: none;">
+                    <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="MD-CARS Showroom" class="c1-logo-light" style="height: 32px; width: auto;">
+                    <img src="{{ asset('boxcar/images/logo.svg') }}" alt="MD-CARS Showroom" class="c1-logo-dark" style="height: 32px; width: auto;">
+                </a>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <button

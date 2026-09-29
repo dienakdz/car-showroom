@@ -109,7 +109,7 @@
                                 type="text"
                                 class="c1-field-input"
                                 wire:model="form.brand_name"
-                                placeholder="Ví dụ: Minh Dien Auto Showroom"
+                                placeholder="Ví dụ: MD-CARS Showroom"
                                 required
                             >
                             @error('form.brand_name') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
@@ -223,7 +223,7 @@
                         <div>
                             <div class="text-muted small" style="margin-bottom: 2px;">Tên đại lý:</div>
                             <div class="fw-bold" style="color: var(--c1-text-heading); font-size: 14px;">
-                                {{ $form['showroom_name'] ?: ($form['brand_name'] ?: 'Minh Dien Auto Showroom') }}
+                                {{ $form['showroom_name'] ?: ($form['brand_name'] ?: 'MD-CARS Showroom') }}
                             </div>
                         </div>
 

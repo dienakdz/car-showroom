@@ -93,8 +93,8 @@
 <aside class="c1-sidebar" aria-label="Điều hướng quản trị">
     <div class="c1-sidebar-brand">
         <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="c1-brand-link">
-            <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="BoxCar" class="c1-brand-logo c1-logo-light">
-            <img src="{{ asset('boxcar/images/logo.svg') }}" alt="BoxCar" class="c1-brand-logo c1-logo-dark">
+            <img src="{{ asset('boxcar/images/logo2.svg') }}" alt="MD-CARS Showroom" class="c1-brand-logo c1-logo-light">
+            <img src="{{ asset('boxcar/images/logo.svg') }}" alt="MD-CARS Showroom" class="c1-brand-logo c1-logo-dark">
         </a>
     </div>
 
