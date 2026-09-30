@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Clients\AccountController;
 use App\Http\Controllers\Clients\AppointmentController;
 use App\Http\Controllers\Clients\AuthController;
 use App\Http\Controllers\Clients\HomeController;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dang-nhap', [AuthController::class, 'show'])->name('login');
-Route::get('/tai-khoan', [AuthController::class, 'account'])
+Route::get('/tai-khoan', [AccountController::class, 'show'])
     ->middleware(['auth', 'customer.access'])
     ->name('account.show');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->name('login.attempt');
@@ -24,10 +25,10 @@ Route::get('/kich-hoat-tai-khoan/{id}/{hash}', [AuthController::class, 'activate
 Route::post('/gui-lai-email-kich-hoat', [AuthController::class, 'resendActivation'])
     ->middleware('throttle:6,1')
     ->name('verification.resend');
-Route::post('/tai-khoan/cap-nhat', [AuthController::class, 'updateProfile'])
+Route::post('/tai-khoan/cap-nhat', [AccountController::class, 'updateProfile'])
     ->middleware(['auth', 'customer.access'])
     ->name('account.profile.update');
-Route::post('/tai-khoan/doi-mat-khau', [AuthController::class, 'updatePassword'])
+Route::post('/tai-khoan/doi-mat-khau', [AccountController::class, 'updatePassword'])
     ->middleware(['auth', 'customer.access'])
     ->name('account.password.update');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
