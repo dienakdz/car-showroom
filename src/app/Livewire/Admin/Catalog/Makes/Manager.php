@@ -44,7 +44,6 @@ class Manager extends AdminPageComponent
 
     public function mount(): void
     {
-        $this->perPage = config('showroom.pagination.admin');
         $this->resetCreateForm();
         $this->resetEditState();
     }
@@ -57,7 +56,7 @@ class Manager extends AdminPageComponent
     public function updatedPerPage(): void
     {
         if (! in_array($this->perPage, self::PER_PAGE_OPTIONS, true)) {
-            $this->perPage = config('showroom.pagination.admin');
+            $this->perPage = self::PER_PAGE_OPTIONS[0];
         }
 
         $this->resetPage('makesPage');

@@ -24,7 +24,7 @@ class ViewDataCache
 
     public static function store(): Repository
     {
-        $storeName = app()->runningInConsole()
+        $storeName = app()->environment('testing')
             ? 'array'
             : config('showroom.cache_store');
 
