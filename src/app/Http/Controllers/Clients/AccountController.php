@@ -14,7 +14,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -22,12 +21,12 @@ use Illuminate\View\View;
 
 class AccountController extends ClientBaseController
 {
-    public function show(): View|RedirectResponse
+    public function show(Request $request): View|RedirectResponse
     {
-        $user = Auth::user();
+        $user = $request->user();
 
-        if ($user === null) {
-            return $this->viewWithSharedData('client.auth');
+        if (! $user instanceof User) {
+            return redirect()->route('login');
         }
 
         if ($user->hasAnyRole(['admin', 'staff'])) {
@@ -94,7 +93,7 @@ class AccountController extends ClientBaseController
     {
         $user = $request->user();
 
-        if ($user === null) {
+        if (! $user instanceof User) {
             return redirect()->route('login');
         }
 
@@ -144,7 +143,7 @@ class AccountController extends ClientBaseController
     {
         $user = $request->user();
 
-        if ($user === null) {
+        if (! $user instanceof User) {
             return redirect()->route('login');
         }
 
