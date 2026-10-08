@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'car_search' => [
+        'url' => env('CAR_SEARCH_URL', 'http://car-search:8000'),
+        'token' => env('CAR_SEARCH_API_TOKEN', 'local-car-search-token'),
+        'connect_timeout' => (int) env('CAR_SEARCH_CONNECT_TIMEOUT', 1),
+        'timeout' => (int) env('CAR_SEARCH_TIMEOUT', 3),
+        'result_limit' => (int) env('CAR_SEARCH_RESULT_LIMIT', 100),
+    ],
+
 ];

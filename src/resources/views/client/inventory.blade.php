@@ -27,6 +27,14 @@
         (object) ['value' => 'mileage_asc', 'label' => 'Số Km (Odo): Thấp nhất'],
         (object) ['value' => 'mileage_desc', 'label' => 'Số Km (Odo): Cao nhất'],
     ]);
+    if (request('q')) {
+        $sortOptions->prepend((object) ['value' => 'relevance', 'label' => 'Phù hợp nhất']);
+    }
+
+    $requestedSort = request('sort');
+    $selectedSort = request('q')
+        ? ($requestedSort ?: 'relevance')
+        : (($requestedSort && $requestedSort !== 'relevance') ? $requestedSort : 'newest');
 
     $activeChips = [];
 
@@ -203,7 +211,7 @@
                 <!-- 2. Option 2: Top Horizontal Filter Bar (Băng Lọc Ngang Trải Rộng) -->
                 <div class="inventory-top-filter-bar wow fadeInUp">
                     <form method="GET" action="{{ $inventoryAction }}" class="inventory-top-filter-form" id="inventoryMainFilterForm">
-                        <input type="hidden" name="sort" value="{{ request('sort', 'newest') }}">
+                        <input type="hidden" name="sort" value="{{ request()->filled('sort') ? request('sort') : '' }}">
                         @foreach (['model', 'trim', 'min_year', 'max_year', 'fuel_type', 'transmission', 'drivetrain', 'min_mileage', 'max_mileage', 'min_price', 'max_price', 'exterior_color'] as $advKey)
                             @if (request()->filled($advKey))
                                 <input type="hidden" name="{{ $advKey }}" value="{{ request($advKey) }}">
@@ -348,7 +356,7 @@
                                 @include('client.partials.form.custom-dropdown', [
                                     'name' => 'sort',
                                     'options' => $sortOptions,
-                                    'selectedValue' => request('sort', 'newest'),
+                                    'selectedValue' => $selectedSort,
                                     'valueField' => 'value',
                                     'labelField' => 'label',
                                     'emptyLabel' => 'Mới cập nhật nhất',

@@ -12,11 +12,17 @@ use App\Models\FuelType;
 use App\Models\Make;
 use App\Models\Transmission;
 use App\Models\Trim;
+use App\Services\CarSearchService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InventoryController extends ClientBaseController
 {
+    public function __construct(
+        private readonly CarSearchService $carSearchService,
+    ) {}
+
     public function index(Request $request, ?string $condition = null): View
     {
         $allowedConditions = ['new', 'used', 'cpo'];
@@ -36,15 +42,7 @@ class InventoryController extends ClientBaseController
         }
 
         $keyword = trim((string) $request->query('q', ''));
-        if ($keyword !== '') {
-            $query->where(function ($queryBuilder) use ($keyword): void {
-                $queryBuilder->where('makes.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('models.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('trims.name', 'like', '%' . $keyword . '%')
-                    ->orWhere('car_units.stock_code', 'like', '%' . $keyword . '%')
-                    ->orWhere('car_units.vin', 'like', '%' . $keyword . '%');
-            });
-        }
+        $rankedCarIds = $this->applyKeywordSearch($query, $keyword);
 
         if ($request->filled('make')) {
             $query->where('makes.slug', $request->query('make'));
@@ -113,8 +111,11 @@ class InventoryController extends ClientBaseController
             $query->where('car_units.price', '<=', $maxPrice);
         }
 
-        $sort = $request->query('sort', 'newest');
+        $sort = $this->resolveSort($request, $keyword, $rankedCarIds);
         switch ($sort) {
+            case 'relevance':
+                $this->applyRelevanceOrder($query, $rankedCarIds ?? []);
+                break;
             case 'price_asc':
                 $query->orderByRaw('car_units.price IS NULL, car_units.price ASC');
                 break;
@@ -163,6 +164,72 @@ class InventoryController extends ClientBaseController
             'currentCondition' => $effectiveCondition,
             'filters' => $this->loadInventoryFilters(),
         ]);
+    }
+
+    /**
+     * @return list<int>|null
+     */
+    private function applyKeywordSearch(Builder $query, string $keyword): ?array
+    {
+        if ($keyword === '') {
+            return null;
+        }
+
+        $rankedCarIds = $this->carSearchService->rankedCarIds($keyword);
+        if ($rankedCarIds !== null && $rankedCarIds !== []) {
+            $query->whereIn('car_units.id', $rankedCarIds);
+
+            return $rankedCarIds;
+        }
+
+        $query->where(function (Builder $queryBuilder) use ($keyword): void {
+            $queryBuilder->where('makes.name', 'like', '%' . $keyword . '%')
+                ->orWhere('models.name', 'like', '%' . $keyword . '%')
+                ->orWhere('trims.name', 'like', '%' . $keyword . '%')
+                ->orWhere('car_units.stock_code', 'like', '%' . $keyword . '%')
+                ->orWhere('car_units.vin', 'like', '%' . $keyword . '%');
+        });
+
+        return null;
+    }
+
+    /**
+     * @param  list<int>|null  $rankedCarIds
+     */
+    private function resolveSort(Request $request, string $keyword, ?array $rankedCarIds): string
+    {
+        $requestedSort = (string) $request->query('sort', '');
+        $allowedSorts = [
+            'relevance',
+            'newest',
+            'price_asc',
+            'price_desc',
+            'year_asc',
+            'year_desc',
+            'mileage_asc',
+            'mileage_desc',
+        ];
+
+        if ($requestedSort !== '' && in_array($requestedSort, $allowedSorts, true)) {
+            if ($requestedSort !== 'relevance' || ($keyword !== '' && $rankedCarIds !== null)) {
+                return $requestedSort;
+            }
+        }
+
+        return $keyword !== '' && $rankedCarIds !== null ? 'relevance' : 'newest';
+    }
+
+    /**
+     * @param  list<int>  $rankedCarIds
+     */
+    private function applyRelevanceOrder(Builder $query, array $rankedCarIds): void
+    {
+        if ($rankedCarIds === []) {
+            return;
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($rankedCarIds), '?'));
+        $query->orderByRaw("FIELD(car_units.id, {$placeholders})", $rankedCarIds);
     }
 
     protected function loadInventoryFilters(): array
