@@ -28,6 +28,29 @@ services:
     depends_on:
       - app
 
+  car-search:
+    build:
+      context: ./services/car-search
+    container_name: car_search
+    environment:
+      CAR_SEARCH_API_TOKEN: ${CAR_SEARCH_API_TOKEN:-local-car-search-token}
+      SEARCH_DB_HOST: mysql
+      SEARCH_DB_PORT: 3306
+      SEARCH_DB_DATABASE: ${DB_DATABASE:-car_showroom}
+      SEARCH_DB_USERNAME: ${DB_USERNAME:-car}
+      SEARCH_DB_PASSWORD: ${DB_PASSWORD:-car}
+    ports:
+      - "127.0.0.1:8001:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   mysql:
     image: mysql:8.4
     container_name: car_mysql
@@ -40,6 +63,12 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
 volumes:
   mysql_data:

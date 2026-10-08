@@ -1,0 +1,5 @@
+fastapi==0.142.2
+PyMySQL[rsa]==1.1.2
+rank-bm25==0.2.2
+rapidfuzz==3.14.1
+uvicorn==0.37.0
