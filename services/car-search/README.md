@@ -5,6 +5,11 @@ data from MySQL for each search request, parses structured Vietnamese search
 intent, applies exact/fuzzy matching, and ranks the remaining candidates with
 BM25.
 
+When no car satisfies every structured condition, the service keeps the most
+specific detected identity (trim, model, or make) and returns the closest
+available cars. The response uses `match_mode: "relaxed"` and lists unmet
+conditions in each hit's `relaxed_constraints` field.
+
 This first phase intentionally has no local language model, embeddings, vector
 database, persistent search index, queue synchronization, or Laravel client.
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -43,12 +43,14 @@ class SearchHit(BaseModel):
     title: str
     score: float
     reasons: list[str]
+    relaxed_constraints: list[str] = Field(default_factory=list)
 
 
 class SearchResponse(BaseModel):
     query: str
     normalized_query: str
     intent: SearchIntent
+    match_mode: Literal["strict", "relaxed", "none"]
     hits: list[SearchHit]
     total: int
     took_ms: float
