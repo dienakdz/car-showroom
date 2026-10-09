@@ -126,8 +126,12 @@ car-showroom/
 │       └── public/boxcar/           # Existing BoxCar assets and admin CSS
 ├── docs/
 │   ├── application-architecture.md
-│   └── coding-standards.md
-└── docker/                         # Current Docker runtime configuration
+│   ├── coding-standards.md
+│   ├── commands.md
+│   ├── diagrams/
+│   └── specifications/
+└── infra/
+    └── docker/                     # PHP-FPM and Nginx runtime configuration
 ```
 
 Laravel commands are run from `apps/laravel/`. Python search service commands

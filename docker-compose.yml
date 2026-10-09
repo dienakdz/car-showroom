@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: infra/docker/php/Dockerfile
     container_name: car_app
     user: "0:0"
     working_dir: /var/www/html
@@ -24,7 +24,7 @@ services:
     volumes:
       - ./apps/laravel/public:/var/www/html/public:ro
       - ./apps/laravel/storage/app/public:/var/www/html/storage/app/public:ro
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./infra/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
 
