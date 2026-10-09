@@ -1,0 +1,1 @@
+"""Inventory search feature."""

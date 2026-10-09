@@ -10,8 +10,37 @@ specific detected identity (trim, model, or make) and returns the closest
 available cars. The response uses `match_mode: "relaxed"` and lists unmet
 conditions in each hit's `relaxed_constraints` field.
 
-This first phase intentionally has no local language model, embeddings, vector
-database, persistent search index, queue synchronization, or Laravel client.
+The service intentionally has no local language model, embeddings, vector
+database, persistent search index, or queue synchronization.
+
+## Project structure
+
+```text
+app/
+├── main.py                 # FastAPI application assembly
+├── api/
+│   ├── dependencies.py     # Dependency wiring and internal-token guard
+│   └── routes/             # Health and search HTTP endpoints
+├── core/                   # Environment-backed configuration
+├── domain/                 # Internal car document model
+├── repositories/           # Read-only MySQL data access
+├── schemas/                # Pydantic API contracts
+└── search/
+    ├── engine.py           # Search use-case orchestration
+    ├── intent_parser.py    # Entity, phrase, and numeric intent parsing
+    ├── matcher.py          # Strict filters and relaxed identity candidates
+    ├── text.py             # Vietnamese normalization and tokenization
+    ├── vocabulary.py       # Aliases, stop words, and controlled terms
+    └── ranking/
+        ├── common.py       # Shared BM25 signals and document text
+        ├── strict.py       # Exact-result ranking
+        └── relaxed.py      # Closest-result scoring and explanations
+```
+
+Dependencies flow inward from API routes to the search engine, repository,
+schemas, and domain model. HTTP handling, database access, parsing, matching,
+and ranking stay in separate modules so future recommendation strategies do not
+need to expand one shared file.
 
 ## Endpoints
 

@@ -4,8 +4,8 @@ from typing import Any
 import pymysql
 from pymysql.cursors import DictCursor
 
-from app.config import Settings
-from app.models import CarDocument
+from app.core.config import Settings
+from app.domain.car import CarDocument
 
 
 class CarRepository:
