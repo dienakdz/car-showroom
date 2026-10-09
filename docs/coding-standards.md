@@ -1,16 +1,16 @@
 # Coding Standards
 
-This repository uses tooling-first conventions for all PHP code inside `src/`.
+This repository uses tooling-first conventions for all PHP code inside `apps/laravel/`.
 
 ## Source of truth
 
-- `src/pint.json`: automatic formatter for PHP / Blade / Livewire files.
-- `src/.editorconfig`: whitespace, indentation, line endings, and final newline policy.
+- `apps/laravel/pint.json`: automatic formatter for PHP / Blade / Livewire files.
+- `apps/laravel/.editorconfig`: whitespace, indentation, line endings, and final newline policy.
 - `.husky/pre-commit` + `.lintstagedrc.json`: blocks commits until staged PHP files are formatted.
 
 ## Auto-enforced rules
 
-These rules are enforced before commit for staged files matching `src/**/*.php`:
+These rules are enforced before commit for staged files matching `apps/laravel/**/*.php`:
 
 - Laravel code style via the `laravel` Pint preset.
 - Four spaces for indentation.
@@ -23,7 +23,7 @@ These rules are enforced before commit for staged files matching `src/**/*.php`:
 - Trailing commas in multiline arrays, argument lists, and similar multiline structures.
 - Single spaces around string concatenation.
 
-Generated PHP should not be formatted. `src/pint.json` excludes:
+Generated PHP should not be formatted. `apps/laravel/pint.json` excludes:
 
 - `bootstrap/cache`
 - `storage`
@@ -41,7 +41,7 @@ These conventions are expected during review even when they are not fully auto-f
 
 ## Commands
 
-Run these from `src/`:
+Run these from `apps/laravel/`:
 
 ```bash
 composer lint
@@ -52,7 +52,7 @@ npm run format
 
 ## Commit gate
 
-After installing dependencies in `src/`, run:
+After installing dependencies in `apps/laravel/`, run:
 
 ```bash
 npm run prepare

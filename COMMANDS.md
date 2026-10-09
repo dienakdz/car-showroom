@@ -99,7 +99,7 @@ docker exec car_app composer stan
 docker exec car_app composer test
 ```
 
-*(Nếu bạn đứng trong thư mục `src/` trên máy host có cài sẵn Composer và PHP thì có thể gõ trực tiếp `composer lint`, `composer stan`)*
+*(Nếu bạn đứng trong thư mục `apps/laravel/` trên máy host có cài sẵn Composer và PHP thì có thể gõ trực tiếp `composer lint`, `composer stan`)*
 
 ---
 
@@ -148,7 +148,7 @@ docker exec car_app php artisan queue:flush
 
 ## 8. Frontend Assets (NPM / Vite)
 
-Chạy trong thư mục `src/` trên máy host (yêu cầu Node.js):
+Chạy trong thư mục `apps/laravel/` trên máy host (yêu cầu Node.js):
 
 ```bash
 # 1. Cài đặt các thư viện frontend
@@ -172,7 +172,7 @@ Khi gặp lỗi 500 hoặc muốn xem email được ghi log:
 docker exec car_app tail -f storage/logs/laravel.log
 
 # Cách 2: Xem trực tiếp bằng PowerShell trên Windows (từ thư mục d:\car-showroom)
-Get-Content -Path src\storage\logs\laravel.log -Wait -Tail 50
+Get-Content -Path apps\laravel\storage\logs\laravel.log -Wait -Tail 50
 
 # Xóa trắng file log khi log quá dài:
 docker exec car_app truncate -s 0 storage/logs/laravel.log

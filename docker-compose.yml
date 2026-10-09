@@ -9,7 +9,7 @@ services:
     command: >
       sh -lc "mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/framework/testing bootstrap/cache && chown -R www:www storage/framework bootstrap/cache && chmod -R ug+rwX storage/framework bootstrap/cache && if [ ! -f vendor/autoload.php ] || [ composer.lock -nt vendor/autoload.php ]; then composer install --no-interaction --prefer-dist; fi && if [ -f .env ]; then php artisan config:cache --ansi; fi && php-fpm"
     volumes:
-      - ./src:/var/www/html
+      - ./apps/laravel:/var/www/html
       - vendor_data:/var/www/html/vendor
       - framework_data:/var/www/html/storage/framework
       - bootstrap_cache_data:/var/www/html/bootstrap/cache
@@ -22,15 +22,15 @@ services:
     ports:
       - "8889:80"
     volumes:
-      - ./src/public:/var/www/html/public:ro
-      - ./src/storage/app/public:/var/www/html/storage/app/public:ro
+      - ./apps/laravel/public:/var/www/html/public:ro
+      - ./apps/laravel/storage/app/public:/var/www/html/storage/app/public:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
 
   car-search:
     build:
-      context: ./services/car-search
+      context: ./apps/car-search
     container_name: car_search
     environment:
       CAR_SEARCH_API_TOKEN: ${CAR_SEARCH_API_TOKEN:-local-car-search-token}

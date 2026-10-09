@@ -1,5 +1,5 @@
 {
-    "src/**/*.php": [
-        "php src/vendor/bin/pint --config src/pint.json"
+    "apps/laravel/**/*.php": [
+        "php apps/laravel/vendor/bin/pint --config apps/laravel/pint.json"
     ]
 }

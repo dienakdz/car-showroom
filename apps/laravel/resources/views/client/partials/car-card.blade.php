@@ -1,4 +1,4 @@
-﻿<div class="car-block-four col-xl-3 col-lg-4 col-md-6 col-sm-6">
+<div class="car-block-four col-xl-3 col-lg-4 col-md-6 col-sm-6">
     <div class="inner-box">
         <div class="image-box">
             <figure class="image"><a href="{{ route('car.show', $car->stock_code) }}"><img src="{{ $car->image_url }}" alt="{{ $car->make_name }} {{ $car->model_name }}"></a></figure>

@@ -2,33 +2,34 @@
 
 ## Workspace
 
-- The main application lives in `src/`. Run Laravel, Composer, npm, Pint, PHPStan, and tests from `src/`.
-- Files outside `src/` are mostly repo tooling, docs, and infrastructure. Do not move application code out of `src/` unless explicitly requested.
+- Deployable applications live under `apps/`: the Laravel showroom in `apps/laravel/` and the Python search service in `apps/car-search/`.
+- Run Laravel, Composer, npm, Pint, and PHPStan from `apps/laravel/`. Run Python service commands from `apps/car-search/`.
+- Files outside `apps/` are repository tooling, documentation, and infrastructure. Do not move application code out of its owning app unless explicitly requested.
 - Read `docs/application-architecture.md` before changing application structure, routes, controllers, Livewire components, services, or view placement.
-- Follow the existing project standards in `docs/coding-standards.md`, `src/pint.json`, `src/.editorconfig`, `.husky/pre-commit`, and `src/composer.json`.
+- Follow the existing project standards in `docs/coding-standards.md`, `apps/laravel/pint.json`, `apps/laravel/.editorconfig`, `.husky/pre-commit`, and `apps/laravel/composer.json`.
 
 ## UI Reuse First
 
 - Before creating or restyling any UI, inspect the existing BoxCar template source at `C:\Users\minhd\Desktop\tailieuCars\cars dealer`.
 - Prefer reusing existing sections, elements, classes, JS hooks, and assets from that template instead of inventing new HTML, CSS, or JS.
 - Search for reusable UI in this order:
-  1. Existing project views and partials in `src/resources/views`
-  2. Existing theme assets already imported in `src/public/boxcar`
+  1. Existing project views and partials in `apps/laravel/resources/views`
+  2. Existing theme assets already imported in `apps/laravel/public/boxcar`
   3. Template source files in `C:\Users\minhd\Desktop\tailieuCars\cars dealer`
 - For small UI pieces, check `ui-elements.html` first.
 - For page and section layouts, check the closest matching template pages first, especially `inventory-*.html`, `inventory-page-single*.html`, `contact.html`, `about.html`, `dashboard.html`, `dealer*.html`, `login.html`, and `team*.html`.
 - Port only the needed section into Blade. Do not copy entire template pages with unrelated markup, dead sections, or unused scripts.
-- Use the template directory as a reference source. Prefer assets that already exist under `src/public/boxcar` before copying anything new.
+- Use the template directory as a reference source. Prefer assets that already exist under `apps/laravel/public/boxcar` before copying anything new.
 - Only add new CSS, JS, or markup when no existing project partial or BoxCar template element can cover the need with a small adaptation.
 - If no suitable template element exists, make the smallest possible extension and keep it consistent with the current BoxCar look and structure.
 - Do not switch client or admin pages to a new UI approach such as Tailwind-heavy markup, Alpine, React, or a different component library unless explicitly requested.
 
 ## Frontend Conventions
 
-- Client-facing pages should stay aligned with the existing BoxCar theme loaded by `src/resources/views/client/layouts/*.blade.php`.
-- Prefer existing Blade partials under `src/resources/views/client/partials` before creating new partials.
+- Client-facing pages should stay aligned with the existing BoxCar theme loaded by `apps/laravel/resources/views/client/layouts/*.blade.php`.
+- Prefer existing Blade partials under `apps/laravel/resources/views/client/partials` before creating new partials.
 - Keep custom inline `<style>` and `<script>` blocks small and page-specific. If styling or behavior becomes shared or substantial, move it into the existing asset and partial structure.
-- For admin pages, preserve the current admin shell and patterns built around `admin.layouts.app`, `admin.layouts.livewire`, `src/public/boxcar/css/admin.css`, and existing `admin-*` classes.
+- For admin pages, preserve the current admin shell and patterns built around `admin.layouts.app`, `admin.layouts.livewire`, `apps/laravel/public/boxcar/css/admin.css`, and existing `admin-*` classes.
 - New admin pages and interactive admin workflows must use Livewire. Existing controller + Blade admin modules are migration backlog, not templates for new work.
 - Keep client-facing pages controller + Blade by default. Use services for non-trivial business rules regardless of presentation layer.
 - Reuse existing admin table, toolbar, form, modal, and feedback patterns before introducing new structures.
@@ -37,10 +38,10 @@
 
 ## Architecture
 
-- Keep routes thin. Do not place business logic in `src/routes/*.php`.
+- Keep routes thin. Do not place business logic in `apps/laravel/routes/*.php`.
 - Keep controllers thin. Use controllers for request entry, orchestration, and response shaping.
 - Keep Livewire components focused on UI state, filters, validation, events, and calling services.
-- Put non-trivial business rules, multi-step write flows, and transaction boundaries in `src/app/Services`.
+- Put non-trivial business rules, multi-step write flows, and transaction boundaries in `apps/laravel/app/Services`.
 - Prefer explicit, domain-oriented naming over generic helper names.
 - Prefer typed properties, typed parameters, typed return values, and early returns.
 - Avoid deep nesting and avoid spreading the same rule across multiple layers when one clear owner is enough.
@@ -49,9 +50,9 @@
 
 ## Laravel And Livewire Patterns
 
-- Match the existing file pairing between `src/app/Livewire/...` and `src/resources/views/livewire/...`.
+- Match the existing file pairing between `apps/laravel/app/Livewire/...` and `apps/laravel/resources/views/livewire/...`.
 - In admin catalog modules, preserve the current pattern: `Index.php` as the workspace container and `*/Manager.php` for per-entity CRUD panels.
-- In this project, "using Livewire" still means rendering through Blade view files under `src/resources/views/livewire/...`. Do not interpret "avoid Blade" as a reason to avoid Livewire.
+- In this project, "using Livewire" still means rendering through Blade view files under `apps/laravel/resources/views/livewire/...`. Do not interpret "avoid Blade" as a reason to avoid Livewire.
 - For new admin CRUD-heavy modules, default to Livewire unless the existing module clearly follows a simpler controller + Blade pattern and does not need rich interaction.
 - Validate small one-off HTTP payloads directly in the controller. Use Form Requests when validation is non-trivial, reused, needs normalization, has cross-field rules, or owns request authorization; do not create a Request class for every endpoint by default.
 - For Livewire, follow the local module pattern already in place. Extract shared validation or normalization only when it is clearly reused across flows.
@@ -71,7 +72,7 @@
 
 ## Verification
 
-- After PHP, Blade, or Livewire changes, run `composer lint` from `src/`.
+- After PHP, Blade, or Livewire changes, run `composer lint` from `apps/laravel/`.
 - After non-trivial PHP logic, query, validation, or service changes, also run `composer stan`.
 - Do not add or run automated tests unless the project owner explicitly requests them. Never delete or weaken existing tests to avoid failures.
 - If a relevant check cannot be run, say so clearly in the final response.

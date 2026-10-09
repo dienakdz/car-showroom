@@ -21,9 +21,9 @@ These rules are the default for new work:
 - A new interactive admin page **MUST** use Livewire.
 - Do not create both a controller-rendered admin view and a Livewire view for the same screen.
 - Livewire still renders Blade. "Admin uses Livewire" means:
-  - component class: `src/app/Livewire/Admin/...`
-  - component view: `src/resources/views/livewire/admin/...`
-- Business rules do not belong to either presentation pattern. Non-trivial rules and multi-table writes belong in `src/app/Services`.
+  - component class: `apps/laravel/app/Livewire/Admin/...`
+  - component view: `apps/laravel/resources/views/livewire/admin/...`
+- Business rules do not belong to either presentation pattern. Non-trivial rules and multi-table writes belong in `apps/laravel/app/Services`.
 
 ## 2. High-level request flows
 
@@ -101,33 +101,37 @@ wire:click / wire:submit / wire:model
 ```text
 car-showroom/
 ├── AGENTS.md
+├── apps/
+│   ├── car-search/                 # FastAPI inventory search application
+│   └── laravel/
+│       ├── app/
+│       │   ├── Http/
+│       │   │   ├── Controllers/
+│       │   │   │   ├── Clients/   # Client request entry points
+│       │   │   │   └── Admin/     # Legacy admin pages + HTTP-only endpoints
+│       │   │   ├── Middleware/     # Authentication and permission boundaries
+│       │   │   └── Requests/       # Complex/reused validation for controller flows
+│       │   ├── Livewire/
+│       │   │   └── Admin/          # Preferred admin presentation layer
+│       │   ├── Models/             # Eloquent entities and relationships
+│       │   ├── Services/           # Business rules and transaction boundaries
+│       │   └── Support/            # Focused shared infrastructure
+│       ├── resources/views/
+│       │   ├── client/             # Client Blade pages, layouts, and partials
+│       │   ├── livewire/admin/     # Blade views paired with admin Livewire classes
+│       │   └── admin/              # Shared admin shell + legacy pages awaiting migration
+│       ├── routes/
+│       │   ├── web.php             # Client/public routes
+│       │   └── admin.php           # Admin routes
+│       └── public/boxcar/           # Existing BoxCar assets and admin CSS
 ├── docs/
 │   ├── application-architecture.md
 │   └── coding-standards.md
-└── src/
-    ├── app/
-    │   ├── Http/
-    │   │   ├── Controllers/
-    │   │   │   ├── Clients/          # Client request entry points
-    │   │   │   └── Admin/            # Legacy admin pages + HTTP-only endpoints
-    │   │   ├── Middleware/            # Authentication and permission boundaries
-    │   │   └── Requests/              # Complex/reused validation for controller flows
-    │   ├── Livewire/
-    │   │   └── Admin/                 # Preferred admin presentation layer
-    │   ├── Models/                    # Eloquent entities and relationships
-    │   ├── Services/                  # Business rules and transaction boundaries
-    │   └── Support/                   # Focused shared infrastructure
-    ├── resources/views/
-    │   ├── client/                    # Client Blade pages, layouts, and partials
-    │   ├── livewire/admin/            # Blade views paired with admin Livewire classes
-    │   └── admin/                     # Shared admin shell + legacy pages awaiting migration
-    ├── routes/
-    │   ├── web.php                    # Client/public routes
-    │   └── admin.php                  # Admin routes
-    └── public/boxcar/                  # Existing BoxCar assets and admin CSS
+└── docker/                         # Current Docker runtime configuration
 ```
 
-Application commands are run from `src/`.
+Laravel commands are run from `apps/laravel/`. Python search service commands
+are run from `apps/car-search/`.
 
 ## 4. Layer responsibilities
 
@@ -146,11 +150,11 @@ Application commands are run from `src/`.
 Client code stays under these locations:
 
 ```text
-src/app/Http/Controllers/Clients/
-src/app/Http/Requests/Clients/       # when request validation is needed
-src/resources/views/client/
-src/resources/views/client/layouts/
-src/resources/views/client/partials/
+apps/laravel/app/Http/Controllers/Clients/
+apps/laravel/app/Http/Requests/Clients/       # when request validation is needed
+apps/laravel/resources/views/client/
+apps/laravel/resources/views/client/layouts/
+apps/laravel/resources/views/client/partials/
 ```
 
 Rules:
@@ -192,8 +196,8 @@ final class InventoryController extends ClientBaseController
 Every full-page admin component must have a matching Livewire Blade view.
 
 ```text
-src/app/Livewire/Admin/Leads/Index.php
-src/resources/views/livewire/admin/leads/index.blade.php
+apps/laravel/app/Livewire/Admin/Leads/Index.php
+apps/laravel/resources/views/livewire/admin/leads/index.blade.php
 ```
 
 Use these naming patterns:
@@ -354,8 +358,8 @@ When a module is migrated, update this table in the same change.
 
 ## 8. Route conventions
 
-Client routes belong in `src/routes/web.php`. Admin routes belong in
-`src/routes/admin.php`.
+Client routes belong in `apps/laravel/routes/web.php`. Admin routes belong in
+`apps/laravel/routes/admin.php`.
 
 Admin full-page Livewire route:
 
@@ -380,7 +384,7 @@ Controllers remain appropriate for genuinely HTTP-specific endpoints, including:
 Before creating or restyling UI, search in this order:
 
 1. Existing project views and partials.
-2. Existing assets under `src/public/boxcar`.
+2. Existing assets under `apps/laravel/public/boxcar`.
 3. BoxCar template source at `C:\Users\minhd\Desktop\tailieuCars\cars dealer`.
 
 Admin rules:
@@ -462,7 +466,7 @@ Before considering an implementation complete, confirm:
 - [ ] No duplicate legacy implementation remains.
 - [ ] Existing BoxCar/admin UI patterns were reused.
 - [ ] No unused route, method, request class, eager load, or import remains in the touched flow.
-- [ ] `composer lint` was run from `src/`.
+- [ ] `composer lint` was run from `apps/laravel/`.
 - [ ] `composer stan` was run for non-trivial PHP/query/validation changes.
 - [ ] Any check that could not run is reported clearly.
 
@@ -470,7 +474,7 @@ Current project-owner testing preference:
 
 - Do not add new automated tests unless the project owner explicitly requests them.
 - Do not delete, weaken, or rewrite existing tests merely to avoid failures.
-- When tests are explicitly requested, run them from `src/` with `composer test`.
+- When tests are explicitly requested, run them from `apps/laravel/` with `composer test`.
 
 ## 14. Sources of truth
 
@@ -479,7 +483,7 @@ When instructions appear to conflict, follow this order:
 1. The project owner's explicit request for the current task.
 2. Repository instructions in `AGENTS.md`.
 3. This architecture document.
-4. `docs/coding-standards.md`, `src/pint.json`, and `src/.editorconfig`.
+4. `docs/coding-standards.md`, `apps/laravel/pint.json`, and `apps/laravel/.editorconfig`.
 5. Existing implementation patterns in the module being changed.
 
 If an existing legacy module conflicts with the target architecture, treat it as
