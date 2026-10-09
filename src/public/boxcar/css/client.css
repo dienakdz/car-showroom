@@ -4233,6 +4233,29 @@ input, button, select, textarea {
     padding-left: 18px;
 }
 
+.client-alert-banner.is-info {
+    align-items: flex-start;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1E40AF;
+}
+
+.client-alert-banner.is-info strong,
+.client-alert-banner.is-info span {
+    display: block;
+}
+
+.client-alert-banner.is-info span {
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+.client-alert-banner.is-info ul {
+    font-weight: 500;
+    margin: 6px 0 0;
+    padding-left: 18px;
+}
+
 .client-section-spacer {
     margin-bottom: 50px;
 }
@@ -9909,4 +9932,3 @@ body.drawer-open {
 body.voice-modal-active {
     overflow: hidden;
 }
-

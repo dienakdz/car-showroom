@@ -332,6 +332,24 @@
                     </div>
                 @endif
 
+                @if (($searchMeta['match_mode'] ?? null) === 'relaxed')
+                    <div class="client-alert-banner is-info wow fadeInUp" role="status">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <div>
+                            <strong>Chưa có xe khớp hoàn toàn với yêu cầu của bạn.</strong>
+                            <span>Chúng tôi đang ưu tiên những lựa chọn gần phù hợp nhất.</span>
+                            @if (! empty($searchMeta['relaxed_constraints']))
+                                <span>Điểm khác biệt của lựa chọn đầu tiên:</span>
+                                <ul>
+                                    @foreach ($searchMeta['relaxed_constraints'] as $constraint)
+                                        <li>{{ $constraint }}</li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
                 <!-- 4. Results Toolbar -->
                 <div class="inventory-toolbar-card wow fadeInUp">
                     <p class="inventory-results-count">

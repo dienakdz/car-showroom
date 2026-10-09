@@ -42,7 +42,8 @@ class InventoryController extends ClientBaseController
         }
 
         $keyword = trim((string) $request->query('q', ''));
-        $rankedCarIds = $this->applyKeywordSearch($query, $keyword);
+        $searchResult = $this->applyKeywordSearch($query, $keyword);
+        $rankedCarIds = $searchResult['ranked_ids'] ?? null;
 
         if ($request->filled('make')) {
             $query->where('makes.slug', $request->query('make'));
@@ -142,6 +143,8 @@ class InventoryController extends ClientBaseController
         $perPage = config('showroom.pagination.client');
         $cars = $query->paginate($perPage)->withQueryString();
         $cars->getCollection()->transform(fn (object $car) => $this->decorateCar($car));
+        $firstCarId = (int) data_get($cars->getCollection()->first(), 'id', 0);
+        $searchMeta = $this->buildSearchMeta($searchResult, $firstCarId);
 
         $pageTitle = match ($effectiveCondition) {
             'new' => 'Xe Mới 100%',
@@ -163,11 +166,16 @@ class InventoryController extends ClientBaseController
             'pageSubtitle' => $pageSubtitle,
             'currentCondition' => $effectiveCondition,
             'filters' => $this->loadInventoryFilters(),
+            'searchMeta' => $searchMeta,
         ]);
     }
 
     /**
-     * @return list<int>|null
+     * @return array{
+     *     match_mode: 'strict'|'relaxed'|'none',
+     *     ranked_ids: list<int>,
+     *     relaxed_constraints_by_id: array<int, list<string>>
+     * }|null
      */
     private function applyKeywordSearch(Builder $query, string $keyword): ?array
     {
@@ -175,11 +183,11 @@ class InventoryController extends ClientBaseController
             return null;
         }
 
-        $rankedCarIds = $this->carSearchService->rankedCarIds($keyword);
-        if ($rankedCarIds !== null && $rankedCarIds !== []) {
-            $query->whereIn('car_units.id', $rankedCarIds);
+        $searchResult = $this->carSearchService->search($keyword);
+        if ($searchResult !== null && $searchResult['ranked_ids'] !== []) {
+            $query->whereIn('car_units.id', $searchResult['ranked_ids']);
 
-            return $rankedCarIds;
+            return $searchResult;
         }
 
         $query->where(function (Builder $queryBuilder) use ($keyword): void {
@@ -191,6 +199,26 @@ class InventoryController extends ClientBaseController
         });
 
         return null;
+    }
+
+    /**
+     * @param  array{
+     *     match_mode: 'strict'|'relaxed'|'none',
+     *     ranked_ids: list<int>,
+     *     relaxed_constraints_by_id: array<int, list<string>>
+     * }|null  $searchResult
+     * @return array{match_mode: 'relaxed', relaxed_constraints: list<string>}|null
+     */
+    private function buildSearchMeta(?array $searchResult, int $firstCarId): ?array
+    {
+        if ($searchResult === null || $searchResult['match_mode'] !== 'relaxed' || $firstCarId <= 0) {
+            return null;
+        }
+
+        return [
+            'match_mode' => 'relaxed',
+            'relaxed_constraints' => $searchResult['relaxed_constraints_by_id'][$firstCarId] ?? [],
+        ];
     }
 
     /**

@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\Log;
 final class CarSearchService
 {
     /**
-     * @return list<int>|null Null means the search service was unavailable or returned an invalid response.
+     * @return array{
+     *     match_mode: 'strict'|'relaxed'|'none',
+     *     ranked_ids: list<int>,
+     *     relaxed_constraints_by_id: array<int, list<string>>
+     * }|null Null means the search service was unavailable or returned an invalid response.
      */
-    public function rankedCarIds(string $query): ?array
+    public function search(string $query): ?array
     {
         $baseUrl = rtrim((string) config('services.car_search.url'), '/');
         if ($baseUrl === '') {
@@ -54,13 +58,15 @@ final class CarSearchService
         }
 
         $hits = $response->json('hits');
-        if (! is_array($hits)) {
+        $matchMode = $response->json('match_mode');
+        if (! is_array($hits) || ! is_string($matchMode) || ! in_array($matchMode, ['strict', 'relaxed', 'none'], true)) {
             Log::warning('Car search service returned an invalid response.');
 
             return null;
         }
 
         $rankedIds = [];
+        $relaxedConstraintsById = [];
         foreach ($hits as $hit) {
             if (! is_array($hit)) {
                 continue;
@@ -76,9 +82,45 @@ final class CarSearchService
                 continue;
             }
 
-            $rankedIds[] = (int) $carUnitId;
+            $carUnitId = (int) $carUnitId;
+            if (isset($relaxedConstraintsById[$carUnitId])) {
+                continue;
+            }
+
+            $rankedIds[] = $carUnitId;
+            $relaxedConstraintsById[$carUnitId] = $this->stringList(
+                $hit['relaxed_constraints'] ?? [],
+            );
         }
 
-        return array_values(array_unique($rankedIds));
+        return [
+            'match_mode' => $matchMode,
+            'ranked_ids' => $rankedIds,
+            'relaxed_constraints_by_id' => $relaxedConstraintsById,
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function stringList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($value as $item) {
+            if (! is_string($item)) {
+                continue;
+            }
+
+            $item = trim($item);
+            if ($item !== '') {
+                $items[] = $item;
+            }
+        }
+
+        return array_values(array_unique($items));
     }
 }
