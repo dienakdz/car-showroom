@@ -1454,11 +1454,13 @@ input, button, select, textarea {
 }
 
 /* Input Fields */
-.boxcar-auth-card .form-group-field {
+.boxcar-auth-card .form-group-field,
+.auth-support-modal .form-group-field {
     margin-bottom: 18px;
 }
 
-.boxcar-auth-card .form-group-field label {
+.boxcar-auth-card .form-group-field label,
+.auth-support-modal .form-group-field label {
     display: block;
     font-size: 13.5px;
     font-weight: 700;
@@ -1467,13 +1469,15 @@ input, button, select, textarea {
     line-height: 1.4;
 }
 
-.boxcar-auth-card .field-wrapper {
+.boxcar-auth-card .field-wrapper,
+.auth-support-modal .field-wrapper {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.boxcar-auth-card .field-wrapper .field-icon {
+.boxcar-auth-card .field-wrapper .field-icon,
+.auth-support-modal .field-wrapper .field-icon {
     position: absolute;
     left: 16px;
     color: #94a3b8;
@@ -1482,7 +1486,8 @@ input, button, select, textarea {
     z-index: 2;
 }
 
-.boxcar-auth-card .field-wrapper input {
+.boxcar-auth-card .field-wrapper input,
+.auth-support-modal .field-wrapper input {
     width: 100%;
     height: 52px;
     padding: 0 46px 0 44px;
@@ -1496,18 +1501,21 @@ input, button, select, textarea {
     box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
-.boxcar-auth-card .field-wrapper input:hover {
+.boxcar-auth-card .field-wrapper input:hover,
+.auth-support-modal .field-wrapper input:hover {
     border-color: #94a3b8;
     background: #ffffff;
 }
 
-.boxcar-auth-card .field-wrapper input:focus {
+.boxcar-auth-card .field-wrapper input:focus,
+.auth-support-modal .field-wrapper input:focus {
     border-color: #405ff2;
     background: #ffffff;
     box-shadow: 0 0 0 4px rgba(64, 95, 242, 0.12);
 }
 
-.boxcar-auth-card .field-wrapper input.is-invalid {
+.boxcar-auth-card .field-wrapper input.is-invalid,
+.auth-support-modal .field-wrapper input.is-invalid {
     border-color: #ef4444;
     background: #fef2f2;
     box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
@@ -1755,6 +1763,10 @@ input, button, select, textarea {
 }
 
 /* Modal Support */
+body.modal-open .boxcar-wrapper {
+    z-index: auto;
+}
+
 .auth-support-modal .modal-content {
     border-radius: 20px;
     border: 0;

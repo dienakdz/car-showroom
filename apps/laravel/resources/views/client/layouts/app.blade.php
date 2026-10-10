@@ -32,6 +32,8 @@
 
 <div class="scroll-to-top scroll-to-target" data-target="html"><span class="fa fa-angle-up"></span></div>
 
+@stack('modals')
+
 <script src="{{ asset('boxcar/js/jquery.js') }}"></script>
 <script src="{{ asset('boxcar/js/popper.min.js') }}"></script>
 <script src="{{ asset('boxcar/js/bootstrap.min.js') }}"></script>

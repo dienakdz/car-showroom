@@ -70,6 +70,11 @@
                 document.querySelectorAll('.js-resend-trigger').forEach(function (btn) {
                     btn.addEventListener('click', function (e) {
                         e.preventDefault();
+                        const loginIdentifier = document.getElementById('login-identifier');
+                        const resendEmailInput = document.getElementById('resend-email');
+                        if (loginIdentifier && resendEmailInput && !resendEmailInput.value.trim() && loginIdentifier.value.includes('@')) {
+                            resendEmailInput.value = loginIdentifier.value.trim();
+                        }
                         const modal = bootstrap.Modal.getOrCreateInstance(resendModalEl);
                         modal.show();
                     });
@@ -279,89 +284,93 @@
     </div>
 </section>
 
-{{-- Modal hỗ trợ Quên mật khẩu --}}
-<div class="modal fade auth-support-modal" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="forgotPasswordModalLabel">
-                    <i class="fa fa-shield-halved"></i> Hỗ trợ Khôi phục Mật khẩu
-                </h5>
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Đóng">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                    Để bảo vệ an toàn thông tin tài khoản và dữ liệu giao dịch xe, MD-CARS cung cấp hai phương thức hỗ trợ cấp lại mật khẩu xác thực trực tiếp:
-                </p>
-
-                <div class="support-channel-card">
-                    <div class="channel-icon hotline">
-                        <i class="fa fa-phone-volume"></i>
+@once
+    @push('modals')
+        {{-- Modal hỗ trợ Quên mật khẩu --}}
+        <div class="modal fade auth-support-modal" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="forgotPasswordModalLabel">
+                            <i class="fa fa-shield-halved"></i> Hỗ trợ Khôi phục Mật khẩu
+                        </h5>
+                        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Đóng">
+                            <i class="fa fa-times"></i>
+                        </button>
                     </div>
-                    <div class="channel-content">
-                        <strong>Tổng đài hỗ trợ trực tiếp (24/7)</strong>
-                        <p>Xác thực nhanh qua số điện thoại đăng ký và nhận mã kích hoạt/mật khẩu tạm trong 2 phút.</p>
-                        <a href="tel:19008888" class="channel-action hotline">
-                            <i class="fa fa-phone"></i> Gọi ngay: 1900 8888 (Miễn phí)
-                        </a>
-                    </div>
-                </div>
+                    <div class="modal-body">
+                        <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                            Để bảo vệ an toàn thông tin tài khoản và dữ liệu giao dịch xe, MD-CARS cung cấp hai phương thức hỗ trợ cấp lại mật khẩu xác thực trực tiếp:
+                        </p>
 
-                <div class="support-channel-card">
-                    <div class="channel-icon">
-                        <i class="fa fa-envelope-open-text"></i>
-                    </div>
-                    <div class="channel-content">
-                        <strong>Gửi yêu cầu qua bộ phận Chăm sóc Khách hàng</strong>
-                        <p>Để lại thông tin tại trang liên hệ, chuyên viên hỗ trợ sẽ liên hệ xử lý trong vòng 15 phút.</p>
-                        <a href="{{ route('contact') }}" class="channel-action">
-                            <i class="fa fa-arrow-right"></i> Đi đến trang Liên hệ hỗ trợ
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                        <div class="support-channel-card">
+                            <div class="channel-icon hotline">
+                                <i class="fa fa-phone-volume"></i>
+                            </div>
+                            <div class="channel-content">
+                                <strong>Tổng đài hỗ trợ trực tiếp (24/7)</strong>
+                                <p>Xác thực nhanh qua số điện thoại đăng ký và nhận mã kích hoạt/mật khẩu tạm trong 2 phút.</p>
+                                <a href="tel:19008888" class="channel-action hotline">
+                                    <i class="fa fa-phone"></i> Gọi ngay: 1900 8888 (Miễn phí)
+                                </a>
+                            </div>
+                        </div>
 
-{{-- Modal Gửi lại email kích hoạt tài khoản --}}
-<div class="modal fade auth-support-modal" id="resendActivationModal" tabindex="-1" aria-labelledby="resendActivationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="resendActivationModalLabel">
-                    <i class="fa fa-envelope-circle-check"></i> Kích hoạt Tài khoản
-                </h5>
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Đóng">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
-            <form method="POST" action="{{ route('verification.resend') }}">
-                @csrf
-                <div class="modal-body">
-                    <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                        Quý khách vui lòng nhập địa chỉ email đã dùng để đăng ký tài khoản. Hệ thống MD-CARS sẽ gửi lại một liên kết kích hoạt mới (có hiệu lực trong 24 giờ).
-                    </p>
-
-                    <div class="form-group-field" style="margin-bottom: 8px;">
-                        <label for="resend-email" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #0f172a;">
-                            Địa chỉ Email của bạn <span class="text-danger">*</span>
-                        </label>
-                        <div class="field-wrapper">
-                            <i class="fa fa-envelope field-icon"></i>
-                            <input id="resend-email" type="email" name="email" value="{{ session('unverified_email', old('email')) }}" placeholder="name@email.com" autocomplete="email" required>
+                        <div class="support-channel-card">
+                            <div class="channel-icon">
+                                <i class="fa fa-envelope-open-text"></i>
+                            </div>
+                            <div class="channel-content">
+                                <strong>Gửi yêu cầu qua bộ phận Chăm sóc Khách hàng</strong>
+                                <p>Để lại thông tin tại trang liên hệ, chuyên viên hỗ trợ sẽ liên hệ xử lý trong vòng 15 phút.</p>
+                                <a href="{{ route('contact') }}" class="channel-action">
+                                    <i class="fa fa-arrow-right"></i> Đi đến trang Liên hệ hỗ trợ
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 15px 24px; display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 14px; font-weight: 500;">Hủy</button>
-                    <button type="submit" class="btn btn-primary" style="background-color: #405ff2; border-color: #405ff2; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 8px;">
-                        <i class="fa fa-paper-plane me-1"></i> Gửi lại email kích hoạt
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
-</div>
+
+        {{-- Modal Gửi lại email kích hoạt tài khoản --}}
+        <div class="modal fade auth-support-modal" id="resendActivationModal" tabindex="-1" aria-labelledby="resendActivationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resendActivationModalLabel">
+                            <i class="fa fa-envelope-circle-check"></i> Kích hoạt Tài khoản
+                        </h5>
+                        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Đóng">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <form method="POST" action="{{ route('verification.resend') }}">
+                        @csrf
+                        <div class="modal-body">
+                            <p style="color: #475467; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                                Quý khách vui lòng nhập địa chỉ email đã dùng để đăng ký tài khoản. Hệ thống MD-CARS sẽ gửi lại một liên kết kích hoạt mới (có hiệu lực trong 24 giờ).
+                            </p>
+
+                            <div class="form-group-field" style="margin-bottom: 8px;">
+                                <label for="resend-email">
+                                    Địa chỉ Email của bạn <span class="text-danger">*</span>
+                                </label>
+                                <div class="field-wrapper">
+                                    <i class="fa fa-envelope field-icon"></i>
+                                    <input id="resend-email" type="email" name="email" value="{{ session('unverified_email', old('email')) }}" placeholder="name@email.com" autocomplete="email" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 15px 24px; display: flex; justify-content: flex-end; gap: 10px;">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-size: 14px; font-weight: 500;">Hủy</button>
+                            <button type="submit" class="btn btn-primary" style="background-color: #405ff2; border-color: #405ff2; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 8px;">
+                                <i class="fa fa-paper-plane me-1"></i> Gửi lại email kích hoạt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endpush
+@endonce
