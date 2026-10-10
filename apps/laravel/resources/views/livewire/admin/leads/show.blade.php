@@ -132,7 +132,7 @@
                         </span>
                         <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--c1-text-heading);">Thông tin khách hàng</h4>
                     </div>
-                    <span class="c1-vehicle-tag">{{ $sourceLabels[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</span>
+                    <span class="c1-vehicle-tag">{{ $sourceOptions[$lead->source] ?? ucfirst($lead->source ?? 'Web') }}</span>
                 </div>
 
                 <form wire:submit="save">
@@ -165,15 +165,15 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Trạng thái phễu (Status)</label>
                             <select class="form-select @error('form.status') is-invalid @enderror" wire:model="form.status">
-                                @foreach ($statusOptions as $statusOption)
-                                    <option value="{{ $statusOption }}">{{ strtoupper($statusOption) }}</option>
+                                @foreach ($statusOptions as $stKey => $stLbl)
+                                    <option value="{{ $stKey }}">{{ $stLbl }}</option>
                                 @endforeach
                             </select>
                             @error('form.status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-muted);">Nguồn tiếp nhận (Source)</label>
-                            <input type="text" class="form-control" value="{{ $sourceLabels[$lead->source] ?? $lead->source }}" disabled style="background: #f8fafc;">
+                            <input type="text" class="form-control" value="{{ $sourceOptions[$lead->source] ?? $lead->source }}" disabled style="background: #f8fafc;">
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: var(--c1-text-body);">Yêu cầu / Lời nhắn ban đầu của khách</label>
