@@ -69,7 +69,7 @@ class AppointmentController extends ClientBaseController
                 'appointment',
                 'Lịch hẹn lái thử mới từ Website',
                 "Khách hàng {$validated['name']} ({$validated['phone']}) đã đặt lịch hẹn lúc {$timeStr}.",
-                route('admin.appointments.index'),
+                route('admin.appointments.edit', $appointment->id),
                 'fa fa-calendar-check',
                 ['appointment_id' => $appointment->id, 'customer_name' => $validated['name']]
             );

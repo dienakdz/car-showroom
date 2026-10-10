@@ -67,7 +67,11 @@
                         $data = $notification->data ?? [];
                         $isUnread = $notification->read_at === null;
                         $category = (string) ($data['category'] ?? 'general');
+                        $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
                         $actionUrl = (string) ($data['action_url'] ?? route('admin.notifications.index'));
+                        if ($category === 'appointment' && ! empty($meta['appointment_id'])) {
+                            $actionUrl = route('admin.appointments.edit', $meta['appointment_id']);
+                        }
                     @endphp
                     <div
                         class="c1-notif-item {{ $isUnread ? 'is-unread' : '' }}"

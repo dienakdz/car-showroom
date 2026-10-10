@@ -103,7 +103,11 @@
                 $data = $notification->data ?? [];
                 $isUnread = $notification->read_at === null;
                 $category = (string) ($data['category'] ?? 'general');
+                $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
                 $actionUrl = (string) ($data['action_url'] ?? '#');
+                if ($category === 'appointment' && ! empty($meta['appointment_id'])) {
+                    $actionUrl = route('admin.appointments.edit', $meta['appointment_id']);
+                }
                 $actionLabel = match ($category) {
                     'appointment' => 'Xem lịch hẹn',
                     'sale' => 'Xem hợp đồng',
@@ -142,15 +146,14 @@
                 {{-- Quick Actions --}}
                 <div class="c1-notif-row-actions">
                     @if ($actionUrl !== '#')
-                        <a
-                            href="{{ $actionUrl }}"
-                            wire:navigate
+                        <button
+                            type="button"
                             class="c1-btn c1-btn-sm c1-btn-outline-primary"
-                            wire:click="markAsRead('{{ $notification->id }}')"
+                            wire:click="openNotification('{{ $notification->id }}', '{{ $actionUrl }}')"
                         >
                             <span>{{ $actionLabel }}</span>
                             <i class="fa fa-arrow-right ms-1"></i>
-                        </a>
+                        </button>
                     @endif
 
                     @if ($isUnread)

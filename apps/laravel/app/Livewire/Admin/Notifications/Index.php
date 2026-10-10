@@ -41,6 +41,16 @@ class Index extends AdminPageComponent
         }
     }
 
+    public function openNotification(string $id, string $url, NotificationService $service): void
+    {
+        $user = auth()->user();
+        if ($user instanceof User) {
+            $service->markAsRead($user, $id);
+        }
+
+        $this->redirect($url, navigate: true);
+    }
+
     public function markAllAsRead(NotificationService $service): void
     {
         $user = auth()->user();

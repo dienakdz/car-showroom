@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Notifications;
 use App\Models\User;
 use App\Services\Admin\NotificationService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Livewire\Component;
 
 class Dropdown extends Component
@@ -47,14 +46,15 @@ class Dropdown extends Component
         }
     }
 
-    public function openNotification(string $id, string $url, NotificationService $service): RedirectResponse
+    public function openNotification(string $id, string $url, NotificationService $service): void
     {
         $user = auth()->user();
         if ($user instanceof User) {
             $service->markAsRead($user, $id);
         }
 
-        return redirect()->to($url);
+        $this->isOpen = false;
+        $this->redirect($url, navigate: true);
     }
 
     public function render(NotificationService $service): View

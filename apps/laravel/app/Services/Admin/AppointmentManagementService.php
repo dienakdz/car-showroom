@@ -102,7 +102,7 @@ class AppointmentManagementService
                         'appointment',
                         'Lịch hẹn lái thử / xem xe mới',
                         "Lịch hẹn của {$customerName} lúc {$timeStr}.",
-                        route('admin.appointments.index'),
+                        route('admin.appointments.edit', $appointment->id),
                         'fa fa-calendar-check',
                         ['appointment_id' => $appointment->id]
                     );
